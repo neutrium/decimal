@@ -1,0 +1,35 @@
+{
+  "name": "@neutrium/math",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "typings": "dist/index",
+  "description": "The NeutriumJS math library.",
+  "keywords": [
+    "neutrium",
+    "math"
+  ],
+  "license": "CC-BY-4.0",
+  "author:": "Trevor Walker <trevorw@neutrium.net> (https://neutrium.net)",
+  "private": false,
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neutrium/math.git"
+  },
+  "bugs": {
+    "url": "https://github.com/neutrium/math/issues"
+  },
+  "dependencies": {},
+  "scripts": {
+    "clean": "rm -r ./dist/*",
+    "tsc": "tsc",
+    "build": "npm run tsc",
+    "prepublish": "npm run clean && npm run build",
+    "test": "jasmine"
+  },
+  "devDependencies": {
+    "jasmine": "^2.4.1"
+  }
+}
