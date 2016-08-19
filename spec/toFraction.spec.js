@@ -25,7 +25,7 @@ function testException(cases)
     }
 }
 
-describe("Neutrium Decimal toDP Tests", function() {
+describe("Neutrium Decimal toFraction Tests", function() {
 
     Decimal.config({
         precision: 20,

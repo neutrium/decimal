@@ -120,6 +120,68 @@ var Decimal = (function () {
         configurable: true
     });
     ;
+    Object.defineProperty(Decimal, "ROUND_UP", {
+        // The rounding mode used when rounding to `precision`.
+        //
+        get: function () { return 0; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(Decimal, "ROUND_DOWN", {
+        get: function () { return 1; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(Decimal, "ROUND_CEIL", {
+        get: function () { return 2; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(Decimal, "ROUND_FLOOR", {
+        get: function () { return 3; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(Decimal, "ROUND_HALF_UP", {
+        get: function () { return 4; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(Decimal, "ROUND_HALF_DOWN", {
+        get: function () { return 5; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(Decimal, "ROUND_HALF_EVEN", {
+        get: function () { return 6; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(Decimal, "ROUND_HALF_CEIL", {
+        get: function () { return 7; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(Decimal, "ROUND_HALF_FLOOR", {
+        get: function () { return 8; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(Decimal, "EUCLID", {
+        get: function () { return 9; },
+        enumerable: true,
+        configurable: true
+    });
+    ;
     Object.defineProperty(Decimal, "isDecimal", {
         get: function () { return /^(\d+(\.\d*)?|\.\d+)(e[+-]?\d+)?$/i; },
         enumerable: true,
@@ -144,13 +206,16 @@ var Decimal = (function () {
         configurable: true
     });
     ;
+    //
     // Return a new Decimal whose value is the absolute value of this Decimal.
+    //
     Decimal.prototype.abs = function () {
         var x = new Decimal(this);
         if (x.s < 0)
             x.s = 1;
         return Decimal.finalise(x);
     };
+    //
     // Return a new Decimal whose value is the cube root of the value of this Decimal, rounded to
     // `precision` significant digits using rounding mode `rounding`.
     //
@@ -163,6 +228,7 @@ var Decimal = (function () {
     //  cbrt(I)  =  I
     //
     // Math.cbrt(x) = (x < 0 ? -Math.pow(-x, 1/3) : Math.pow(x, 1/3))
+    //
     Decimal.prototype.cbrt = function () {
         var e, m, n, r, rep, s, sd, t, t3, t3plusx, x = this;
         if (!x.isFinite() || x.isZero())
@@ -235,16 +301,20 @@ var Decimal = (function () {
         Decimal.external = true;
         return Decimal.finalise(r, e, Decimal.rounding, m);
     };
+    //
     // Return a new Decimal whose value is the value of this Decimal rounded to a whole number in the
     // direction of positive Infinity.
+    //
     Decimal.prototype.ceil = function () {
         return Decimal.finalise(new Decimal(this), this.e + 1, 2);
     };
+    //
     // Return
     //   1    if the value of this Decimal is greater than the value of `y`,
     //  -1    if the value of this Decimal is less than the value of `y`,
     //   0    if they have the same value,
     //   NaN  if the value of either Decimal is NaN.
+    //
     Decimal.prototype.cmp = function (w) {
         var xdL, ydL, x = this, xd = x.d, y = new Decimal(w), yd = y.d, xs = x.s, ys = y.s;
         // Either NaN or ±Infinity?
@@ -272,7 +342,9 @@ var Decimal = (function () {
         // Compare lengths.
         return xdL === ydL ? 0 : xdL > ydL !== xs < 0 ? 1 : -1;
     };
+    //
     // Return the number of decimal places of the value of this Decimal.
+    //
     Decimal.prototype.dp = function () {
         var w, d = this.d, n = NaN;
         if (d) {
@@ -288,108 +360,136 @@ var Decimal = (function () {
         }
         return n;
     };
+    //
     // Return a new Decimal whose value is the value of this Decimal divided by `y`, rounded to
     // `precision` significant digits using rounding mode `rounding`.
+    //
     Decimal.prototype.div = function (y) {
         return Decimal.divide(this, new Decimal(y));
     };
+    //
     // Return a new Decimal whose value is the integer part of dividing the value of this Decimal
     // by the value of `y`, rounded to `precision` significant digits using rounding mode `rounding`.
+    //
     Decimal.prototype.divToInt = function (y) {
         return Decimal.finalise(Decimal.divide(this, new Decimal(y), 0, 1, 1), Decimal.precision, Decimal.rounding);
     };
+    //
     // Return true if the value of this Decimal is equal to the value of `y`, otherwise return false.
+    //
     Decimal.prototype.eq = function (y) {
         return this.cmp(y) === 0;
     };
+    //
     // Return a new Decimal whose value is the natural exponential of the value of this Decimal,
     // i.e. the base e raised to the power the value of this Decimal, rounded to `precision`
     // significant digits using rounding mode `rounding`.
+    //
     Decimal.prototype.exp = function () {
         return Decimal.naturalExponential(this);
     };
+    //
     // Return a new Decimal whose value is the value of this Decimal rounded to a whole number in the
     // direction of negative Infinity.
+    //
     Decimal.prototype.floor = function () {
         return Decimal.finalise(new Decimal(this), this.e + 1, 3);
     };
-    // Return true if the value of this Decimal is greater than the value of `y`, otherwise return
-    // false.
+    //
+    // Return true if the value of this Decimal is greater than the value of `y`, otherwise return false.
+    //
     Decimal.prototype.gt = function (y) {
         return this.cmp(y) > 0;
     };
+    //
     // Return true if the value of this Decimal is greater than or equal to the value of `y`,
     // otherwise return false.
+    //
     Decimal.prototype.gte = function (y) {
         var k = this.cmp(y);
         return k == 1 || k === 0;
     };
+    //
     // Return true if the value of this Decimal is a finite number, otherwise return false.
+    //
     Decimal.prototype.isFinite = function () {
         return !!this.d;
     };
+    //
     // Return true if the value of this Decimal is an integer, otherwise return false.
+    //
     Decimal.prototype.isInt = function () {
         return !!this.d && Math.floor(this.e / Decimal.LOG_BASE) > this.d.length - 2;
     };
+    //
     // Return true if the value of this Decimal is NaN, otherwise return false.
+    //
     Decimal.prototype.isNaN = function () {
         return !this.s;
     };
+    //
     // Return true if the value of this Decimal is negative, otherwise return false.
+    //
     Decimal.prototype.isNeg = function () {
         return this.s < 0;
     };
+    //
     // Return true if the value of this Decimal is positive, otherwise return false.
+    //
     Decimal.prototype.isPos = function () {
         return this.s > 0;
     };
+    //
     // Return true if the value of this Decimal is 0 or -0, otherwise return false.
+    //
     Decimal.prototype.isZero = function () {
         return !!this.d && this.d[0] === 0;
     };
+    //
     // Return true if the value of this Decimal is less than `y`, otherwise return false.
+    //
     Decimal.prototype.lt = function (y) {
         return this.cmp(y) < 0;
     };
+    //
     // Return true if the value of this Decimal is less than or equal to `y`, otherwise return false.
+    //
     Decimal.prototype.lte = function (y) {
         return this.cmp(y) < 1;
     };
+    //
     // Return a new Decimal whose value is the natural logarithm of the value of this Decimal,
     // rounded to `precision` significant digits using rounding mode `rounding`.
+    //
     Decimal.prototype.ln = function () {
         return this.naturalLogarithm(this);
     };
-    /*
-    * Return the logarithm of the value of this Decimal to the specified base, rounded to `precision`
-    * significant digits using rounding mode `rounding`.
-    *
-    * If no base is specified, return log[10](arg).
-    *
-    * log[base](arg) = ln(arg) / ln(base)
-    *
-    * The result will always be correctly rounded if the base of the log is 10, and 'almost always'
-    * otherwise:
-    *
-    * Depending on the rounding mode, the result may be incorrectly rounded if the first fifteen
-    * rounding digits are [49]99999999999999 or [50]00000000000000. In that case, the maximum error
-    * between the result and the correctly rounded result will be one ulp (unit in the last place).
-    *
-    * log[-b](a)       = NaN
-    * log[0](a)        = NaN
-    * log[1](a)        = NaN
-    * log[NaN](a)      = NaN
-    * log[Infinity](a) = NaN
-    * log[b](0)        = -Infinity
-    * log[b](-0)       = -Infinity
-    * log[b](-a)       = NaN
-    * log[b](1)        = 0
-    * log[b](Infinity) = Infinity
-    * log[b](NaN)      = NaN
-    *
-    */
-    // Todo log and log10() could be moved into separate math library
+    //
+    // Return the logarithm of the value of this Decimal to the specified base, rounded to `precision`
+    // significant digits using rounding mode `rounding`.
+    //
+    // If no base is specified, return log[10](arg).
+    //
+    // log[base](arg) = ln(arg) / ln(base)
+    //
+    // The result will always be correctly rounded if the base of the log is 10, and 'almost always' otherwise:
+    //
+    // Depending on the rounding mode, the result may be incorrectly rounded if the first fifteen
+    // rounding digits are [49]99999999999999 or [50]00000000000000. In that case, the maximum error
+    // between the result and the correctly rounded result will be one ulp (unit in the last place).
+    //
+    // log[-b](a)       = NaN
+    // log[0](a)        = NaN
+    // log[1](a)        = NaN
+    // log[NaN](a)      = NaN
+    // log[Infinity](a) = NaN
+    // log[b](0)        = -Infinity
+    // log[b](-0)       = -Infinity
+    // log[b](-a)       = NaN
+    // log[b](1)        = 0
+    // log[b](Infinity) = Infinity
+    // log[b](NaN)      = NaN
+    //
     Decimal.prototype.log = function (baseN) {
         var isBase10, d, denominator, k, inf, num, sd, r, base, arg = this, pr = Decimal.precision, rm = Decimal.rounding, guard = 5;
         // Default base is 10.
@@ -461,51 +561,51 @@ var Decimal = (function () {
         Decimal.external = true;
         return Decimal.finalise(r, pr, rm);
     };
-    ;
     Decimal.prototype.log10 = function () {
         return this.log(10);
     };
     Decimal.prototype.log2 = function () {
         return this.log(2);
     };
+    //
     // Return a new Decimal whose value is the maximum of the arguments and the value of this Decimal.
     // arguments {number|string|Decimal}
+    //
     Decimal.prototype.max = function (values) {
         values.unshift(this);
         //Array.prototype.push.call(arguments, this);
         return this.maxOrMin(values, 'lt');
     };
+    //
     // Return a new Decimal whose value is the minimum of the arguments and the value of this Decimal.
     // arguments {number|string|Decimal}
+    //
     Decimal.prototype.min = function (values) {
         values.unshift(this);
         //Array.prototype.push.call(arguments, this);
         return this.maxOrMin(values, 'gt');
     };
-    /*
-    *  n - 0 = n
-    *  n - N = N
-    *  n - I = -I
-    *  0 - n = -n
-    *  0 - 0 = 0
-    *  0 - N = N
-    *  0 - I = -I
-    *  N - n = N
-    *  N - 0 = N
-    *  N - N = N
-    *  N - I = N
-    *  I - n = I
-    *  I - 0 = I
-    *  I - N = N
-    *  I - I = N
-    *
-    * Return a new Decimal whose value is the value of this Decimal minus `y`, rounded to `precision`
-    * significant digits using rounding mode `rounding`.
-    *
-    */
-    Decimal.prototype.sub = function (y) {
-        var d, e, i, j, k, len, pr, rm, xd, xe, xLTy, yd, x = this, LOG_BASE = Decimal.LOG_BASE, BASE = Decimal.BASE;
-        y = new Decimal(y);
+    //
+    // Return a new Decimal whose value is the value of this Decimal minus `y`, rounded to `precision`
+    // significant digits using rounding mode `rounding`.
+    //  n - 0 = n
+    //  n - N = N
+    //  n - I = -I
+    //  0 - n = -n
+    //  0 - 0 = 0
+    //  0 - N = N
+    //  0 - I = -I
+    //  N - n = N
+    //  N - 0 = N
+    //  N - N = N
+    //  N - I = N
+    //  I - n = I
+    //  I - 0 = I
+    //  I - N = N
+    //  I - I = N
+    //
+    Decimal.prototype.sub = function (yy) {
+        var d, e, i, j, k, len, pr, rm, xd, xe, xLTy, yd, x = this, y = new Decimal(yy), LOG_BASE = Decimal.LOG_BASE, BASE = Decimal.BASE;
         // If either is not finite...
         if (!x.d || !y.d) {
             // Return NaN if either is NaN.
@@ -625,33 +725,30 @@ var Decimal = (function () {
         y.e = this.getBase10Exponent(xd, e);
         return Decimal.external ? Decimal.finalise(y, pr, rm) : y;
     };
-    /*
-    *   n % 0 =  N
-    *   n % N =  N
-    *   n % I =  n
-    *   0 % n =  0
-    *  -0 % n = -0
-    *   0 % 0 =  N
-    *   0 % N =  N
-    *   0 % I =  0
-    *   N % n =  N
-    *   N % 0 =  N
-    *   N % N =  N
-    *   N % I =  N
-    *   I % n =  N
-    *   I % 0 =  N
-    *   I % N =  N
-    *   I % I =  N
-    *
-    * Return a new Decimal whose value is the value of this Decimal modulo `y`, rounded to
-    * `precision` significant digits using rounding mode `rounding`.
-    *
-    * The result depends on the modulo mode.
-    *
-    */
-    Decimal.prototype.mod = function (y) {
-        var q, x = this;
-        y = new Decimal(y);
+    //
+    // Return a new Decimal whose value is the value of this Decimal modulo `y`, rounded to
+    // `precision` significant digits using rounding mode `rounding`.
+    //
+    // The result depends on the modulo mode.
+    //   n % 0 =  N
+    //   n % N =  N
+    //   n % I =  n
+    //   0 % n =  0
+    //  -0 % n = -0
+    //   0 % 0 =  N
+    //   0 % N =  N
+    //   0 % I =  0
+    //   N % n =  N
+    //   N % 0 =  N
+    //   N % N =  N
+    //   N % I =  N
+    //   I % n =  N
+    //   I % 0 =  N
+    //   I % N =  N
+    //   I % I =  N
+    //
+    Decimal.prototype.mod = function (yy) {
+        var q, x = this, y = new Decimal(yy);
         // Return NaN if x is ±Infinity or NaN, or y is NaN or ±0.
         if (!x.d || !y.s || y.d && !y.d[0]) {
             return new Decimal(NaN);
@@ -675,36 +772,36 @@ var Decimal = (function () {
         Decimal.external = true;
         return x.sub(q);
     };
+    //
     // Return a new Decimal whose value is the value of this Decimal negated, i.e. as if multiplied by -1
+    //
     Decimal.prototype.neg = function () {
         var x = new Decimal(this);
         x.s = -x.s;
         return Decimal.finalise(x);
     };
-    /*
-    *  n + 0 = n
-    *  n + N = N
-    *  n + I = I
-    *  0 + n = n
-    *  0 + 0 = 0
-    *  0 + N = N
-    *  0 + I = I
-    *  N + n = N
-    *  N + 0 = N
-    *  N + N = N
-    *  N + I = N
-    *  I + n = I
-    *  I + 0 = I
-    *  I + N = N
-    *  I + I = I
-    *
-    * Return a new Decimal whose value is the value of this Decimal plus `y`, rounded to `precision`
-    * significant digits using rounding mode `rounding`.
-    *
-    */
-    Decimal.prototype.add = function (y) {
-        var carry, d, e, i, k, len, pr, rm, xd, yd, x = this;
-        y = new Decimal(y);
+    //
+    // Return a new Decimal whose value is the value of this Decimal plus `y`, rounded to `precision`
+    // significant digits using rounding mode `rounding`.
+    //
+    //  n + 0 = n
+    //  n + N = N
+    //  n + I = I
+    //  0 + n = n
+    //  0 + 0 = 0
+    //  0 + N = N
+    //  0 + I = I
+    //  N + n = N
+    //  N + 0 = N
+    //  N + N = N
+    //  N + I = N
+    //  I + n = I
+    //  I + 0 = I
+    //  I + N = N
+    //  I + I = I
+    //
+    Decimal.prototype.add = function (yy) {
+        var carry, d, e, i, k, len, pr, rm, xd, yd, x = this, y = new Decimal(yy);
         // If either is not finite...
         if (!x.d || !y.d) {
             // Return NaN if either is NaN.
@@ -788,8 +885,10 @@ var Decimal = (function () {
         y.e = this.getBase10Exponent(xd, e);
         return Decimal.external ? Decimal.finalise(y, pr, rm) : y;
     };
+    //
     // Return the number of significant digits of the value of this Decimal.
     // [z] {boolean|number} Whether to count integer-part trailing zeros: true, false, 1 or 0.
+    //
     Decimal.prototype.precision = function (z) {
         var k, x = this;
         if (z !== void 0 && z !== !!z && z !== 1 && z !== 0)
@@ -804,7 +903,9 @@ var Decimal = (function () {
         }
         return k;
     };
+    //
     // Return a new Decimal whose value is the value of this Decimal rounded to a whole number using rounding mode `rounding`.
+    //
     Decimal.prototype.round = function () {
         var x = new Decimal(this);
         return Decimal.finalise(x, x.e + 1, Decimal.rounding);
@@ -813,29 +914,28 @@ var Decimal = (function () {
         var x = this;
         return x.d ? (x.d[0] ? x.s : 0 * x.s) : x.s || NaN;
     };
-    /*
-    *  n * 0 = 0
-    *  n * N = N
-    *  n * I = I
-    *  0 * n = 0
-    *  0 * 0 = 0
-    *  0 * N = N
-    *  0 * I = N
-    *  N * n = N
-    *  N * 0 = N
-    *  N * N = N
-    *  N * I = N
-    *  I * n = I
-    *  I * 0 = N
-    *  I * N = N
-    *  I * I = I
-    *
-    * Return a new Decimal whose value is this Decimal times `y`, rounded to `precision` significant
-    * digits using rounding mode `rounding`.
-    *
-    */
-    Decimal.prototype.mul = function (y) {
-        y = new Decimal(y);
+    //
+    // Return a new Decimal whose value is this Decimal times `y`, rounded to `precision` significant
+    // digits using rounding mode `rounding`.
+    //
+    //  n * 0 = 0
+    //  n * N = N
+    //  n * I = I
+    //  0 * n = 0
+    //  0 * 0 = 0
+    //  0 * N = N
+    //  0 * I = N
+    //  N * n = N
+    //  N * 0 = N
+    //  N * N = N
+    //  N * I = N
+    //  I * n = I
+    //  I * 0 = N
+    //  I * N = N
+    //  I * I = I
+    //
+    Decimal.prototype.mul = function (yy) {
+        var y = new Decimal(yy);
         var carry, e, i, k, r, rL, t, xdL, ydL, x = this, xd = x.d, yd = y.d, LOG_BASE = Decimal.LOG_BASE, BASE = Decimal.BASE;
         y.s *= x.s;
         // If either is NaN, ±Infinity or ±0...
@@ -886,16 +986,15 @@ var Decimal = (function () {
         //return y;
         return Decimal.external ? Decimal.finalise(y, Decimal.precision, Decimal.rounding) : y;
     };
-    /*
-    * Return a new Decimal whose value is the value of this Decimal rounded to a maximum of `dp`
-    * decimal places using rounding mode `rm` or `rounding` if `rm` is omitted.
-    *
-    * If `dp` is omitted, return a new Decimal whose value is the value of this Decimal.
-    *
-    * [dp] {number} Decimal places. Integer, 0 to MAX_DIGITS inclusive.
-    * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
-    *
-    */
+    //
+    // Return a new Decimal whose value is the value of this Decimal rounded to a maximum of `dp`
+    // decimal places using rounding mode `rm` or `rounding` if `rm` is omitted.
+    //
+    // If `dp` is omitted, return a new Decimal whose value is the value of this Decimal.
+    //
+    // [dp] {number} Decimal places. Integer, 0 to MAX_DIGITS inclusive.
+    // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
+    //
     Decimal.prototype.toDP = function (dp, rm) {
         var x = new Decimal(this);
         if (dp === void 0)
@@ -909,6 +1008,7 @@ var Decimal = (function () {
         }
         return Decimal.finalise(x, dp + x.e + 1, rm);
     };
+    //
     // Return a new Decimal whose value is the square root of this Decimal, rounded to `precision`
     // significant digits using rounding mode `rounding`.
     //
@@ -918,6 +1018,7 @@ var Decimal = (function () {
     //  sqrt(I)  =  I
     //  sqrt(0)  =  0
     //  sqrt(-0) = -0
+    //
     Decimal.prototype.sqrt = function () {
         var m, n, sd, r, rep, t, x = this, d = x.d, e = x.e, s = x.s;
         // Negative/NaN/Infinity/zero?
@@ -985,14 +1086,13 @@ var Decimal = (function () {
         Decimal.external = true;
         return Decimal.finalise(r, e, Decimal.rounding, m);
     };
-    /*
-    * Return a string representing the value of this Decimal in exponential notation rounded to
-    * `dp` fixed decimal places using rounding mode `rounding`.
-    *
-    * [dp] {number} Decimal places. Integer, 0 to MAX_DIGITS inclusive.
-    * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
-    *
-    */
+    //
+    // Return a string representing the value of this Decimal in exponential notation rounded to
+    // `dp` fixed decimal places using rounding mode `rounding`.
+    //
+    // [dp] {number} Decimal places. Integer, 0 to MAX_DIGITS inclusive.
+    // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
+    //
     Decimal.prototype.toExponential = function (dp, rm) {
         var str, x = this;
         if (dp === void 0) {
@@ -1009,22 +1109,20 @@ var Decimal = (function () {
         }
         return x.isNeg() && !x.isZero() ? '-' + str : str;
     };
-    /*
-    * Return a string representing the value of this Decimal in normal (fixed-point) notation to
-    * `dp` fixed decimal places and rounded using rounding mode `rm` or `rounding` if `rm` is
-    * omitted.
-    *
-    * As with JavaScript numbers, (-0).toFixed(0) is '0', but e.g. (-0.00001).toFixed(0) is '-0'.
-    *
-    * [dp] {number} Decimal places. Integer, 0 to MAX_DIGITS inclusive.
-    * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
-    *
-    * (-0).toFixed(0) is '0', but (-0.1).toFixed(0) is '-0'.
-    * (-0).toFixed(1) is '0.0', but (-0.01).toFixed(1) is '-0.0'.
-    * (-0).toFixed(3) is '0.000'.
-    * (-0.5).toFixed(0) is '-0'.
-    *
-    */
+    //
+    // Return a string representing the value of this Decimal in normal (fixed-point) notation to
+    // `dp` fixed decimal places and rounded using rounding mode `rm` or `rounding` if `rm` is omitted.
+    //
+    // As with JavaScript numbers, (-0).toFixed(0) is '0', but e.g. (-0.00001).toFixed(0) is '-0'.
+    //
+    // [dp] {number} Decimal places. Integer, 0 to MAX_DIGITS inclusive.
+    // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
+    //
+    // (-0).toFixed(0) is '0', but (-0.1).toFixed(0) is '-0'.
+    // (-0).toFixed(1) is '0.0', but (-0.01).toFixed(1) is '-0.0'.
+    // (-0).toFixed(3) is '0.000'.
+    // (-0.5).toFixed(0) is '-0'.
+    //
     Decimal.prototype.toFixed = function (dp, rm) {
         var str, y, x = this;
         if (dp === void 0) {
@@ -1045,19 +1143,18 @@ var Decimal = (function () {
         // i.e. look at `x` rather than `y`.
         return x.isNeg() && !x.isZero() ? '-' + str : str;
     };
-    /*
-    * Return an array representing the value of this Decimal as a simple fraction with an integer
-    * numerator and an integer denominator.
-    *
-    * The denominator will be a positive non-zero value less than or equal to the specified maximum
-    * denominator. If a maximum denominator is not specified, the denominator will be the lowest
-    * value necessary to represent the number exactly.
-    *
-    * [maxD] {number|string|Decimal} Maximum denominator. Integer >= 1 and < Infinity.
-    *
-    */
-    Decimal.prototype.toFraction = function (maxD) {
-        var d, d0, d1, d2, e, k, n, n0, n1, pr, q, r, x = this, xd = x.d;
+    //
+    // Return an array representing the value of this Decimal as a simple fraction with an integer
+    // numerator and an integer denominator.
+    //
+    // The denominator will be a positive non-zero value less than or equal to the specified maximum
+    // denominator. If a maximum denominator is not specified, the denominator will be the lowest
+    // value necessary to represent the number exactly.
+    //
+    // [maxD] {number|string|Decimal} Maximum denominator. Integer >= 1 and < Infinity.
+    //
+    Decimal.prototype.toFraction = function (denominator) {
+        var d, d0, d1, d2, e, k, n, n0, n1, pr, q, r, x = this, xd = x.d, maxD = denominator ? new Decimal(denominator) : null;
         if (!xd)
             return new Decimal(x);
         n1 = d0 = new Decimal(1);
@@ -1105,28 +1202,27 @@ var Decimal = (function () {
         Decimal.external = true;
         return r;
     };
-    /*
-    * Returns a new Decimal whose value is the nearest multiple of the magnitude of `y` to the value
-    * of this Decimal.
-    *
-    * If the value of this Decimal is equidistant from two multiples of `y`, the rounding mode `rm`,
-    * or `Decimal.rounding` if `rm` is omitted, determines the direction of the nearest multiple.
-    *
-    * In the context of this method, rounding mode 4 (ROUND_HALF_UP) is the same as rounding mode 0
-    * (ROUND_UP), and so on.
-    *
-    * The return value will always have the same sign as this Decimal, unless either this Decimal
-    * or `y` is NaN, in which case the return value will be also be NaN.
-    *
-    * The return value is not affected by the value of `precision`.
-    *
-    * y {number|string|Decimal} The magnitude to round to a multiple of.
-    * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
-    *
-    * 'toNearest() rounding mode not an integer: {rm}'
-    * 'toNearest() rounding mode out of range: {rm}'
-    *
-    */
+    //
+    // Returns a new Decimal whose value is the nearest multiple of the magnitude of `y` to the value
+    // of this Decimal.
+    //
+    // If the value of this Decimal is equidistant from two multiples of `y`, the rounding mode `rm`,
+    // or `Decimal.rounding` if `rm` is omitted, determines the direction of the nearest multiple.
+    //
+    // In the context of this method, rounding mode 4 (ROUND_HALF_UP) is the same as rounding mode 0
+    // (ROUND_UP), and so on.
+    //
+    // The return value will always have the same sign as this Decimal, unless either this Decimal
+    // or `y` is NaN, in which case the return value will be also be NaN.
+    //
+    // The return value is not affected by the value of `precision`.
+    //
+    // y {number|string|Decimal} The magnitude to round to a multiple of.
+    // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
+    //
+    // 'toNearest() rounding mode not an integer: {rm}'
+    // 'toNearest() rounding mode out of range: {rm}'
+    //
     Decimal.prototype.toNearest = function (yy, rm) {
         var x = new Decimal(this), y;
         if (yy == null) {
@@ -1165,55 +1261,52 @@ var Decimal = (function () {
         }
         return x;
     };
-    /*
-    * Return the value of this Decimal converted to a number primitive.
-    * Zero keeps its sign.
-    *
-    */
+    //
+    // Return the value of this Decimal converted to a number primitive.
+    // Zero keeps its sign.
+    //
     Decimal.prototype.toNumber = function () {
         return +this;
     };
-    /*
-    * Return a new Decimal whose value is the value of this Decimal raised to the power `y`, rounded
-    * to `precision` significant digits using rounding mode `rounding`.
-    *
-    * ECMAScript compliant.
-    *
-    *   pow(x, NaN)                           = NaN
-    *   pow(x, ±0)                            = 1
-
-    *   pow(NaN, non-zero)                    = NaN
-    *   pow(abs(x) > 1, +Infinity)            = +Infinity
-    *   pow(abs(x) > 1, -Infinity)            = +0
-    *   pow(abs(x) == 1, ±Infinity)           = NaN
-    *   pow(abs(x) < 1, +Infinity)            = +0
-    *   pow(abs(x) < 1, -Infinity)            = +Infinity
-    *   pow(+Infinity, y > 0)                 = +Infinity
-    *   pow(+Infinity, y < 0)                 = +0
-    *   pow(-Infinity, odd integer > 0)       = -Infinity
-    *   pow(-Infinity, even integer > 0)      = +Infinity
-    *   pow(-Infinity, odd integer < 0)       = -0
-    *   pow(-Infinity, even integer < 0)      = +0
-    *   pow(+0, y > 0)                        = +0
-    *   pow(+0, y < 0)                        = +Infinity
-    *   pow(-0, odd integer > 0)              = -0
-    *   pow(-0, even integer > 0)             = +0
-    *   pow(-0, odd integer < 0)              = -Infinity
-    *   pow(-0, even integer < 0)             = +Infinity
-    *   pow(finite x < 0, finite non-integer) = NaN
-    *
-    * For non-integer or very large exponents pow(x, y) is calculated using
-    *
-    *   x^y = exp(y*ln(x))
-    *
-    * Assuming the first 15 rounding digits are each equally likely to be any digit 0-9, the
-    * probability of an incorrectly rounded result
-    * P([49]9{14} | [50]0{14}) = 2 * 0.2 * 10^-14 = 4e-15 = 1/2.5e+14
-    * i.e. 1 in 250,000,000,000,000
-    *
-    * If a result is incorrectly rounded the maximum error will be 1 ulp (unit in last place).
-    *
-    */
+    //
+    // Return a new Decimal whose value is the value of this Decimal raised to the power `y`, rounded
+    // to `precision` significant digits using rounding mode `rounding`.
+    //
+    // ECMAScript compliant.
+    //
+    //  pow(x, NaN)                           = NaN
+    //   pow(x, ±0)                            = 1
+    //   pow(NaN, non-zero)                    = NaN
+    //   pow(abs(x) > 1, +Infinity)            = +Infinity
+    //   pow(abs(x) > 1, -Infinity)            = +0
+    //   pow(abs(x) == 1, ±Infinity)           = NaN
+    //   pow(abs(x) < 1, +Infinity)            = +0
+    //   pow(abs(x) < 1, -Infinity)            = +Infinity
+    //   pow(+Infinity, y > 0)                 = +Infinity
+    //   pow(+Infinity, y < 0)                 = +0
+    //   pow(-Infinity, odd integer > 0)       = -Infinity
+    //   pow(-Infinity, even integer > 0)      = +Infinity
+    //   pow(-Infinity, odd integer < 0)       = -0
+    //   pow(-Infinity, even integer < 0)      = +0
+    //   pow(+0, y > 0)                        = +0
+    //   pow(+0, y < 0)                        = +Infinity
+    //   pow(-0, odd integer > 0)              = -0
+    //   pow(-0, even integer > 0)             = +0
+    //   pow(-0, odd integer < 0)              = -Infinity
+    //   pow(-0, even integer < 0)             = +Infinity
+    //   pow(finite x < 0, finite non-integer) = NaN
+    //
+    // For non-integer or very large exponents pow(x, y) is calculated using
+    //
+    //   x^y = exp(y*ln(x))
+    //
+    // Assuming the first 15 rounding digits are each equally likely to be any digit 0-9, the
+    // probability of an incorrectly rounded result
+    // P([49]9{14} | [50]0{14}) = 2 * 0.2 * 10^-14 = 4e-15 = 1/2.5e+14
+    // i.e. 1 in 250,000,000,000,000
+    //
+    // If a result is incorrectly rounded the maximum error will be 1 ulp (unit in last place).
+    //
     Decimal.prototype.pow = function (yy) {
         var e, k, pr, r, rm, sign, yIsInt, x = this, y = new Decimal(yy), yn = +y;
         // Either ±Infinity, NaN or ±0?
@@ -1281,7 +1374,88 @@ var Decimal = (function () {
         Decimal.rounding = rm;
         return Decimal.finalise(r, pr, rm);
     };
+    //
+    // Return a string representing the value of this Decimal rounded to `sd` significant digits
+    // using rounding mode `rounding`.
+    //
+    // Return exponential notation if `sd` is less than the number of digits necessary to represent
+    // the integer part of the value in normal notation.
+    //
+    // [sd] {number} Significant digits. Integer, 1 to MAX_DIGITS inclusive.
+    // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
+    //
+    Decimal.prototype.toPrecision = function (sd, rm) {
+        var str, x = this;
+        if (sd === void 0) {
+            str = x.finiteToString(x, x.e <= Decimal.toExpNeg || x.e >= Decimal.toExpPos);
+        }
+        else {
+            this.checkInt32(sd, 1, Decimal.MAX_DIGITS);
+            if (rm === void 0) {
+                rm = Decimal.rounding;
+            }
+            else {
+                this.checkInt32(rm, 0, 8);
+            }
+            x = Decimal.finalise(new Decimal(x), sd, rm);
+            str = x.finiteToString(x, sd <= x.e || x.e <= Decimal.toExpNeg, sd);
+        }
+        return x.isNeg() && !x.isZero() ? '-' + str : str;
+    };
+    //
+    // Return a new Decimal whose value is the value of this Decimal rounded to a maximum of `sd`
+    // significant digits using rounding mode `rm`, or to `precision` and `rounding` respectively if
+    // omitted.
+    //
+    // [sd] {number} Significant digits. Integer, 1 to MAX_DIGITS inclusive.
+    // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
+    //
+    // 'toSD() digits out of range: {sd}'
+    // 'toSD() digits not an integer: {sd}'
+    // 'toSD() rounding mode not an integer: {rm}'
+    // 'toSD() rounding mode out of range: {rm}'
+    //
+    Decimal.prototype.toSignificantDigits = function (sd, rm) {
+        var x = this;
+        if (sd === void 0) {
+            sd = Decimal.precision;
+            rm = Decimal.rounding;
+        }
+        else {
+            x.checkInt32(sd, 1, Decimal.MAX_DIGITS);
+            if (rm === void 0)
+                rm = Decimal.rounding;
+            else
+                x.checkInt32(rm, 0, 8);
+        }
+        return Decimal.finalise(new Decimal(x), sd, rm);
+    };
+    //
+    // Return a string representing the value of this Decimal.
+    //
+    // Return exponential notation if this Decimal has a positive exponent equal to or greater than
+    // `toExpPos`, or a negative exponent equal to or less than `toExpNeg`.
+    //
+    Decimal.prototype.toString = function () {
+        var x = this, str = x.finiteToString(x, x.e <= Decimal.toExpNeg || x.e >= Decimal.toExpPos);
+        return x.isNeg() && !x.isZero() ? '-' + str : str;
+    };
+    //
+    // Return a new Decimal whose value is the value of this Decimal truncated to a whole number.
+    //
+    Decimal.prototype.trunc = function () {
+        return Decimal.finalise(new Decimal(this), this.e + 1, 1);
+    };
+    //
+    // Return a string representing the value of this Decimal.
+    // Unlike `toString`, negative zero will include the minus sign.
+    //
+    Decimal.prototype.valueOf = function () {
+        var x = this, str = x.finiteToString(x, x.e <= Decimal.toExpNeg || x.e >= Decimal.toExpPos);
+        return x.isNeg() ? '-' + str : str;
+    };
     // Trig methods
+    //
     // Return a new Decimal whose value is the cosine of the value in radians of this Decimal.
     //
     // Domain: [-Infinity, Infinity]
@@ -1292,6 +1466,7 @@ var Decimal = (function () {
     // cos(Infinity)  = NaN
     // cos(-Infinity) = NaN
     // cos(NaN)       = NaN
+    //
     Decimal.prototype.cos = function () {
         var pr, rm, x = this;
         if (!x.d)
@@ -1308,6 +1483,7 @@ var Decimal = (function () {
         Decimal.rounding = rm;
         return Decimal.finalise(Decimal.quadrant == 2 || Decimal.quadrant == 3 ? x.neg() : x, pr, rm, true);
     };
+    //
     // Return a new Decimal whose value is the arccosine (inverse cosine) in radians of the value of
     // this Decimal.
     //
@@ -1323,6 +1499,7 @@ var Decimal = (function () {
     // acos(-1/2)    = 2*pi/3
     // acos(|x| > 1) = NaN
     // acos(NaN)     = NaN
+    //
     Decimal.prototype.acos = function () {
         var halfPi, x = this, k = x.abs().cmp(1), pr = Decimal.precision, rm = Decimal.rounding;
         if (k !== -1) {
@@ -1341,6 +1518,7 @@ var Decimal = (function () {
         Decimal.rounding = rm;
         return halfPi.sub(x);
     };
+    //
     // Return a new Decimal whose value is the hyperbolic cosine of the value in radians of this Decimal.
     //
     // Domain: [-Infinity, Infinity]
@@ -1362,7 +1540,6 @@ var Decimal = (function () {
     // 10000000  abandoned after 2 minute wait
     //
     // TODO? Compare performance of cosh(x) = 0.5 * (exp(x) + exp(-x))
-    //
     //
     Decimal.prototype.cosh = function () {
         var k, n, pr, rm, len, x = this, one = new Decimal(1);
@@ -1396,6 +1573,7 @@ var Decimal = (function () {
         }
         return Decimal.finalise(x, Decimal.precision = pr, Decimal.rounding = rm, true);
     };
+    //
     // Return a new Decimal whose value is the inverse of the hyperbolic cosine in radians of the value of this Decimal.
     //
     // Domain: [1, Infinity]
@@ -1411,6 +1589,7 @@ var Decimal = (function () {
     // acosh(-0)        = NaN
     // acosh(1)         = 0
     // acosh(-1)        = NaN
+    //
     Decimal.prototype.acosh = function () {
         var pr, rm, x = this;
         if (x.lte(1))
@@ -1428,6 +1607,7 @@ var Decimal = (function () {
         Decimal.rounding = rm;
         return x.ln();
     };
+    //
     // Return a new Decimal whose value is the sine of the value in radians of this Decimal.
     //
     // Domain: [-Infinity, Infinity]
@@ -1440,6 +1620,7 @@ var Decimal = (function () {
     // sin(Infinity)  = NaN
     // sin(-Infinity) = NaN
     // sin(NaN)       = NaN
+    //
     Decimal.prototype.sin = function () {
         var pr, rm, x = this;
         if (!x.isFinite())
@@ -1455,6 +1636,7 @@ var Decimal = (function () {
         Decimal.rounding = rm;
         return Decimal.finalise(Decimal.quadrant > 2 ? x.neg() : x, pr, rm, true);
     };
+    //
     // Return a new Decimal whose value is the arcsine (inverse sine) in radians of the value of this Decimal.
     //
     // Domain: [-Infinity, Infinity]
@@ -1472,6 +1654,7 @@ var Decimal = (function () {
     // asin(NaN)     = NaN
     //
     // TODO? Compare performance of Taylor series.
+    //
     Decimal.prototype.asin = function () {
         var halfPi, k, pr, rm, x = this;
         if (x.isZero())
@@ -1497,6 +1680,7 @@ var Decimal = (function () {
         Decimal.rounding = rm;
         return x.mul(2);
     };
+    //
     // Return a new Decimal whose value is the hyperbolic sine of the value in radians of this Decimal.
     //
     // Domain: [-Infinity, Infinity]
@@ -1523,6 +1707,7 @@ var Decimal = (function () {
     // 1000000  48543 ms
     //
     // TODO? Compare performance of sinh(x) = 0.5 * (exp(x) - exp(-x))
+    //
     Decimal.prototype.sinh = function () {
         var k, pr, rm, len, x = this;
         if (!x.isFinite() || x.isZero())
@@ -1558,6 +1743,7 @@ var Decimal = (function () {
         Decimal.rounding = rm;
         return Decimal.finalise(x, pr, rm, true);
     };
+    //
     // Return a new Decimal whose value is the inverse of the hyperbolic sine in radians of the value of this Decimal.
     //
     // Domain: [-Infinity, Infinity]
@@ -1570,6 +1756,7 @@ var Decimal = (function () {
     // asinh(-Infinity) = -Infinity
     // asinh(0)         = 0
     // asinh(-0)        = -0
+    //
     Decimal.prototype.asinh = function () {
         var pr, rm, x = this;
         if (!x.isFinite() || x.isZero())
@@ -1585,6 +1772,7 @@ var Decimal = (function () {
         Decimal.rounding = rm;
         return x.ln();
     };
+    //
     // Return a new Decimal whose value is the tangent of the value in radians of this Decimal.
     //
     // Domain: [-Infinity, Infinity]
@@ -1595,6 +1783,7 @@ var Decimal = (function () {
     // tan(Infinity)  = NaN
     // tan(-Infinity) = NaN
     // tan(NaN)       = NaN
+    //
     Decimal.prototype.tan = function () {
         var pr, rm, x = this;
         if (!x.isFinite())
@@ -1612,6 +1801,7 @@ var Decimal = (function () {
         Decimal.rounding = rm;
         return Decimal.finalise(Decimal.quadrant == 2 || Decimal.quadrant == 4 ? x.neg() : x, pr, rm, true);
     };
+    //
     // Return a new Decimal whose value is the arctangent (inverse tangent) in radians of the value of this Decimal.
     //
     // Domain: [-Infinity, Infinity]
@@ -1626,6 +1816,7 @@ var Decimal = (function () {
     // atan(Infinity)  = pi/2
     // atan(-Infinity) = -pi/2
     // atan(NaN)       = NaN
+    //
     Decimal.prototype.atan = function () {
         var i, j, k, n, px, t, r, wpr, x2, x = this, pr = Decimal.precision, rm = Decimal.rounding;
         if (!x.isFinite()) {
@@ -1675,6 +1866,7 @@ var Decimal = (function () {
         Decimal.external = true;
         return Decimal.finalise(r, Decimal.precision = pr, Decimal.rounding = rm, true);
     };
+    //
     // Return a new Decimal whose value is the arctangent in radians of `y/x` in the range -pi to pi
     // (inclusive), rounded to `precision` significant digits using rounding mode `rounding`.
     //
@@ -1697,6 +1889,7 @@ var Decimal = (function () {
     // atan2(±Infinity, +Infinity) = ±pi/4
     // atan2(NaN, x) = NaN
     // atan2(y, NaN) = NaN
+    //
     Decimal.atan2 = function (yy, xx) {
         var y = new Decimal(yy), x = new Decimal(xx), r, pr = Decimal.precision, rm = Decimal.rounding, wpr = pr + 4;
         // Either NaN
@@ -1729,6 +1922,7 @@ var Decimal = (function () {
         }
         return r;
     };
+    //
     // Return a new Decimal whose value is the hyperbolic tangent of the value in radians of this Decimal.
     //
     // Domain: [-Infinity, Infinity]
@@ -1754,6 +1948,7 @@ var Decimal = (function () {
         Decimal.rounding = 1;
         return Decimal.divide(x.sinh(), x.cosh(), Decimal.precision = pr, Decimal.rounding = rm);
     };
+    //
     // Return a new Decimal whose value is the inverse of the hyperbolic tangent in radians of the value of this Decimal.
     //
     // Domain: [-1, 1]
@@ -1769,6 +1964,7 @@ var Decimal = (function () {
     // atanh(-0)        = -0
     // atanh(1)         = Infinity
     // atanh(-1)        = -Infinity
+    //
     Decimal.prototype.atanh = function () {
         var pr, rm, wpr, xsd, x = this;
         if (!x.isFinite())
@@ -1789,7 +1985,9 @@ var Decimal = (function () {
         Decimal.rounding = rm;
         return x.mul(0.5);
     };
+    //
     // Return the absolute value of `x` reduced to less than or equal to half pi.
+    //
     Decimal.prototype.toLessThanHalfPi = function (x) {
         var t, isNeg = x.s < 0, pi = Decimal.getPi(Decimal.precision, 1), halfPi = pi.mul(0.5);
         x = x.abs();
@@ -1812,8 +2010,10 @@ var Decimal = (function () {
         }
         return x.mul(pi).abs();
     };
+    //
     // sin(x) = x - x^3/3! + x^5/5! - ...
     // |x| < pi/2
+    //
     Decimal.prototype.sine = function (x) {
         var k, len = x.d.length;
         if (len < 3)
@@ -1835,8 +2035,10 @@ var Decimal = (function () {
         }
         return x;
     };
+    //
     // cos(x) = 1 - x^2/2! + x^4/4! - ...
     // |x| < pi/2
+    //
     Decimal.prototype.cosine = function (x) {
         var k, y, len = x.d.length;
         // Argument reduction: cos(4x) = 8*(cos^4(x) - cos^2(x)) + 1
@@ -1860,7 +2062,9 @@ var Decimal = (function () {
         Decimal.precision -= k;
         return x;
     };
+    //
     // Calculate Taylor series for `cos`, `cosh`, `sin` and `sinh`.
+    //
     Decimal.prototype.taylorSeries = function (n, x, y, isHyperbolic) {
         var j, t, u, x2, i = 1, pr = Decimal.precision, k = Math.ceil(pr / Decimal.LOG_BASE);
         Decimal.external = false;
@@ -1886,88 +2090,6 @@ var Decimal = (function () {
         Decimal.external = true;
         t.d.length = k + 1;
         return t;
-    };
-    /*
-    * Return a string representing the value of this Decimal rounded to `sd` significant digits
-    * using rounding mode `rounding`.
-    *
-    * Return exponential notation if `sd` is less than the number of digits necessary to represent
-    * the integer part of the value in normal notation.
-    *
-    * [sd] {number} Significant digits. Integer, 1 to MAX_DIGITS inclusive.
-    * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
-    *
-    */
-    Decimal.prototype.toPrecision = function (sd, rm) {
-        var str, x = this;
-        if (sd === void 0) {
-            str = x.finiteToString(x, x.e <= Decimal.toExpNeg || x.e >= Decimal.toExpPos);
-        }
-        else {
-            this.checkInt32(sd, 1, Decimal.MAX_DIGITS);
-            if (rm === void 0) {
-                rm = Decimal.rounding;
-            }
-            else {
-                this.checkInt32(rm, 0, 8);
-            }
-            x = Decimal.finalise(new Decimal(x), sd, rm);
-            str = x.finiteToString(x, sd <= x.e || x.e <= Decimal.toExpNeg, sd);
-        }
-        return x.isNeg() && !x.isZero() ? '-' + str : str;
-    };
-    /*
-    * Return a new Decimal whose value is the value of this Decimal rounded to a maximum of `sd`
-    * significant digits using rounding mode `rm`, or to `precision` and `rounding` respectively if
-    * omitted.
-    *
-    * [sd] {number} Significant digits. Integer, 1 to MAX_DIGITS inclusive.
-    * [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
-    *
-    * 'toSD() digits out of range: {sd}'
-    * 'toSD() digits not an integer: {sd}'
-    * 'toSD() rounding mode not an integer: {rm}'
-    * 'toSD() rounding mode out of range: {rm}'
-    *
-    */
-    Decimal.prototype.toSignificantDigits = function (sd, rm) {
-        var x = this;
-        if (sd === void 0) {
-            sd = Decimal.precision;
-            rm = Decimal.rounding;
-        }
-        else {
-            x.checkInt32(sd, 1, Decimal.MAX_DIGITS);
-            if (rm === void 0)
-                rm = Decimal.rounding;
-            else
-                x.checkInt32(rm, 0, 8);
-        }
-        return Decimal.finalise(new Decimal(x), sd, rm);
-    };
-    /*
-    * Return a string representing the value of this Decimal.
-    *
-    * Return exponential notation if this Decimal has a positive exponent equal to or greater than
-    * `toExpPos`, or a negative exponent equal to or less than `toExpNeg`.
-    *
-    */
-    Decimal.prototype.toString = function () {
-        var x = this, str = x.finiteToString(x, x.e <= Decimal.toExpNeg || x.e >= Decimal.toExpPos);
-        return x.isNeg() && !x.isZero() ? '-' + str : str;
-    };
-    // Return a new Decimal whose value is the value of this Decimal truncated to a whole number.
-    Decimal.prototype.trunc = function () {
-        return Decimal.finalise(new Decimal(this), this.e + 1, 1);
-    };
-    /*
-    * Return a string representing the value of this Decimal.
-    * Unlike `toString`, negative zero will include the minus sign.
-    *
-    */
-    Decimal.prototype.valueOf = function () {
-        var x = this, str = x.finiteToString(x, x.e <= Decimal.toExpNeg || x.e >= Decimal.toExpPos);
-        return x.isNeg() ? '-' + str : str;
     };
     /*
     *  digitsToString           P.cubeRoot, P.logarithm, P.squareRoot, P.toFraction, P.toPower,
@@ -2043,11 +2165,11 @@ var Decimal = (function () {
             throw Error(Decimal.invalidArgument + i);
         }
     };
-    /*
-    * Check 5 rounding digits if `repeating` is null, 4 otherwise.
-    * `repeating == null` if caller is `log` or `pow`,
-    * `repeating != null` if caller is `naturalLogarithm` or `naturalExponential`.
-    */
+    //
+    // Check 5 rounding digits if `repeating` is null, 4 otherwise.
+    // `repeating == null` if caller is `log` or `pow`,
+    // `repeating != null` if caller is `naturalLogarithm` or `naturalExponential`.
+    //
     Decimal.checkRoundingDigits = function (d, i, rm, repeating) {
         var di, k, r, rd, LOG_BASE = Decimal.LOG_BASE;
         // Get the length of the first word of the array d.
@@ -2099,37 +2221,9 @@ var Decimal = (function () {
         }
         return r;
     };
-    // Convert string of `baseIn` to an array of numbers of `baseOut`.
-    // Eg. convertBase('255', 10, 16) returns [15, 15].
-    // Eg. convertBase('ff', 16, 10) returns [2, 5, 5].
-    /*  private convertBase(str, baseIn, baseOut)
-      {
-          let j,
-              arr = [0],
-              arrL,
-              i = 0,
-              strL = str.length;
-  
-          for (; i < strL;)
-          {
-              for (arrL = arr.length; arrL--;) arr[arrL] *= baseIn;
-              arr[0] += Decimal.NUMERALS.indexOf(str.charAt(i++));
-  
-              for (j = 0; j < arr.length; j++)
-              {
-                  if (arr[j] > baseOut - 1)
-                  {
-                      if (arr[j + 1] === void 0) arr[j + 1] = 0;
-                      arr[j + 1] += arr[j] / baseOut | 0;
-                      arr[j] %= baseOut;
-                  }
-              }
-          }
-  
-          return arr.reverse();
-      }
-  */
+    //
     // Perform division in the specified base.
+    //
     Decimal.divide = function (x, y, pr, rm, dp, base) {
         // Assumes non-zero x and k, and hence non-zero result.
         function multiplyInteger(x, k, base) {
@@ -2217,14 +2311,14 @@ var Decimal = (function () {
             i = 0;
             // divisor < 1e7
             if (yL == 1) {
+                var yd0_1 = yd[0];
                 k = 0;
-                yd = yd[0];
                 sd++;
                 // k is the carry.
                 for (; (i < xL || k) && sd--; i++) {
                     t = k * base + (xd[i] || 0);
-                    qd[i] = t / yd | 0;
-                    k = t % yd | 0;
+                    qd[i] = t / yd0_1 | 0;
+                    k = t % yd0_1 | 0;
                 }
                 more = k || i < xL;
             }
@@ -2344,8 +2438,10 @@ var Decimal = (function () {
         }
         return q;
     };
+    //
     // Round `x` to `sd` significant digits using rounding mode `rm`.
     // Check for over/under-flow.
+    //
     Decimal.finalise = function (x, sd, rm, isTruncated) {
         var digits, i, j, k, rd, roundUp, w, xd, xdi, LOG_BASE = Decimal.LOG_BASE, BASE = Decimal.BASE;
         // Don't round if sd is null or undefined.
@@ -2490,7 +2586,7 @@ var Decimal = (function () {
                 // Zero.
                 x.e = 0;
                 x.d = [0];
-            } // else Ctor.underflow = false;
+            }
         }
         return x;
     };
@@ -2528,7 +2624,9 @@ var Decimal = (function () {
         }
         return str;
     };
+    //
     // Calculate the base 10 exponent from the base 1e7 exponent.
+    //
     Decimal.prototype.getBase10Exponent = function (digits, e) {
         // First get the number of digits of the first word of the digits array.
         for (var i = 1, w = digits[0]; w >= 10; w /= 10)
@@ -2571,13 +2669,12 @@ var Decimal = (function () {
             zs += '0';
         return zs;
     };
-    /*
-    * Return a new Decimal whose value is the value of Decimal `x` to the power `n`, where `n` is an
-    * integer of type number.
-    *
-    * Implements 'exponentiation by squaring'. Called by `pow` and `parseOther`.
-    *
-    */
+    //
+    // Return a new Decimal whose value is the value of Decimal `x` to the power `n`, where `n` is an
+    // integer of type number.
+    //
+    // Implements 'exponentiation by squaring'. Called by `pow` and `parseOther`.
+    //
     Decimal.prototype.intPow = function (x, n, pr) {
         var isTruncated, r = new Decimal(1), 
         // Max n of 9007199254740991 takes 53 loop iterations.
@@ -2605,11 +2702,11 @@ var Decimal = (function () {
         return r;
     };
     Decimal.prototype.isOdd = function (n) {
-        return n.d[n.d.length - 1] & 1;
+        return (n.d[n.d.length - 1] & 1) === 1;
     };
-    /*
-    * Handle `max` and `min`. `ltgt` is 'lt' or 'gt'.
-    */
+    //
+    // Handle `max` and `min`. `ltgt` is 'lt' or 'gt'.
+    //
     Decimal.prototype.maxOrMin = function (values, ltgt) {
         var y, x = new Decimal(values[0]), i = 0;
         for (; ++i < values.length;) {
@@ -2624,37 +2721,35 @@ var Decimal = (function () {
         }
         return x;
     };
-    /*
-    * Return a new Decimal whose value is the natural exponential of `x` rounded to `sd` significant
-    * digits.
-    *
-    * Taylor/Maclaurin series.
-    *
-    * exp(x) = x^0/0! + x^1/1! + x^2/2! + x^3/3! + ...
-    *
-    * Argument reduction:
-    *   Repeat x = x / 32, k += 5, until |x| < 0.1
-    *   exp(x) = exp(x / 2^k)^(2^k)
-    *
-    * Previously, the argument was initially reduced by
-    * exp(x) = exp(r) * 10^k  where r = x - k * ln10, k = floor(x / ln10)
-    * to first put r in the range [0, ln10], before dividing by 32 until |x| < 0.1, but this was
-    * found to be slower than just dividing repeatedly by 32 as above.
-    *
-    * Max integer argument: exp('20723265836946413') = 6.3e+9000000000000000
-    * Min integer argument: exp('-20723265836946411') = 1.2e-9000000000000000
-    * (Math object integer min/max: Math.exp(709) = 8.2e+307, Math.exp(-745) = 5e-324)
-    *
-    *  exp(Infinity)  = Infinity
-    *  exp(-Infinity) = 0
-    *  exp(NaN)       = NaN
-    *  exp(±0)        = 1
-    *
-    *  exp(x) is non-terminating for any finite, non-zero x.
-    *
-    *  The result will always be correctly rounded.
-    *
-    */
+    //
+    // Return a new Decimal whose value is the natural exponential of `x` rounded to `sd` significant digits.
+    //
+    // Taylor/Maclaurin series.
+    //
+    // exp(x) = x^0/0! + x^1/1! + x^2/2! + x^3/3! + ...
+    //
+    // Argument reduction:
+    //   Repeat x = x / 32, k += 5, until |x| < 0.1
+    //   exp(x) = exp(x / 2^k)^(2^k)
+    //
+    // Previously, the argument was initially reduced by
+    // exp(x) = exp(r) * 10^k  where r = x - k * ln10, k = floor(x / ln10)
+    // to first put r in the range [0, ln10], before dividing by 32 until |x| < 0.1, but this was
+    // found to be slower than just dividing repeatedly by 32 as above.
+    //
+    // Max integer argument: exp('20723265836946413') = 6.3e+9000000000000000
+    // Min integer argument: exp('-20723265836946411') = 1.2e-9000000000000000
+    // (Math object integer min/max: Math.exp(709) = 8.2e+307, Math.exp(-745) = 5e-324)
+    //
+    //  exp(Infinity)  = Infinity
+    //  exp(-Infinity) = 0
+    //  exp(NaN)       = NaN
+    //  exp(±0)        = 1
+    //
+    //  exp(x) is non-terminating for any finite, non-zero x.
+    //
+    //  The result will always be correctly rounded.
+    //
     Decimal.naturalExponential = function (x, sd) {
         var denominator, guard, j, pow, sum, t, wpr, rep = 0, i = 0, k = 0, rm = Decimal.rounding, pr = Decimal.precision;
         // 0/NaN/Infinity?
@@ -2715,21 +2810,19 @@ var Decimal = (function () {
             sum = t;
         }
     };
-    /*
-    * Return a new Decimal whose value is the natural logarithm of `x` rounded to `sd` significant
-    * digits.
-    *
-    *  ln(-n)        = NaN
-    *  ln(0)         = -Infinity
-    *  ln(-0)        = -Infinity
-    *  ln(1)         = 0
-    *  ln(Infinity)  = Infinity
-    *  ln(-Infinity) = NaN
-    *  ln(NaN)       = NaN
-    *
-    *  ln(n) (n != 1) is non-terminating.
-    *
-    */
+    //
+    // Return a new Decimal whose value is the natural logarithm of `x` rounded to `sd` significant digits.
+    //
+    //  ln(-n)        = NaN
+    //  ln(0)         = -Infinity
+    //  ln(-0)        = -Infinity
+    //  ln(1)         = 0
+    //  ln(Infinity)  = Infinity
+    //  ln(-Infinity) = NaN
+    //  ln(NaN)       = NaN
+    //
+    //  ln(n) (n != 1) is non-terminating.
+    //
     Decimal.prototype.naturalLogarithm = function (y, sd) {
         var c, c0, denominator, e, numerator, rep, sum, t, wpr, x1, x2, n = 1, guard = 10, x = y, xd = x.d, rm = Decimal.rounding, pr = Decimal.precision;
         // Is x negative or Infinity, NaN, 0 or 1?
@@ -2835,14 +2928,16 @@ var Decimal = (function () {
             denominator += 2;
         }
     };
+    //
     // ±Infinity, NaN.
+    //
     Decimal.prototype.nonFiniteToString = function (x) {
         // Unsigned.
         return String(x.s * x.s / 0);
     };
-    /*
-    * Parse the value of a new Decimal `x` from string `str`.
-    */
+    //
+    // Parse the value of a new Decimal `x` from string `str`.
+    //
     Decimal.prototype.parseDecimal = function (x, str) {
         var e, i, len, LOG_BASE = Decimal.LOG_BASE;
         // Decimal point?
@@ -2912,7 +3007,9 @@ var Decimal = (function () {
         }
         return x;
     };
+    //
     // Parse the value of a new Decimal `x` from a string `str`, which is not a decimal value.
+    //
     Decimal.prototype.parseOther = function (x, str) {
         if (str === 'Infinity' || str === 'NaN') {
             if (!+str)
@@ -2925,30 +3022,32 @@ var Decimal = (function () {
             throw Error(Decimal.invalidArgument + str);
         }
     };
+    //
     // Does not strip trailing zeros.
+    //
     Decimal.prototype.truncate = function (arr, len) {
         if (arr.length > len) {
             arr.length = len;
             return true;
         }
     };
-    /*
-    * Configure global settings for a Decimal constructor.
-    *
-    * `obj` is an object with one or more of the following properties,
-    *
-    *   precision  {number}
-    *   rounding   {number}
-    *   toExpNeg   {number}
-    *   toExpPos   {number}
-    *   maxE       {number}
-    *   minE       {number}
-    *   modulo     {number}
-    *   crypto     {boolean|number|undefined}
-    *
-    * E.g. Decimal.config({ precision: 20, rounding: 4 })
-    *
-    */
+    //
+    // Configure global settings for a Decimal constructor.
+    //
+    // `obj` is an object with one or more of the following properties,
+    //
+    //   precision  {number}
+    //   rounding   {number}
+    //   toExpNeg   {number}
+    //   toExpPos   {number}
+    //   maxE       {number}
+    //   minE       {number}
+    //   modulo     {number}
+    //
+    // E.g. Decimal.config({ precision: 20, rounding: 4 })
+    //
+    // Todo? Make a configuration interface?
+    //
     Decimal.config = function (obj) {
         if (!obj || typeof obj !== 'object') {
             throw Error(Decimal.decimalError + 'Object expected');
@@ -2974,21 +3073,10 @@ var Decimal = (function () {
         }
         return this;
     };
-    // Configuration variables      -- Todo make these static or instance?
+    // Configuration variables
     // The maximum number of significant digits of the result of a calculation or base conversion.
     // E.g. `Decimal.config({ precision: 20 });`
     Decimal.precision = 20; // 1 to MAX_DIGITS
-    // The rounding mode used when rounding to `precision`.
-    //
-    // ROUND_UP         0 Away from zero.
-    // ROUND_DOWN       1 Towards zero.
-    // ROUND_CEIL       2 Towards +Infinity.
-    // ROUND_FLOOR      3 Towards -Infinity.
-    // ROUND_HALF_UP    4 Towards nearest neighbour. If equidistant, up.
-    // ROUND_HALF_DOWN  5 Towards nearest neighbour. If equidistant, down.
-    // ROUND_HALF_EVEN  6 Towards nearest neighbour. If equidistant, towards even neighbour.
-    // ROUND_HALF_CEIL  7 Towards nearest neighbour. If equidistant, towards +Infinity.
-    // ROUND_HALF_FLOOR 8 Towards nearest neighbour. If equidistant, towards -Infinity.
     //
     // E.g.
     // `Decimal.rounding = 4;`
@@ -3020,28 +3108,12 @@ var Decimal = (function () {
     // The maximum exponent value, above which overflow to Infinity occurs.
     // JavaScript numbers: 308  (1.7976931348623157e+308)
     Decimal.maxE = Decimal.EXP_LIMIT; // 1 to EXP_LIMIT
-    // Whether to use cryptographically-secure random number generation, if available.
-    //crypto = void 0;                                 // true/false/undefined      Push crypto to another module
     //private inexact;  // THink this is only used for binary conversion
-    //private noConflict;
-    //private quadrant;     // Only used for trig methods
-    //private cryptoObject = typeof crypto != 'undefined' ? crypto : null,      Push random numbers to a separate library
-    //private static external : boolean = true;
     Decimal.external = true;
+    // Basic error messages
     Decimal.decimalError = '[DecimalError] ';
     Decimal.invalidArgument = Decimal.decimalError + 'Invalid argument: ';
     Decimal.precisionLimitExceeded = Decimal.decimalError + 'Precision limit exceeded';
-    // Rounding modes - Todo turn these into enum
-    Decimal.ROUND_UP = 0;
-    Decimal.ROUND_DOWN = 1;
-    Decimal.ROUND_CEIL = 2;
-    Decimal.ROUND_FLOOR = 3;
-    Decimal.ROUND_HALF_UP = 4;
-    Decimal.ROUND_HALF_DOWN = 5;
-    Decimal.ROUND_HALF_EVEN = 6;
-    Decimal.ROUND_HALF_CEIL = 7;
-    Decimal.ROUND_HALF_FLOOR = 8;
-    Decimal.EUCLID = 9;
     return Decimal;
 }());
 exports.Decimal = Decimal;
