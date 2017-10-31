@@ -1088,7 +1088,7 @@ export class Decimal
     // Return the number of significant digits of the value of this Decimal.
     // [z] {boolean|number} Whether to count integer-part trailing zeros: true, false, 1 or 0.
     //
-    precision(z? : boolean | number) : number
+    precision(z ?: boolean | number) : number
     {
         let k,
             x = this;
@@ -1229,7 +1229,7 @@ export class Decimal
     // [dp] {number} Decimal places. Integer, 0 to MAX_DIGITS inclusive.
     // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
     //
-    toDP(dp : number, rm : number) : Decimal
+    toDP(dp ?: number, rm ?: number) : Decimal
     {
         let x = new Decimal(this);
 
@@ -1369,7 +1369,7 @@ export class Decimal
     // [dp] {number} Decimal places. Integer, 0 to MAX_DIGITS inclusive.
     // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
     //
-    toExponential(dp : number, rm : number) : Decimal
+    toExponential(dp ?: number, rm ?: number) : Decimal
     {
         var str,
             x : Decimal = this;
@@ -1406,7 +1406,7 @@ export class Decimal
     // (-0).toFixed(3) is '0.000'.
     // (-0.5).toFixed(0) is '-0'.
     //
-    toFixed(dp : number, rm : number) : Decimal
+    toFixed(dp ?: number, rm ?: number) : Decimal
     {
         var str, y,
             x = this;
@@ -1533,7 +1533,7 @@ export class Decimal
     // 'toNearest() rounding mode not an integer: {rm}'
     // 'toNearest() rounding mode out of range: {rm}'
     //
-    toNearest(yy : number | string | Decimal, rm : number) : Decimal
+    toNearest(yy : number | string | Decimal, rm ?: number) : Decimal
     {
         let x = new Decimal(this),
             y : Decimal;
@@ -1739,7 +1739,7 @@ export class Decimal
     // [sd] {number} Significant digits. Integer, 1 to MAX_DIGITS inclusive.
     // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
     //
-    toPrecision(sd : number, rm : number) : string
+    toPrecision(sd ?: number, rm ?: number) : string
     {
         var str,
             x : Decimal = this;
@@ -1781,7 +1781,7 @@ export class Decimal
     // 'toSD() rounding mode not an integer: {rm}'
     // 'toSD() rounding mode out of range: {rm}'
     //
-    toSignificantDigits(sd : number, rm : number) : Decimal
+    toSignificantDigits(sd ?: number, rm ?: number) : Decimal
     {
         var x = this;
 
@@ -2761,7 +2761,7 @@ export class Decimal
     // `repeating == null` if caller is `log` or `pow`,
     // `repeating != null` if caller is `naturalLogarithm` or `naturalExponential`.
     //
-    private static checkRoundingDigits(d : number[], i : number, rm : number, repeating? : number)
+    private static checkRoundingDigits(d : number[], i : number, rm : number, repeating ?: number)
     {
         let di, k, r, rd,
             LOG_BASE = Decimal.LOG_BASE;

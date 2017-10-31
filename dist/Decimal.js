@@ -1,6 +1,7 @@
-// Based on decimal.js https://github.com/MikeMcl/decimal.js
 "use strict";
-var Decimal = (function () {
+// Based on decimal.js https://github.com/MikeMcl/decimal.js
+Object.defineProperty(exports, "__esModule", { value: true });
+var Decimal = /** @class */ (function () {
     function Decimal(v) {
         var e, i, t, x = this;
         // Duplicate.
@@ -68,7 +69,7 @@ var Decimal = (function () {
         enumerable: true,
         configurable: true
     });
-    ;
+    ; // 0 to 9e15
     Object.defineProperty(Decimal, "MAX_DIGITS", {
         // The limit on the value of `precision`, and on the value of the first argument to
         // `toDecimalPlaces`, `toExponential`, `toFixed`, `toPrecision` and `toSignificantDigits`.
@@ -76,7 +77,7 @@ var Decimal = (function () {
         enumerable: true,
         configurable: true
     });
-    ;
+    ; // 0 to 1e9
     Object.defineProperty(Decimal, "NUMERALS", {
         // Base conversion alphabet.
         get: function () { return '0123456789abcdef'; },
@@ -127,55 +128,55 @@ var Decimal = (function () {
         enumerable: true,
         configurable: true
     });
-    ;
+    ; // Away from zero.
     Object.defineProperty(Decimal, "ROUND_DOWN", {
         get: function () { return 1; },
         enumerable: true,
         configurable: true
     });
-    ;
+    ; // Towards zero.
     Object.defineProperty(Decimal, "ROUND_CEIL", {
         get: function () { return 2; },
         enumerable: true,
         configurable: true
     });
-    ;
+    ; // Towards +Infinity.
     Object.defineProperty(Decimal, "ROUND_FLOOR", {
         get: function () { return 3; },
         enumerable: true,
         configurable: true
     });
-    ;
+    ; // Towards -Infinity.
     Object.defineProperty(Decimal, "ROUND_HALF_UP", {
         get: function () { return 4; },
         enumerable: true,
         configurable: true
     });
-    ;
+    ; // Towards nearest neighbour. If equidistant, up.
     Object.defineProperty(Decimal, "ROUND_HALF_DOWN", {
         get: function () { return 5; },
         enumerable: true,
         configurable: true
     });
-    ;
+    ; // Towards nearest neighbour. If equidistant, down.
     Object.defineProperty(Decimal, "ROUND_HALF_EVEN", {
         get: function () { return 6; },
         enumerable: true,
         configurable: true
     });
-    ;
+    ; // Towards nearest neighbour. If equidistant, towards even neighbour.
     Object.defineProperty(Decimal, "ROUND_HALF_CEIL", {
         get: function () { return 7; },
         enumerable: true,
         configurable: true
     });
-    ;
+    ; // Towards nearest neighbour. If equidistant, towards +Infinity.
     Object.defineProperty(Decimal, "ROUND_HALF_FLOOR", {
         get: function () { return 8; },
         enumerable: true,
         configurable: true
     });
-    ;
+    ; // Towards nearest neighbour. If equidistant, towards -Infinity.
     Object.defineProperty(Decimal, "EUCLID", {
         get: function () { return 9; },
         enumerable: true,
@@ -675,6 +676,7 @@ var Decimal = (function () {
             for (i = k; i--;)
                 d.push(0);
             d.reverse();
+            // Base 1e7 exponents equal.
         }
         else {
             // Check digits to determine which is the bigger number.
@@ -941,7 +943,11 @@ var Decimal = (function () {
         // If either is NaN, ±Infinity or ±0...
         if (!xd || !xd[0] || !yd || !yd[0]) {
             return new Decimal(!y.s || xd && !xd[0] && !yd || yd && !yd[0] && !xd
+                // Return NaN if either is NaN.
+                // Return NaN if x is ±0 and y is ±Infinity, or y is ±0 and x is ±Infinity.
                 ? NaN
+                // Return ±Infinity if either is ±Infinity.
+                // Return ±0 if either is ±0.
                 : !xd || !yd ? y.s / 0 : y.s * 0);
         }
         e = Math.floor(x.e / LOG_BASE) + Math.floor(y.e / LOG_BASE);
@@ -1254,6 +1260,7 @@ var Decimal = (function () {
             x = Decimal.divide(x, y, 0, rm, 1).mul(y);
             Decimal.external = true;
             Decimal.finalise(x);
+            // If y is zero, return zero with the sign of x.
         }
         else {
             y.s = x.s;
@@ -1328,6 +1335,7 @@ var Decimal = (function () {
         if (!yIsInt) {
             if (sign < 0)
                 return new Decimal(NaN);
+            // If y is a small integer use the 'exponentiation by squaring' algorithm.
         }
         else if ((k = yn < 0 ? -yn : yn) <= Decimal.MAX_SAFE_INTEGER) {
             r = this.intPow(x, k, pr);
@@ -1504,7 +1512,9 @@ var Decimal = (function () {
         var halfPi, x = this, k = x.abs().cmp(1), pr = Decimal.precision, rm = Decimal.rounding;
         if (k !== -1) {
             return k === 0
+                // |x| is 1
                 ? x.isNeg() ? Decimal.getPi(pr, rm) : new Decimal(0)
+                // |x| > 1 or x is NaN
                 : new Decimal(NaN);
         }
         if (x.isZero())
@@ -2321,6 +2331,7 @@ var Decimal = (function () {
                     k = t % yd0_1 | 0;
                 }
                 more = k || i < xL;
+                // divisor >= 1e7
             }
             else {
                 // Normalise xd and yd so highest order digit of yd is >= base/2
@@ -2428,6 +2439,7 @@ var Decimal = (function () {
         // logBase is 1 when divide is being used for base conversion.
         if (logBase == 1) {
             q.e = e;
+            //inexact = more;
         }
         else {
             // To calculate q.e, first get the number of digits of qd[0].
@@ -2992,11 +3004,13 @@ var Decimal = (function () {
                     // Infinity.
                     x.d = null;
                     x.e = NaN;
+                    // Underflow?
                 }
                 else if (x.e < x.minE) {
                     // Zero.
                     x.e = 0;
                     x.d = [0];
+                    // x.constructor.underflow = true;
                 } // else x.constructor.underflow = false;
             }
         }

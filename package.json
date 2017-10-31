@@ -1,6 +1,6 @@
 {
   "name": "@neutrium/math",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/index.js",
   "typings": "dist/index",
   "description": "The NeutriumJS math library.",
