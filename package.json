@@ -1,5 +1,5 @@
 {
-	"name": "@neutrium/math",
+	"name": "@neutrium/decimal",
 	"version": "1.0.0",
 	"type": "module",
 	"exports": {
@@ -24,10 +24,10 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/neutrium/math.git"
+		"url": "https://github.com/neutrium/decimal.git"
 	},
 	"bugs": {
-		"url": "https://github.com/neutrium/math/issues"
+		"url": "https://github.com/neutrium/decimal/issues"
 	},
 	"dependencies": {},
 	"scripts": {
