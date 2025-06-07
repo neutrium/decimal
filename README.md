@@ -52,33 +52,33 @@ In exponential notation, e or E defines a power-of-ten exponent for decimal valu
 
 Throws an Error on an invalid `value` parameter.
 
-	x = new Decimal(9)										// '9'
-	y = new Decimal(x)										// '9'
+	x = new Decimal(9)								// '9'
+	y = new Decimal(x)								// '9'
 
 	new Decimal('5032485723458348569331745.33434346346912144534543')
-	new Decimal('4.321e+4')									// '43210'
+	new Decimal('4.321e+4')								// '43210'
 	new Decimal('-735.0918e-430')							// '-7.350918e-428'
-	new Decimal('5.6700000')								// '5.67'
-	new Decimal(Infinity)									// 'Infinity'
-	new Decimal(NaN)										// 'NaN'
-	new Decimal('.5')										// '0.5'
+	new Decimal('5.6700000')							// '5.67'
+	new Decimal(Infinity)								// 'Infinity'
+	new Decimal(NaN)								// 'NaN'
+	new Decimal('.5')								// '0.5'
 	new Decimal('-0b10110100.1')							// '-180.5'
-	new Decimal('0xff.8')									// '255.5'
+	new Decimal('0xff.8')								// '255.5'
 
-	new Decimal(0.046875)									// '0.046875'
+	new Decimal(0.046875)								// '0.046875'
 	new Decimal('0.046875000000')							// '0.046875'
 	new Decimal('0.046_875_000_000')						// '0.046875'
 
-	new Decimal(4.6875e-2)									// '0.046875'
-	new Decimal('468.75e-4')								// '0.046875'
+	new Decimal(4.6875e-2)								// '0.046875'
+	new Decimal('468.75e-4')							// '0.046875'
 
-	new Decimal('0b0.000011')								// '0.046875'
-	new Decimal('0o0.03')									// '0.046875'
-	new Decimal('0x0.0c') 									// '0.046875'
+	new Decimal('0b0.000011')							// '0.046875'
+	new Decimal('0o0.03')								// '0.046875'
+	new Decimal('0x0.0c') 								// '0.046875'
 
-	new Decimal('0b1.1p-5')									// '0.046875'
-	new Decimal('0o1.4p-5')									// '0.046875'
-	new Decimal('0x1.8p-5')									// '0.046875'
+	new Decimal('0b1.1p-5')								// '0.046875'
+	new Decimal('0o1.4p-5')								// '0.046875'
+	new Decimal('0x1.8p-5')								// '0.046875'
 
 
 ## Configuration
@@ -123,7 +123,7 @@ The maximum number of significant digits of the result of an operation.
 All functions which return a Decimal will round the return value to `precision` significant digits except Decimal, absoluteValue, ceil, floor, negated, round, toDecimalPlaces, toNearest and truncated.
 
 	Decimal.config = { precision: 5 }
-	Decimal.precision										// 5
+	Decimal.precision								// 5
 
 ### rounding
 
@@ -133,7 +133,7 @@ The rounding modes are available as enumerated properties of the constructor.
 
 	Decimal.config = { rounding: Decimal.ROUND_UP }
 	Decimal.config = { rounding: 0 } 						// equivalent
-	Decimal.rounding										// 0
+	Decimal.rounding								// 0
 
 The enumerated rounding modes are stored as properties of the Decimal constructor.
 
@@ -159,13 +159,13 @@ The negative exponent limit, i.e. the exponent value below which underflow to ze
 If the Decimal to be returned by a calculation would have an exponent lower than minE then the value of that Decimal becomes zero.
 
 	Decimal.config = { minE: -500 }
-	Decimal.config.minE										// -500
-	new Decimal('1e-500')									// '1e-500'
-	new Decimal('9.9e-501')									// '0'
+	Decimal.config.minE								// -500
+	new Decimal('1e-500')								// '1e-500'
+	new Decimal('9.9e-501')								// '0'
 
 	Decimal.config = { minE: -3 }
-	new Decimal(0.001)										// '0.01' e is -3
-	new Decimal(0.0001)										// '0'    e is -4
+	new Decimal(0.001)								// '0.01' e is -3
+	new Decimal(0.0001)								// '0'    e is -4
 
 
 JavaScript numbers underflow to zero for exponents below -324. The smallest possible magnitude of a non-zero Decimal is 1e-9000000000000000
@@ -177,13 +177,13 @@ The positive exponent limit, i.e. the exponent value above which overflow to Inf
 If the Decimal to be returned by a calculation would have an exponent higher than maxE then the value of that Decimal becomes Infinity.
 
 	Decimal.config = { maxE: 500 }
-	Decimal.config.maxE										// 500
-	new Decimal('9.999e500')								// '9.999e+500'
-	new Decimal('1e501')									// 'Infinity'
+	Decimal.config.maxE								// 500
+	new Decimal('9.999e500')							// '9.999e+500'
+	new Decimal('1e501')								// 'Infinity'
 
 	Decimal.config = { maxE: 4 }
-	new Decimal(99999)										// '99999' e is 4
-	new Decimal(100000)										// 'Infinity'
+	new Decimal(99999)								// '99999' e is 4
+	new Decimal(100000)								// 'Infinity'
 
 JavaScript numbers overflow to Infinity for exponents above 308. The largest possible magnitude of a finite Decimal is 9.999...e+9000000000000000
 
@@ -192,9 +192,9 @@ JavaScript numbers overflow to Infinity for exponents above 308. The largest pos
 The negative exponent value at and below which toString returns exponential notation.
 
 	Decimal.config = { toExpNeg: -7 }
-	Decimal.config.toExpNeg									// -7
-	new Decimal(0.00000123)									// '0.00000123'  e is -6
-	new Decimal(0.000000123)								// '1.23e-7'
+	Decimal.config.toExpNeg								// -7
+	new Decimal(0.00000123)								// '0.00000123'  e is -6
+	new Decimal(0.000000123)							// '1.23e-7'
 
 	Decimal.config = { toExpNeg: 0 }						// Always returns exponential notation
 
@@ -207,9 +207,9 @@ Regardless of the value of toExpNeg, the toFixed method will always return a val
 The positive exponent value at and above which toString returns exponential notation.
 
 	Decimal.config = { toExpPos: 2 }
-	Decimal.config.toExpPos									// 2
-	new Decimal(12.3)										// '12.3' e is 1
-	new Decimal(123)										// '1.23e+2'
+	Decimal.config.toExpPos								// 2
+	new Decimal(12.3)								// '12.3' e is 1
+	new Decimal(123)								// '1.23e+2'
 
 	Decimal.config = { toExpPos: 0 }						// Always returns exponential notation
 
@@ -239,7 +239,7 @@ The rounding/modulo modes are available as enumerated properties of the Decimal 
 
 	Decimal.config = { modulo: Decimal.EUCLID }
 	Decimal.config = { modulo: 9 }							// equivalent
-	Decimal.config.modulo									// 9
+	Decimal.config.modulo								// 9
 
 ## Usage
 
@@ -319,7 +319,7 @@ Returns a new Decimal whose value is the absolute value, i.e. non-negative value
 The return value is not affected by the value of the precision setting.
 
 	let x = new Decimal(-0.8),
-		y = x.abs()											// '0.8'
+		y = x.abs()								// '0.8'
 
 #### .neg() : Decimal
 
@@ -328,10 +328,10 @@ Returns a new Decimal whose value is the value of this Decimal negated, i.e. mul
 The return value is not affected by the value of the precision setting.
 
 	let x = new Decimal(1.8)
-	x.neg()													// '-1.8'
+	x.neg()										// '-1.8'
 
 	let y = new Decimal(-1.3)
-	y.neg()													// '1.3'
+	y.neg()										// '1.3'
 
 #### .mod(x : number | string | Decimal) : Decimal
 
@@ -345,16 +345,16 @@ See [modulo](#modulo) for a description of the other modulo modes.
 	// Standard javascript floats 1 % 0.9 =  0.09999999999999998
 
 	let x = new Decimal(1),
-		y = x.mod(0.9)										// 0.1
+		y = x.mod(0.9)								// 0.1
 
 	let y = new Decimal(8),
 		z = new Decimal(-3);
 
 	Decimal.config = { modulo : 1 }
-	y.mod(z)												// '2'
+	y.mod(z)									// '2'
 
 	Decimal.config = { modulo : 3 }
-	y.mod(z)												// '-1'
+	y.mod(z)									// '-1'
 
 
 ### Power
@@ -402,7 +402,7 @@ The return value will be correctly rounded, i.e. rounded as if the result was fi
 This method is much faster than using the toPower method with an exponent of 0.5.
 
 	let x = new Decimal(16)
-		y = x.sqrt()										// 4
+		y = x.sqrt()								// 4
 
 
 #### .cbrt() : Decimal
@@ -412,7 +412,7 @@ Returns a new Decimal whose value is the cube root of this Decimal.
 The return value will be correctly rounded, i.e. rounded as if the result was first calculated to an infinite number of correct digits before rounding.
 
 	let x = new Decimal(125),
-		y = x.cbrt()										// 5
+		y = x.cbrt()								// 5
 
 ### Exponential
 
@@ -421,7 +421,7 @@ The return value will be correctly rounded, i.e. rounded as if the result was fi
 Returns a new Decimal whose value is the base e (Euler's number, the base of the natural logarithm) exponential of the value of this Decimal.
 
 	let x = new Decimal(1)
-	x.exp()													// '2.7182818284590452354'
+	x.exp()										// '2.7182818284590452354'
 
 The return value will be correctly rounded, i.e. rounded as if the result was first calculated to an infinite number of correct digits before rounding. (The mathematical result of the exponential function is non-terminating, unless its argument is 0).
 
@@ -432,7 +432,7 @@ The performance of this method degrades exponentially with increasing digits.
 Returns a new Decimal whose value is the natural logarithm of the value of this Decimal.
 
 	let x = new Decimal(10)
-	x.ln()													// '2.3026'
+	x.ln()										// '2.3026'
 
 The return value will be correctly rounded, i.e. rounded as if the result was first calculated to an infinite number of correct digits before rounding. (The mathematical result of the natural logarithm function is non-terminating, unless its argument is 1).
 
@@ -447,10 +447,10 @@ Returns a new Decimal whose value is the base x logarithm of the value of this D
 If x is omitted, the base 10 logarithm of the value of this Decimal will be returned.
 
 	let x = new Decimal(1000)
-	x.log()													// '3'
+	x.log()										// '3'
 
 	let y = new Decimal(256)
-	y.log(2)												// '8'
+	y.log(2)									// '8'
 
 The return value will almost always be correctly rounded, i.e. rounded as if the result was first calculated to an infinite number of correct digits before rounding. If a result is incorrectly rounded the maximum error will be 1 ulp (unit in the last place).
 
@@ -502,14 +502,14 @@ If greater precision is required then the value of PI will need to be extended t
 Returns a new Decimal whose value is the sine of the value in radians of this Decimal.
 
 	let x = new Decimal(0.5),
-		y = x.sin()											// y = '0.47942553860420300027'
+		y = x.sin()								// y = '0.47942553860420300027'
 
 #### .asin() : Decimal
 
 Returns a new Decimal whose value is the inverse sine in radians of the value of this Decimal.
 
 	let x = new Decimal(0.5),
-		y = x.asin()										// y = '0.52359877559829887308'
+		y = x.asin()								// y = '0.52359877559829887308'
 
 #### .sinh() : Decimal
 
@@ -517,63 +517,63 @@ Returns a new Decimal whose value is the hyperbolic sine of the value in radians
 
 
 	let x = new Decimal(1),
-		y = x.sinh()										// y = '1.1752011936438014569'
+		y = x.sinh()								// y = '1.1752011936438014569'
 
 #### .asinh() : Decimal
 
 Returns a new Decimal whose value is the inverse hyperbolic sine in radians of the value of this Decimal.
 
 	let x = new Decimal(5),
-		y = x.asinh()										// y = '2.3124383412727526203'
+		y = x.asinh()								// y = '2.3124383412727526203'
 
 #### .cos() : Decimal
 
 Returns a new Decimal whose value is the cosine of the value in radians of this Decimal.
 
 	let x = new Decimal(0.25),
-		y = x.cos()											// y = '0.96891242171064478414'
+		y = x.cos()								// y = '0.96891242171064478414'
 
 #### .acos() : Decimal
 
 Returns a new Decimal whose value is the inverse cosine in radians of the value of this Decimal.
 
 	let x = new Decimal(0),
-		y = x.acos()										// y = '1.5707963267948966192'
+		y = x.acos()								// y = '1.5707963267948966192'
 
 #### .cosh() : Decimal
 
 Returns a new Decimal whose value is the hyperbolic cosine of the value in radians of this Decimal.
 
 	let x = new Decimal(1),
-		y = x.cosh()										// y = '1.5430806348152437785'
+		y = x.cosh()								// y = '1.5430806348152437785'
 
 #### .acosh() : Decimal
 
 Returns a new Decimal whose value is the inverse hyperbolic cosine in radians of the value of this Decimal.
 
 	let x = new Decimal(5),
-		y = x.acosh()										// y = '2.2924316695611776878'
+		y = x.acosh()								// y = '2.2924316695611776878'
 
 #### .tan() : Decimal
 
 Returns a new Decimal whose value is the tangent of the value in radians of this Decimal.
 
 	let x = new Decimal(0.5),
-		y = x.tan()											// y = '0.54630248984379051326'
+		y = x.tan()								// y = '0.54630248984379051326'
 
 #### .atan() : Decimal
 
 Returns a new Decimal whose value is the inverse tangent in radians of the value of this Decimal.
 
 	let x = new Decimal(0.5),
-		y = x.atan()										// y = '0.46364760900080611621'
+		y = x.atan()								// y = '0.46364760900080611621'
 
 #### .tanh() : Decimal
 
 Returns a new Decimal whose value is the hyperbolic tangent of the value in radians of this Decimal.
 
 	let x = new Decimal(1),
-		y = x.tanh()										// y = '0.76159415595576488812'
+		y = x.tanh()								// y = '0.76159415595576488812'
 
 #### .atanh() : Decimal
 
@@ -581,7 +581,7 @@ Returns a new Decimal whose value is the inverse hyperbolic tangent in radians o
 
 
 	let x = new Decimal(0.5),
-		y = x.atanh()										// y = '0.5493061443340548457'
+		y = x.atanh()								// y = '0.5493061443340548457'
 
 
 #### Decimal.atan2(y: number | string | Decimal, x: number | string | Decimal) : Decimal
@@ -610,19 +610,19 @@ Returns a new Decimal whose value is the maximum of the arguments.
 
 Returns an integer indicating x's value relative to this Decima;
 
-| Return value	| Condition														|
+| Return value	| Condition							|
 | ------------- | ------------------------------------------------------------- |
-| 1				| If the value of this Decimal is greater than the value of x	|
-| -1			| If the value of this Decimal is less than the value of x		|
-| 0				| If this Decimal and x have the same value						|
-| NaN			| If the value of either this Decimal or x is NaN				|
+| 1		| If the value of this Decimal is greater than the value of x	|
+| -1		| If the value of this Decimal is less than the value of x	|
+| 0		| If this Decimal and x have the same value			|
+| NaN		| If the value of either this Decimal or x is NaN		|
 
 	let x = new Decimal(Infinity),
 		y = new Decimal(5)
 
-	x.cmp(y)												// 1
-	x.cmp(x.minus(1))										// 0
-	y.cmp(NaN)												// NaN
+	x.cmp(y)									// 1
+	x.cmp(x.minus(1))								// 0
+	y.cmp(NaN)									// NaN
 
 
 #### .eq(x : string | number | Decimal) : boolean
@@ -632,11 +632,11 @@ As with JavaScript, NaN does not equal NaN.
 
 	// In Javascript 0 === 1e-324 is true
 	let x = new Decimal(0)
-	x.equals('1e-324')										// false
-	new Decimal(-0).eq(x)									// true  ( -0 === 0 )
+	x.equals('1e-324')								// false
+	new Decimal(-0).eq(x)								// true  ( -0 === 0 )
 
 	let y = new Decimal(NaN)
-	y.eq(NaN)												// false
+	y.eq(NaN)									// false
 
 #### .gt(y : string | number | Decimal) : boolean
 
@@ -646,7 +646,7 @@ Returns true if the value of this Decimal is greater than the value of x, otherw
 	let x = new Decimal(0.1)
 
 	x.gt(Decimal(0.3).minus(0.2))							// false
-	new Decimal(0).gt(x)									// false
+	new Decimal(0).gt(x)								// false
 
 #### .gte(y : string | number | Decimal) : boolean
 
@@ -655,8 +655,8 @@ Returns true if the value of this Decimal is greater than or equal to the value 
 	// In Javascript (0.3 - 0.2) >= 0.1  is false
 	let x = new Decimal(0.3).minus(0.2)
 
-	x.gte(0.1)												// true
-	new Decimal(1).gte(x)									// true
+	x.gte(0.1)									// true
+	new Decimal(1).gte(x)								// true
 
 #### .lt(y : string | number | Decimal) : boolean
 
@@ -665,8 +665,8 @@ Returns true if the value of this Decimal is less than the value of x, otherwise
 	// In Javascript (0.3 - 0.2) < 0.1  is true
 	let x = new Decimal(0.3).minus(0.2)
 
-	x.lt(0.1)												// false
-	new Decimal(0).lt(x)									// true
+	x.lt(0.1)									// false
+	new Decimal(0).lt(x)								// true
 
 #### .lte(y : string | number | Decimal) : boolean
 
@@ -676,7 +676,7 @@ Returns true if the value of this Decimal is less than or equal to the value of 
 	let x = new Decimal(0.1)
 
 	x.lte(Decimal(0.3).minus(0.2))							// true
-	new Decimal(-1).lte(x)									// true
+	new Decimal(-1).lte(x)								// true
 
 ### Identiy Comparison
 
@@ -687,78 +687,78 @@ The only possible non-finite values of a Decimal are NaN, Infinity and -Infinity
 
 	let x = new Decimal(1)
 
-	x.isFinite()											// true
+	x.isFinite()									// true
 
 	let y = new Decimal(Infinity)
-	y.isFinite()											// false
+	y.isFinite()									// false
 
 #### .isInt() : boolean
 
 Returns true if the value of this Decimal is a whole number, otherwise returns false.
 
 	let x = new Decimal(1)
-	x.isInt()												// true
+	x.isInt()									// true
 
 	let y = new Decimal(123.456)
-	y.isInt()												// false
+	y.isInt()									// false
 
 #### .isNaN() : boolean
 
 Returns true if the value of this Decimal is NaN, otherwise returns false.
 
 	let x = new Decimal(NaN)
-	x.isNaN()												// true
+	x.isNaN()									// true
 
 	let y = new Decimal('Infinity')
-	y.isNaN()												// false
+	y.isNaN()									// false
 
 #### .isNeg() : boolean
 
 Returns true if the value of this Decimal is negative, otherwise returns false.
 
 	let x = new Decimal(-0)
-	x.isNeg()												// true
+	x.isNeg()									// true
 
 	let y = new Decimal(2)
-	y.isNeg()												// false
+	y.isNeg()									// false
 
 Note that zero is signed.
 
-	new Decimal(0).valueOf()								// '0'
-	new Decimal(0).isNeg()									// false
+	new Decimal(0).valueOf()							// '0'
+	new Decimal(0).isNeg()								// false
 	new Decimal(0).negated().valueOf()						// '-0'
 	new Decimal(0).negated().isNeg()						// true
-	new Decimal(-0).isNeg()									// true
+	new Decimal(-0).isNeg()								// true
 
 #### .isPos() : boolean
 
 Returns true if the value of this Decimal is positive, otherwise returns false.
 
 	let x = new Decimal(0)
-	x.isPos()												// true
+	x.isPos()									// true
 
 	let y = new Decimal(-2)
-	y.isPos()												// false
+	y.isPos()									// false
 
 #### .isZero() : boolean
 
 Returns true if the value of this Decimal is zero or minus zero, otherwise returns false.
 
 	let x = new Decimal(-0)
-	x.isZero() && x.isNeg()									// true
+	x.isZero() && x.isNeg()								// true
 
 	let y = new Decimal(Infinity)
-	y.isZero()												// false
+	y.isZero()									// false
 
 #### .isOdd() : boolean
 
 Returns true if the value of this Decimal is odd, otherwise returns false.
 
 	let x = new Decimal(3)
-	x.isOdd()												// true
+	x.isOdd()									// true
 
 	let y = new Decimal(2)
-	y.isOdd()												// false
+	y.isOdd()									// false
 
 
 #### .isEven() : boolean
@@ -766,10 +766,10 @@ Returns true if the value of this Decimal is odd, otherwise returns false.
 Returns true if the value of this Decimal is even, otherwise returns false.
 
 	let x = new Decimal(3)
-	x.isEven()												// false
+	x.isEven()									// false
 
 	let y = new Decimal(2)
-	y.isEven()												// true
+	y.isEven()									// true
 
 ### Rounding
 
@@ -778,19 +778,19 @@ Returns true if the value of this Decimal is even, otherwise returns false.
 Returns a new Decimal whose value is the value of this Decimal rounded to a whole number in the direction of positive Infinity.
 
 	x = new Decimal(1.3)
-	x.ceil()												// '2'
+	x.ceil()									// '2'
 	y = new Decimal(-1.8)
-	y.ceil()												// '-1'
+	y.ceil()									// '-1'
 
 #### .floor() : Decimal
 
 Returns a new Decimal whose value is the value of this Decimal rounded to a whole number in the direction of negative Infinity.
 
 	let x = new Decimal(1.8)
-	x.floor()												// '1'
+	x.floor()									// '1'
 
 	let y = new Decimal(-1.3)
-	y.floor()												// '-2'
+	y.floor()									// '-2'
 
 #### .round() : Decimal
 
@@ -798,7 +798,7 @@ Returns a new Decimal whose value is the value of this Decimal rounded to a whol
 
 	Decimal.rounding = Decimal.ROUND_DOWN
 	x = new Decimal(1234.5)
-	x.round()												// '1234'
+	x.round()									// '1234'
 
 To emulate Math.round, set rounding to 7, i.e. ROUND_HALF_CEIL.
 
@@ -807,10 +807,10 @@ To emulate Math.round, set rounding to 7, i.e. ROUND_HALF_CEIL.
 Returns a new Decimal whose value is the value of this Decimal truncated to a whole number.
 
 	x = new Decimal(123.456)
-	x.truncated()											// '123'
+	x.truncated()									// '123'
 
 	y = new Decimal(-12.3)
-	y.trunc()												// '-12'
+	y.trunc()									// '-12'
 
 #### toNearest(x : number | string | Decimal, rm ?: number) : Decimal
 
@@ -821,11 +821,11 @@ The return value will always have the same sign as this Decimal, unless either t
 The return value is not affected by the value of the precision setting.
 
 	x = new Decimal(1.39)
-	x.toNearest(0.25)										// '1.5'
+	x.toNearest(0.25)								// '1.5'
 
 	y = new Decimal(9.499)
 	y.toNearest(0.5, Decimal.ROUND_UP)						// '9.5'
-	y.toNearest(0.5, Decimal.ROUND_DOWN)					// '9'
+	y.toNearest(0.5, Decimal.ROUND_DOWN)						// '9'
 
 ### Conversion
 
@@ -840,8 +840,8 @@ If rm is omitted, rounding mode rounding is used.
 Throws an Error on an invalid dp or rm value.
 
 	let x = new Decimal(12.34567)
-	x.toDP(0)												// '12'
-	x.toDecimalPlaces(1, Decimal.ROUND_UP)					// '12.4'
+	x.toDP(0)									// '12'
+	x.toDecimalPlaces(1, Decimal.ROUND_UP)						// '12.4'
 
 #### toExponential(dp ?: number, rm ?: number) : string
 
@@ -857,15 +857,15 @@ Throws an Error on an invalid dp or rm value.
 
 	x = 45.6
 	y = new Decimal(x)
-	x.toExponential()										// '4.56e+1'
-	y.toExponential()										// '4.56e+1'
-	x.toExponential(0)										// '5e+1'
-	y.toExponential(0)										// '5e+1'
-	x.toExponential(1)										// '4.6e+1'
-	y.toExponential(1)										// '4.6e+1'
-	y.toExponential(1, Decimal.ROUND_DOWN)					// '4.5e+1'
-	x.toExponential(3)										// '4.560e+1'
-	y.toExponential(3)										// '4.560e+1'
+	x.toExponential()								// '4.56e+1'
+	y.toExponential()								// '4.56e+1'
+	x.toExponential(0)								// '5e+1'
+	y.toExponential(0)								// '5e+1'
+	x.toExponential(1)								// '4.6e+1'
+	y.toExponential(1)								// '4.6e+1'
+	y.toExponential(1, Decimal.ROUND_DOWN)						// '4.5e+1'
+	x.toExponential(3)								// '4.560e+1'
+	y.toExponential(3)								// '4.560e+1'
 
 #### toFixed(dp ?: number, rm ?: number) : string
 
@@ -884,14 +884,14 @@ Throws an Error on an invalid dp or rm value.
 	let x = 3.456,
 		y = new Decimal(x)
 
-	x.toFixed()												// '3'
-	y.toFixed()												// '3.456'
-	y.toFixed(0)											// '3'
-	x.toFixed(2)											// '3.46'
-	y.toFixed(2)											// '3.46'
+	x.toFixed()									// '3'
+	y.toFixed()									// '3.456'
+	y.toFixed(0)									// '3'
+	x.toFixed(2)									// '3.46'
+	y.toFixed(2)									// '3.46'
 	y.toFixed(2, Decimal.ROUND_DOWN)						// '3.45'
-	x.toFixed(5)											// '3.45600'
-	y.toFixed(5)											// '3.45600'
+	x.toFixed(5)									// '3.45600'
+	y.toFixed(5)									// '3.45600'
 
 #### toFraction(max_denominator : number | string | Decimal) : Decimal[2]
 
@@ -902,15 +902,15 @@ If a maximum denominator is omitted, the denominator will be the lowest value ne
 Throws on an invalid `max_denominator` value.
 
 	let x = new Decimal(1.75)
-	x.toFraction()												// '7, 4'
+	x.toFraction()									// '7, 4'
 
 	let pi = new Decimal('3.14159265358')
-	pi.toFraction()												// '157079632679,50000000000'
-	pi.toFraction(100000)										// '312689, 99532'
-	pi.toFraction(10000)										// '355, 113'
-	pi.toFraction(100)											// '311, 99'
-	pi.toFraction(10)											// '22, 7'
-	pi.toFraction(1)											// '3, 1'
+	pi.toFraction()									// '157079632679,50000000000'
+	pi.toFraction(100000)								// '312689, 99532'
+	pi.toFraction(10000)								// '355, 113'
+	pi.toFraction(100)								// '311, 99'
+	pi.toFraction(10)								// '22, 7'
+	pi.toFraction(1)								// '3, 1'
 
 #### toNumber() : number
 
@@ -919,15 +919,15 @@ Returns the value of this Decimal converted to a primitive number.
 Type coercion (e.g. JavaScript's unary plus operator) will also work, except that a Decimal with the value minus zero will convert to positive zero.
 
 	let x = new Decimal(456.789)
-	x.toNumber()												// 456.789
-	+x															// 456.789
+	x.toNumber()									// 456.789
+	+x										// 456.789
 
 	let y = new Decimal('45987349857634085409857349856430985')
-	y.toNumber()												// 4.598734985763409e+34
+	y.toNumber()									// 4.598734985763409e+34
 
 	let z = new Decimal(-0)
-	1 / +z														// Infinity
-	1 / z.toNumber()											// -Infinity
+	1 / +z										// Infinity
+	1 / z.toNumber()								// -Infinity
 
 #### toSD(sd ?: number, rm ?: number) : Decimal
 
@@ -942,12 +942,12 @@ Throws and Error on an invalid sd or rm value.
 	Decimal.config = { precision: 5, rounding: 4 }
 	let x = new Decimal(9876.54321)
 
-	x.toSD()													// '9876.5'
-	x.toSD(6)													// '9876.54'
-	x.toSD(6, Decimal.ROUND_UP)									// '9876.55'
-	x.toSD(2)													// '9900'
-	x.toSD(2, 1)												// '9800'
-	x 															// '9876.54321'
+	x.toSD()									// '9876.5'
+	x.toSD(6)									// '9876.54'
+	x.toSD(6, Decimal.ROUND_UP)							// '9876.55'
+	x.toSD(2)									// '9900'
+	x.toSD(2, 1)									// '9800'
+	x 										// '9876.54321'
 
 #### toPrecision(sd ?: number, rm ?: number) : string
 
@@ -964,14 +964,14 @@ Throws an Error on an invalid sd or rm value.
 	let x = 45.6,
 		y = new Decimal(x)
 
-	x.toPrecision()												// '45.6'
-	y.toPrecision()												// '45.6'
-	x.toPrecision(1)											// '5e+1'
-	y.toPrecision(1)											// '5e+1'
-	y.toPrecision(2, Decimal.ROUND_UP)							// '46'
+	x.toPrecision()									// '45.6'
+	y.toPrecision()									// '45.6'
+	x.toPrecision(1)								// '5e+1'
+	y.toPrecision(1)								// '5e+1'
+	y.toPrecision(2, Decimal.ROUND_UP)						// '46'
 	y.toPrecision(2, Decimal.ROUND_DOWN)						// '45'
-	x.toPrecision(5)											// '45.600'
-	y.toPrecision(5)											// '45.600'
+	x.toPrecision(5)								// '45.600'
+	y.toPrecision(5)								// '45.600'
 
 #### toString() : string
 
@@ -981,18 +981,18 @@ If this Decimal has a positive exponent that is equal to or greater than toExpPo
 
 	let x = new Decimal(750000)
 
-	x.toString()												// '750000'
+	x.toString()									// '750000'
 	Decimal.config = { toExpPos: 5 }
-	x.toString()												// '7.5e+5'
+	x.toString()									// '7.5e+5'
 
 	Decimal.config = { precision: 4 }
 	let y = new Decimal('1.23456789')
-	y.toString()												// '1.23456789'
+	y.toString()									// '1.23456789'
 
 #### toValue() : string
 
 As [toString](#tostring--string), but zero is signed.
 
 	x = new Decimal(-0)
-	x.valueOf()													// '-0'
+	x.valueOf()									// '-0'
 
