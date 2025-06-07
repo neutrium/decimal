@@ -1,0 +1,9 @@
+import { Decimal } from "../../Decimal.js";
+export declare function isFinite(x: Decimal): boolean;
+export declare function isInt(x: Decimal): boolean;
+export declare function isNaN(x: Decimal): boolean;
+export declare function isNeg(x: Decimal): boolean;
+export declare function isPos(x: Decimal): boolean;
+export declare function isZero(x: Decimal): boolean;
+export declare function isOdd(n: Decimal): boolean;
+export declare function isEven(n: Decimal): boolean;

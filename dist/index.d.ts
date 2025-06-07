@@ -1,1 +1,1 @@
-export { Decimal } from './Decimal';
+export * from './Decimal.js';
