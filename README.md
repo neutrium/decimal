@@ -114,6 +114,28 @@ Addtionally, for simplicity you get set and get the `precision` and `rounding` p
 	Decimal.precision = 20;
 	Decimal.rounding = 4;
 
+To create an independent Decimal constructor with its own configuration, use `Decimal.clone`:
+
+	const Money = Decimal.clone({
+		precision: 20,
+		rounding: 4
+	});
+
+	const Measurements = Decimal.clone({
+		precision: 50,
+		rounding: 1
+	});
+
+	Money.precision = 12;
+
+	Money.precision								// 12
+	Measurements.precision						// 50
+	Decimal.precision							// 20
+
+Values returned from calculations retain the constructor of the value on which the calculation
+was started, so subsequent operations continue to use the same isolated configuration. Cloning an
+existing clone copies its current configuration and then applies any supplied overrides.
+
 Each configuration parameter is described in the subsequent sections.
 
 ### precision
@@ -995,4 +1017,3 @@ As [toString](#tostring--string), but zero is signed.
 
 	x = new Decimal(-0)
 	x.valueOf()									// '-0'
-

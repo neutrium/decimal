@@ -1,6 +1,6 @@
 {
 	"name": "@neutrium/decimal",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"type": "module",
 	"exports": {
 		"." : "./dist/Decimal.js"
@@ -17,7 +17,7 @@
 		"numbers"
 	],
 	"license": "CC-BY-4.0",
-	"author:": "Trevor Walker <trevorw@neutrium.net> (https://neutrium.net)",
+	"author": "Trevor Walker <trevorw@neutrium.net> (https://neutrium.net)",
 	"private": false,
 	"engines": {
 		"node": ">=0.10.0"

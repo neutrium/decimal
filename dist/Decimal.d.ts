@@ -1,3 +1,4 @@
+import { DecimalConfig } from './config/DecimalConfig.js';
 export declare class Decimal {
     static params: {
         BASE: number;
@@ -9,14 +10,16 @@ export declare class Decimal {
         LN10_PRECISION: number;
     };
     private static _config;
-    static get config(): any;
-    static set config(params: any);
+    private static _activeConstructor;
+    static get config(): Readonly<DecimalConfig>;
+    static set config(params: Partial<DecimalConfig>);
     static get precision(): number;
     static set precision(val: number);
     static get rounding(): number;
     static set rounding(val: number);
     static get LN10(): Decimal;
     static get PI(): Decimal;
+    static clone(config?: Partial<DecimalConfig>): typeof Decimal;
     static external: boolean;
     static quadrant: any;
     private static get isDecimal();
@@ -24,6 +27,7 @@ export declare class Decimal {
     e: number;
     s: number;
     constructor(v: string | number | Decimal);
+    private initialise;
     dp: () => number;
     precision: (z?: boolean | number) => number;
     add: (y: number | string | Decimal) => Decimal;
@@ -38,17 +42,15 @@ export declare class Decimal {
     pow: (yy: number | string | Decimal) => Decimal;
     sqrt: () => Decimal;
     cbrt: () => Decimal;
-    min: (...values: any[]) => Decimal;
-    max: (...values: any[]) => Decimal;
+    min: (...values: (number | string | Decimal)[]) => Decimal;
+    max: (...values: (number | string | Decimal)[]) => Decimal;
     cmp: (w: string | number | Decimal) => number;
     eq: (y: string | number | Decimal) => boolean;
     gt: (y: string | number | Decimal) => boolean;
     gte: (y: string | number | Decimal) => boolean;
     lt: (y: string | number | Decimal) => boolean;
     lte: (y: string | number | Decimal) => boolean;
-    isFinite: () => this is Decimal & {
-        d: string[];
-    };
+    isFinite: () => boolean;
     isInt: () => boolean;
     isNaN: () => boolean;
     isNeg: () => boolean;
@@ -74,7 +76,7 @@ export declare class Decimal {
     acosh: () => Decimal;
     tan: () => Decimal;
     atan: () => Decimal;
-    static atan2: (y: number | string | Decimal, x: number | string | Decimal) => Decimal;
+    static atan2(y: number | string | Decimal, x: number | string | Decimal): Decimal;
     tanh: () => Decimal;
     atanh: () => Decimal;
     toString: () => string;
@@ -86,5 +88,7 @@ export declare class Decimal {
     toExponential: (dp?: number, rm?: number) => string;
     toPrecision: (sd?: number, rm?: number) => string;
     toFraction: (denominator?: number | string | Decimal) => Decimal[];
+    private execute;
+    private static runWithContext;
     private static setConfig;
 }

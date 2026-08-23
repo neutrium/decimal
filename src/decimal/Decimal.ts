@@ -30,19 +30,37 @@ export class Decimal
 {
 	// Decimal parameters and config
 	public static params = DecimalParams;
-	private static _config : DecimalConfig = DefaultDecimalConfig;
-	static get config() { return Decimal._config};
-	static set config(params: any) { Decimal.setConfig(params) }
+	private static _config : DecimalConfig = { ...DefaultDecimalConfig };
+	private static _activeConstructor : typeof Decimal | null = null;
+	static get config() : Readonly<DecimalConfig> { return { ...this._config }};
+	static set config(params: Partial<DecimalConfig>) { this.setConfig(params) }
 
 	// Low overhead Getter and setters for config params changed during intermediate calculations
-	static get precision() { return Decimal._config.precision };
-	static set precision(val: number) { Decimal._config.precision = val}
-	static get rounding() { return Decimal._config.rounding };
-	static set rounding(val: number) { Decimal._config.rounding = val}
+	static get precision() { return this._config.precision };
+	static set precision(val: number) { this.setConfig({ precision: val }) }
+	static get rounding() { return this._config.rounding };
+	static set rounding(val: number) { this.setConfig({ rounding: val as DecimalConfig['rounding'] }) }
 
 
-	public static get LN10() { return new Decimal(LN10_STR) };
-	public static get PI() { return new Decimal(PI_STR) };
+	public static get LN10() { return new this(LN10_STR) };
+	public static get PI() { return new this(PI_STR) };
+
+	public static clone(config: Partial<DecimalConfig> = {}) : typeof Decimal
+	{
+		const Parent = this;
+
+		class DecimalClone extends Parent {}
+
+		Object.defineProperty(DecimalClone, '_config', {
+			configurable: true,
+			value: { ...Parent._config },
+			writable: true
+		});
+
+		DecimalClone.setConfig(config);
+
+		return DecimalClone;
+	}
 
 
 	//private inexact;  // THink this is only used for binary conversion
@@ -58,6 +76,20 @@ export class Decimal
 
 	constructor(v : string | number | Decimal)
 	{
+		const Constructor = new.target as typeof Decimal;
+
+		// Intermediate values are constructed with `new Decimal` throughout the implementation.
+		// Redirect them to the constructor whose calculation context is currently active.
+		if (Constructor === Decimal && Decimal._activeConstructor && Decimal._activeConstructor !== Decimal)
+		{
+			return Reflect.construct(Decimal, [v], Decimal._activeConstructor);
+		}
+
+		return Decimal.runWithContext(Constructor, () => this.initialise(v));
+	}
+
+	private initialise(v : string | number | Decimal) : this
+	{
 		let e, i, t,
 			x = this;
 
@@ -70,7 +102,7 @@ export class Decimal
 			x.e = v.e;
 			x.d = (vv = v.d) ? vv.slice() : vv;
 
-			return;
+			return x;
 		}
 		else if (typeof v === 'number')
 		{
@@ -82,7 +114,7 @@ export class Decimal
 				x.e = 0;
 				x.d = [0];
 
-				return;
+				return x;
 			}
 
 			if (v < 0)
@@ -102,17 +134,17 @@ export class Decimal
 				for (e = 0, i = vv; i >= 10; i /= 10) e++;
 				x.e = e;
 				x.d = [vv];
-				return;
+				return x;
 			}
 			else if (vv * 0 !== 0) // Infinity, NaN.
 			{
 				if (!vv) x.s = NaN;
 				x.e = NaN;
 				x.d = null;
-				return;
+				return x;
 			}
 
-			return parseDecimal(x, vv.toString());
+			return parseDecimal(x, vv.toString()) as this;
 
 		}
 		else if(typeof v === 'string')
@@ -131,7 +163,7 @@ export class Decimal
 				x.s = 1;
 			}
 
-			return Decimal.isDecimal.test(vv) ? parseDecimal(x, vv) : parseOther(x, vv);
+			return (Decimal.isDecimal.test(vv) ? parseDecimal(x, vv) : parseOther(x, vv)) as this;
 		}
 		else
 		{
@@ -139,111 +171,156 @@ export class Decimal
 		}
 	}
 
-	dp = () : number => getDecimalPlaces(this);
-	precision = (z ?: boolean | number) : number => precision(this, z)
+	dp = () : number => this.execute(() => getDecimalPlaces(this));
+	precision = (z ?: boolean | number) : number => this.execute(() => precision(this, z))
 
 	// Arithmetic methods
-	add = (y : number | string | Decimal) : Decimal => add(this, y);
-	sub = (y : number | string | Decimal) : Decimal => sub(this, y);
-	mul = (y : number | string | Decimal) : Decimal => mul(this, y);
-	div = (y : number | string | Decimal) : Decimal => div(this, y);
-	divToInt = (y : string | number | Decimal) : Decimal => divToInt(this, y);
-	mod = (yy : number | string | Decimal) : Decimal => mod(this, yy);
-	neg = () : Decimal => neg(this);
-	sign = () : number => getSign(this);
-	abs = () : Decimal => abs(this);
+	add = (y : number | string | Decimal) : Decimal => this.execute(() => add(this, y));
+	sub = (y : number | string | Decimal) : Decimal => this.execute(() => sub(this, y));
+	mul = (y : number | string | Decimal) : Decimal => this.execute(() => mul(this, y));
+	div = (y : number | string | Decimal) : Decimal => this.execute(() => div(this, y));
+	divToInt = (y : string | number | Decimal) : Decimal => this.execute(() => divToInt(this, y));
+	mod = (yy : number | string | Decimal) : Decimal => this.execute(() => mod(this, yy));
+	neg = () : Decimal => this.execute(() => neg(this));
+	sign = () : number => this.execute(() => getSign(this));
+	abs = () : Decimal => this.execute(() => abs(this));
 
 	// Power methods
-	pow = (yy : number | string | Decimal) : Decimal => pow(this, yy);
-	sqrt = () : Decimal => sqrt(this);
-	cbrt = () : Decimal => cbrt(this);
+	pow = (yy : number | string | Decimal) : Decimal => this.execute(() => pow(this, yy));
+	sqrt = () : Decimal => this.execute(() => sqrt(this));
+	cbrt = () : Decimal => this.execute(() => cbrt(this));
 
 	// Comparison methods
-	min = (...values) : Decimal => min(this, ...values)
-	max = (...values) : Decimal => max(this, ...values)
+	min = (...values: (number | string | Decimal)[]) : Decimal => this.execute(() => min(this, ...values))
+	max = (...values: (number | string | Decimal)[]) : Decimal => this.execute(() => max(this, ...values))
 
 	// Relational Comparison
-	cmp = (w : string | number | Decimal) : number => cmp(this, w);
-	eq =  (y : string | number | Decimal) : boolean => eq(this, y);
-	gt = (y : string | number | Decimal) : boolean => gt(this, y);
-	gte = (y : string | number | Decimal) : boolean => gte(this, y);
-	lt = (y : string | number | Decimal) : boolean => lt(this, y);
-	lte = (y : string | number | Decimal) : boolean => lte(this, y);
+	cmp = (w : string | number | Decimal) : number => this.execute(() => cmp(this, w));
+	eq =  (y : string | number | Decimal) : boolean => this.execute(() => eq(this, y));
+	gt = (y : string | number | Decimal) : boolean => this.execute(() => gt(this, y));
+	gte = (y : string | number | Decimal) : boolean => this.execute(() => gte(this, y));
+	lt = (y : string | number | Decimal) : boolean => this.execute(() => lt(this, y));
+	lte = (y : string | number | Decimal) : boolean => this.execute(() => lte(this, y));
 
 	// Identiy Comparison
-	isFinite = () : this is Decimal & { d: string[] } => isFinite(this);
-	isInt = () : boolean => isInt(this);
-	isNaN = () : boolean => isNaN(this);
-	isNeg = () : boolean => isNeg(this);
-	isPos = () : boolean => isPos(this);
-	isZero = () : boolean => isZero(this);
-	isOdd = () : boolean => isOdd(this);
-	isEven = () : boolean => isEven(this);
+	isFinite = () : boolean => this.execute(() => isFinite(this));
+	isInt = () : boolean => this.execute(() => isInt(this));
+	isNaN = () : boolean => this.execute(() => isNaN(this));
+	isNeg = () : boolean => this.execute(() => isNeg(this));
+	isPos = () : boolean => this.execute(() => isPos(this));
+	isZero = () : boolean => this.execute(() => isZero(this));
+	isOdd = () : boolean => this.execute(() => isOdd(this));
+	isEven = () : boolean => this.execute(() => isEven(this));
 
 	// Rounding
-	ceil = () : Decimal => ceil(this);
-	floor = () : Decimal => floor(this);
-	round = () : Decimal => round(this);
-	trunc = () : Decimal => finalise(new Decimal(this), this.e + 1, 1);
-	toNearest = (yy : number | string | Decimal, rm ?: number) : Decimal => toNearest(this, yy, rm)
+	ceil = () : Decimal => this.execute(() => ceil(this));
+	floor = () : Decimal => this.execute(() => floor(this));
+	round = () : Decimal => this.execute(() => round(this));
+	trunc = () : Decimal => this.execute(() => finalise(new Decimal(this), this.e + 1, 1));
+	toNearest = (yy : number | string | Decimal, rm ?: number) : Decimal => this.execute(() => toNearest(this, yy, rm))
 
 	// Exponential methods
-	log = (baseN : number | string | Decimal) : Decimal => log(this, baseN)
-	ln = () : Decimal => naturalLogarithm(this);
-	exp = () : Decimal => naturalExponential(this);
+	log = (baseN : number | string | Decimal) : Decimal => this.execute(() => log(this, baseN))
+	ln = () : Decimal => this.execute(() => naturalLogarithm(this));
+	exp = () : Decimal => this.execute(() => naturalExponential(this));
 
 	// Trigonometric functions
-	sin = () : Decimal => sin(this);
-	asin = () : Decimal => asin(this);
-	sinh = () : Decimal => sinh(this);
-	asinh = () : Decimal => asinh(this);
-	cos = () : Decimal => cos(this);
-	acos = () : Decimal => acos(this);
-	cosh = () : Decimal => cosh(this);
-	acosh = () : Decimal => acosh(this);
-	tan = () : Decimal => tan(this);
-	atan = () : Decimal => atan(this);
-	static atan2 = (y: number | string | Decimal, x: number | string | Decimal) : Decimal => atan2(y, x);
-	tanh = () : Decimal => tanh(this);
-	atanh = () : Decimal => atanh(this);
+	sin = () : Decimal => this.execute(() => sin(this));
+	asin = () : Decimal => this.execute(() => asin(this));
+	sinh = () : Decimal => this.execute(() => sinh(this));
+	asinh = () : Decimal => this.execute(() => asinh(this));
+	cos = () : Decimal => this.execute(() => cos(this));
+	acos = () : Decimal => this.execute(() => acos(this));
+	cosh = () : Decimal => this.execute(() => cosh(this));
+	acosh = () : Decimal => this.execute(() => acosh(this));
+	tan = () : Decimal => this.execute(() => tan(this));
+	atan = () : Decimal => this.execute(() => atan(this));
+	static atan2(y: number | string | Decimal, x: number | string | Decimal) : Decimal
+	{
+		return Decimal.runWithContext(this, () => atan2(y, x));
+	}
+	tanh = () : Decimal => this.execute(() => tanh(this));
+	atanh = () : Decimal => this.execute(() => atanh(this));
 
 	// to/output methods
-	toString = () : string => toString(this);
-	toValue = () : string => toValue(this);
-	toFixed = (dp ?: number, rm ?: number) : string => toFixed(this, dp, rm);
-	toNumber = () : number => toNumber(this);
-	toDP = (dp ?: number, rm ?: number) : Decimal => toDP(this, dp, rm);
-	toSD = (sd ?: number, rm ?: number) : Decimal => toSignificantDigits(this, sd, rm);
-	toExponential = (dp ?: number, rm ?: number) : string => toExponential(this, dp, rm);
-	toPrecision = (sd ?: number, rm ?: number) => toPrecision(this, sd, rm)
-	toFraction = (denominator ?: number | string | Decimal) => toFraction(this, denominator);
+	toString = () : string => this.execute(() => toString(this));
+	toValue = () : string => this.execute(() => toValue(this));
+	toFixed = (dp ?: number, rm ?: number) : string => this.execute(() => toFixed(this, dp, rm));
+	toNumber = () : number => this.execute(() => toNumber(this));
+	toDP = (dp ?: number, rm ?: number) : Decimal => this.execute(() => toDP(this, dp, rm));
+	toSD = (sd ?: number, rm ?: number) : Decimal => this.execute(() => toSignificantDigits(this, sd, rm));
+	toExponential = (dp ?: number, rm ?: number) : string => this.execute(() => toExponential(this, dp, rm));
+	toPrecision = (sd ?: number, rm ?: number) : string => this.execute(() => toPrecision(this, sd, rm))
+	toFraction = (denominator ?: number | string | Decimal) : Decimal[] => this.execute(() => toFraction(this, denominator));
 
 
-	private static setConfig(config: any)
+	private execute<T>(operation: () => T) : T
+	{
+		return Decimal.runWithContext(this.constructor as typeof Decimal, operation);
+	}
+
+	private static runWithContext<T>(Constructor: typeof Decimal, operation: () => T) : T
+	{
+		if (Decimal._activeConstructor === Constructor)
+		{
+			return operation();
+		}
+
+		const previousConstructor = Decimal._activeConstructor,
+			previousConfig = Decimal._config,
+			previousExternal = Decimal.external,
+			previousQuadrant = Decimal.quadrant,
+			targetConfig = Constructor._config,
+			targetConfigSnapshot = { ...targetConfig };
+
+		Decimal._activeConstructor = Constructor;
+		Decimal._config = targetConfig;
+		Decimal.external = true;
+		Decimal.quadrant = undefined;
+
+		try
+		{
+			return operation();
+		}
+		finally
+		{
+			Object.assign(targetConfig, targetConfigSnapshot);
+			Decimal._config = previousConfig;
+			Decimal.external = previousExternal;
+			Decimal.quadrant = previousQuadrant;
+			Decimal._activeConstructor = previousConstructor;
+		}
+	}
+
+	private static setConfig(config: Partial<DecimalConfig>)
 	{
 		if (!config || typeof config !== 'object')
 		{
 			throw Error('[DecimalError] Object expected');
 		}
 
-		let i, p, v,
-			ps = [
-				'precision', 1, Decimal.params.MAX_DIGITS,
-				'rounding', 0, 8,
-				'toExpNeg', -Decimal.params.EXP_LIMIT, 0,
-				'toExpPos', 0, Decimal.params.EXP_LIMIT,
-				'maxE', 0, Decimal.params.EXP_LIMIT,
-				'minE', -Decimal.params.EXP_LIMIT, 0,
-				'modulo', 0, 9
-			];
+		const ranges : Record<keyof DecimalConfig, readonly [number, number]> = {
+			precision: [1, Decimal.params.MAX_DIGITS],
+			rounding: [0, 8],
+			toExpNeg: [-Decimal.params.EXP_LIMIT, 0],
+			toExpPos: [0, Decimal.params.EXP_LIMIT],
+			maxE: [0, Decimal.params.EXP_LIMIT],
+			minE: [-Decimal.params.EXP_LIMIT, 0],
+			modulo: [0, 9]
+		};
+		const updates : Partial<DecimalConfig> = {};
 
-		for (i = 0; i < ps.length; i += 3)
+		for (const p of Object.keys(ranges) as (keyof DecimalConfig)[])
 		{
-			if ((v = config[p = ps[i]]) !== void 0)
+			const v = config[p];
+
+			if (v !== void 0)
 			{
-				if (Math.floor(v) === v && v >= ps[i + 1] && v <= ps[i + 2])
+				const [min, max] = ranges[p];
+
+				if (Math.floor(v) === v && v >= min && v <= max)
 				{
-					this._config[p] = v;
+					(updates as Record<string, number>)[p] = v;
 				}
 				else
 				{
@@ -251,5 +328,7 @@ export class Decimal
 				}
 			}
 		}
+
+		Object.assign(this._config, updates);
 	}
 }
