@@ -1,10 +1,10 @@
-import { Decimal } from '#dist/Decimal.js';
+import { Decimal } from '../../../Decimal.ts';
 
 function test(cases)
 {
 	for(var i = 0; i < cases.length; i++)
 	{
-		var testCase = cases[i];
+		let testCase = cases[i];
 
 		it('should fixed ' + testCase[1] + ' equal ' + testCase[0], function() {
 			expect(new Decimal(testCase[1]).toFixed(testCase[2])).toEqual(testCase[0]);
@@ -17,7 +17,7 @@ function testException(cases)
 {
 	for(var i = 0; i < cases.length; i++)
 	{
-		var testCase = cases[i];
+		let testCase = cases[i];
 
 		it('should throw exception for ' + testCase[1], function() {
 			expect( testCase[0] ).toThrow();

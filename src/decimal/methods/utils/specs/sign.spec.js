@@ -1,10 +1,10 @@
-import { Decimal } from '#dist/Decimal.js';
+import { Decimal } from '../../../Decimal.ts';
 
 function test(cases)
 {
 	for(var i = 0; i < cases.length; i++)
 	{
-		var testCase = cases[i];
+		let testCase = cases[i];
 
 		it('should sign of ' + testCase[0] + ' equal ' + testCase[1], function() {
 			expect(new Decimal(testCase[0]).sign()).toEqual(testCase[1]);
@@ -25,11 +25,6 @@ describe("Neutrium Decimal sign Tests", function() {
 			['Infinity', 1],
 			['-Infinity', -1],
 
-			[1 / new Decimal('0').sign(), Infinity],
-			[1 / new Decimal(new Decimal('0')).sign(), Infinity],
-			[1 / new Decimal('-0').sign(), -Infinity],
-			[1 / new Decimal(new Decimal('-0')).sign(), -Infinity],
-
 			['0', 0],
 			['-0', -0],
 			['1', 1],
@@ -39,6 +34,13 @@ describe("Neutrium Decimal sign Tests", function() {
 		];
 
 		test(cases);
+
+		it('should preserve the sign of zero', function() {
+			expect(1 / new Decimal('0').sign()).toEqual(Infinity);
+			expect(1 / new Decimal(new Decimal('0')).sign()).toEqual(Infinity);
+			expect(1 / new Decimal('-0').sign()).toEqual(-Infinity);
+			expect(1 / new Decimal(new Decimal('-0')).sign()).toEqual(-Infinity);
+		});
 	});
 
 });

@@ -1,4 +1,4 @@
-import { Decimal } from '#dist/Decimal.js';
+import { Decimal } from '../../../Decimal.ts';
 
 
 function test(test)
@@ -286,5 +286,22 @@ describe("Neutrium Decimal is X Tests", function() {
 		test(!new Decimal('0.999999999999999999999').isInt());
 		test(new Decimal('4e4').isInt());
 		test(new Decimal('-4e4').isInt());
+	});
+
+	describe("parity", function() {
+		it("identifies parity only for finite integers", function() {
+			expect(new Decimal(0).isEven()).toBe(true);
+			expect(new Decimal(2).isEven()).toBe(true);
+			expect(new Decimal('1e7').isEven()).toBe(true);
+			expect(new Decimal(3).isOdd()).toBe(true);
+			expect(new Decimal('10000001').isOdd()).toBe(true);
+
+			for (const value of ['1.5', '1.0000001', 'NaN', 'Infinity', '-Infinity']) {
+				const n = new Decimal(value);
+
+				expect(n.isOdd()).toBe(false);
+				expect(n.isEven()).toBe(false);
+			}
+		});
 	});
 });

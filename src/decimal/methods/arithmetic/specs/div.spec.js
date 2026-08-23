@@ -1,10 +1,10 @@
-import { Decimal } from '#dist/Decimal.js';
+import { Decimal } from '../../../Decimal.ts';
 
 function testNegZero(cases)
 {
 	for(var i = 0; i < cases.length; i++)
 	{
-		var testCase = cases[i],
+		let testCase = cases[i],
 			quotient = new Decimal(testCase[1]).div(testCase[2]);
 
 		it('should divide ' + testCase[1] + ' by ' + testCase[2] + ' to give ' + testCase[0], function() {
@@ -17,7 +17,7 @@ function test(cases)
 {
 	for(var i = 0; i < cases.length; i++)
 	{
-		var testCase = cases[i];
+		let testCase = cases[i];
 
 		if(testCase.length === 3)
 		{

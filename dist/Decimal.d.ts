@@ -85,6 +85,6 @@ export declare class Decimal {
     toSD: (sd?: number, rm?: number) => Decimal;
     toExponential: (dp?: number, rm?: number) => string;
     toPrecision: (sd?: number, rm?: number) => string;
-    toFraction: (denominator: number | string | Decimal) => Decimal[];
+    toFraction: (denominator?: number | string | Decimal) => Decimal[];
     private static setConfig;
 }

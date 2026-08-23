@@ -1,10 +1,10 @@
-import { Decimal } from '#dist/Decimal.js';
+import { Decimal } from '../../../Decimal.ts';
 
 function test(cases)
 {
 	for(var i = 0; i < cases.length; i++)
 	{
-		var testCase = cases[i];
+		let testCase = cases[i];
 
 		it('should toSD of ' + testCase[1] + ' equal ' + testCase[0], function() {
 			expect(new Decimal(testCase[1]).toSD(testCase[2], testCase[3]).toValue()).toEqual(testCase[0]);
@@ -17,7 +17,7 @@ function testException(cases)
 {
 	for(var i = 0; i < cases.length; i++)
 	{
-		var testCase = cases[i];
+		let testCase = cases[i];
 
 		it('should throw exception for ' + testCase[1], function() {
 			expect( testCase[0] ).toThrow();
@@ -112,6 +112,7 @@ describe("Neutrium Decimal toSD Tests", function() {
 
 	describe("rounding = 8", function() {
 		beforeEach(function() {
+			Decimal.precision = 5;
 			Decimal.rounding = 8;
 		});
 

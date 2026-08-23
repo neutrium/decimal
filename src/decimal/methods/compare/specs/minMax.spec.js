@@ -1,4 +1,4 @@
-import { Decimal } from '#dist/Decimal.js';
+import { Decimal } from '../../../Decimal.ts';
 
 
 function test(cases)

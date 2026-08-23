@@ -35,9 +35,11 @@
 		"tsc": "tsc",
 		"build": "npm run tsc",
 		"prepublish": "npm run clean && npm run build",
-		"test": "jasmine"
+		"test": "vitest run",
+		"test:watch": "vitest"
 	},
 	"devDependencies": {
-		"jasmine": "^5.5.0"
+		"typescript": "^5.9.2",
+		"vitest": "^4.1.11"
 	}
 }

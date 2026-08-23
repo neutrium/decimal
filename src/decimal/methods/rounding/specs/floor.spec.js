@@ -1,10 +1,10 @@
-import { Decimal } from '#dist/Decimal.js';
+import { Decimal } from '../../../Decimal.ts';
 
 function test(cases)
 {
 	for(var i = 0; i < cases.length; i++)
 	{
-		var testCase = cases[i];
+		let testCase = cases[i];
 
 		if(testCase.length === 2)
 		{
@@ -133,8 +133,10 @@ describe("Neutrium Decimal floor() Tests", function() {
 
 	describe("exponential tests", function() {
 		beforeEach(function() {
-			Decimal.toExpNeg = -100;
-			Decimal.toExpPos = 100;
+			Decimal.config = {
+				toExpNeg: -100,
+				toExpPos: 100
+			};
 		});
 
 		var cases = [

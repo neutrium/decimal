@@ -3,7 +3,7 @@ export function checkOverflow(x) {
     if (Decimal.external) {
         const config = Decimal.config;
         // Overflow?
-        if (x.e > config.maxE) // Should be the config
+        if (x.e > config.maxE) // Overflow
          {
             // Infinity.
             x.d = null;

@@ -1,10 +1,10 @@
-import { Decimal } from '#dist/Decimal.js';
+import { Decimal } from '../../../Decimal.ts';
 
 function test(cases)
 {
 	for(var i = 0; i < cases.length; i++)
 	{
-		var testCase = cases[i];
+		let testCase = cases[i];
 
 		it('should toNumber of ' + testCase[0] + ' equal ' + testCase[1], function() {
 			expect(new Decimal(testCase[0]).toNumber()).toEqual(testCase[1]);
@@ -33,7 +33,7 @@ describe("Neutrium Decimal toNearest Tests", function() {
 
 		for(var i = 0; i < cases.length; i++)
 		{
-			var testCase = cases[i];
+			let testCase = cases[i];
 
 			it('should toNumber of 1/' + testCase + ' equal Infinity', function() {
 				expect(1/ new Decimal(testCase).toNumber()).toEqual(Infinity);
@@ -49,7 +49,7 @@ describe("Neutrium Decimal toNearest Tests", function() {
 
 		for(var i = 0; i < cases.length; i++)
 		{
-			var testCase = cases[i];
+			let testCase = cases[i];
 			it('should to Number of 1/' + testCase + ' equal -Infinity', function() {
 				expect(1/ new Decimal(testCase).toNumber()).toEqual(-Infinity);
 			});

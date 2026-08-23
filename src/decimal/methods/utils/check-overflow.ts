@@ -7,13 +7,13 @@ export function checkOverflow(x: Decimal) : Decimal
 		const config = Decimal.config;
 
 		// Overflow?
-		if (x.e > config.maxE)	// Should be the config
+		if (x.e > config.maxE)			// Overflow
 		{
 			// Infinity.
 			x.d = null;
 			x.e = NaN;
 		}
-		else if (x.e < config.minE)    // Underflow?
+		else if (x.e < config.minE)		// Underflow?
 		{
 			// Zero.
 			x.e = 0;
