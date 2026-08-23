@@ -1,4 +1,4 @@
-import { Decimal } from '../../Decimal.js'
+import { Decimal, type DecimalValue } from '../../Decimal.js'
 import { finalise } from '../utils/finalise.js'
 import { naturalExponential } from '../exponential/exponential.js'
 import { naturalLogarithm } from '../exponential/ln.js'
@@ -45,7 +45,7 @@ import { truncate } from '../rounding/truncate.js'
 //
 // If a result is incorrectly rounded the maximum error will be 1 ulp (unit in last place).
 //
-export function pow(x: Decimal, yy : number | string | Decimal) : Decimal
+export function pow(x: Decimal, yy : DecimalValue) : Decimal
 {
 	let e, k, pr, r, rm, sign, yIsInt,
 		y = new Decimal(yy),
@@ -62,7 +62,7 @@ export function pow(x: Decimal, yy : number | string | Decimal) : Decimal
 	if (x.eq(1)) return x;
 
 	pr = Decimal.precision;
-	rm = Decimal.rounding;
+	rm = Decimal.roundingCode;
 
 	if (y.eq(1))
 	{
@@ -87,7 +87,7 @@ export function pow(x: Decimal, yy : number | string | Decimal) : Decimal
 	}
 
 	// Result is negative if x is negative and the last digit of integer y is odd.
-	sign = sign < 0 && y.d[Math.max(e, k)] & 1 ? -1 : 1;
+	sign = sign < 0 && y.d![Math.max(e, k)]! & 1 ? -1 : 1;
 
 	// Estimate result exponent.
 	// x^y = 10^e,  where e = y * log10(x)
@@ -104,7 +104,7 @@ export function pow(x: Decimal, yy : number | string | Decimal) : Decimal
 	if (e > Decimal.params.EXP_LIMIT + 1 || e < -Decimal.params.EXP_LIMIT - 1) return new Decimal(e > 0 ? sign / 0 : 0);
 
 	Decimal.external = false;
-	Decimal.rounding = x.s = 1;
+	Decimal.roundingCode = x.s = 1;
 
 	// Estimate the extra guard digits needed to ensure five correct rounding digits from
 	// naturalLogarithm(x). Example of failure without these extra digits (precision: 10):
@@ -120,7 +120,7 @@ export function pow(x: Decimal, yy : number | string | Decimal) : Decimal
 
 	// If the rounding digits are [49]9999 or [50]0000 increase the precision by 10 and recalculate
 	// the result.
-	if (checkRoundingDigits(r.d, pr, rm))
+	if (checkRoundingDigits(r.d!, pr, rm))
 	{
 		e = pr + 10;
 
@@ -137,7 +137,7 @@ export function pow(x: Decimal, yy : number | string | Decimal) : Decimal
 	r.s = sign;
 
 	Decimal.external = true;
-	Decimal.rounding = rm;
+	Decimal.roundingCode = rm;
 
 	return finalise(r, pr, rm);
 }
@@ -174,7 +174,7 @@ function intPow(x : Decimal, n : number, pr : number) : Decimal
 		{
 			// To ensure correct rounding when r.d is truncated, increment the last word if it is zero.
 			n = r.d!.length - 1;
-			if (isTruncated && r.d![n] === 0) ++r.d![n];
+			if (isTruncated && r.d![n] === 0) r.d![n] = r.d![n]! + 1;
 			break;
 		}
 

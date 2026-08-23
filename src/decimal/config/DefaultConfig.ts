@@ -1,12 +1,12 @@
-import { DecimalConfig } from "./DecimalConfig.js"
+import type { DecimalConfig } from "./DecimalConfig.js"
 import { DecimalParams } from "../DecimalParameters.js";
 
 export const DefaultDecimalConfig:  DecimalConfig = {
 	'precision': 20,
-	'rounding': 4,
+	'rounding': 'half-up',
 	'toExpNeg': -7,
 	'toExpPos': 21,
 	'maxE':  DecimalParams.EXP_LIMIT,
 	'minE':  -DecimalParams.EXP_LIMIT,
-	'modulo': 1
+	'modulo': 'down'
 }

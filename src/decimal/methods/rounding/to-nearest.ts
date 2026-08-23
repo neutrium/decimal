@@ -1,4 +1,5 @@
-import { Decimal } from "../../Decimal.js";
+import { Decimal, type DecimalValue } from "../../Decimal.js";
+import type { RoundingCode } from "../../config/RoundingModes.js";
 import { checkInt32 } from "../utils/check-int.js";
 import { divide } from "../arithmetic/div.js";
 import { finalise } from '../utils/finalise.js'
@@ -18,13 +19,13 @@ import { finalise } from '../utils/finalise.js'
 //
 // The return value is not affected by the value of `precision`.
 //
-// y {number|string|Decimal} The magnitude to round to a multiple of.
+// y {DecimalValue} The magnitude to round to a multiple of.
 // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
 //
 // 'toNearest() rounding mode not an integer: {rm}'
 // 'toNearest() rounding mode out of range: {rm}'
 //
-export function toNearest(x: Decimal, yy : number | string | Decimal, rm : number = Decimal.config.rounding) : Decimal
+export function toNearest(x: Decimal, yy : DecimalValue, rm : RoundingCode = Decimal.roundingCode) : Decimal
 {
 	let y : Decimal;
 
@@ -55,7 +56,10 @@ export function toNearest(x: Decimal, yy : number | string | Decimal, rm : numbe
 	if (y.d !== null && y.d[0])
 	{
 		Decimal.external = false;
-		if (rm < 4) rm = [4, 5, 7, 8][rm];
+		if (rm === 0) rm = 4;
+		else if (rm === 1) rm = 5;
+		else if (rm === 2) rm = 7;
+		else if (rm === 3) rm = 8;
 		x = divide(x, y, 0, rm, 1).mul(y);
 
 		Decimal.external = true;

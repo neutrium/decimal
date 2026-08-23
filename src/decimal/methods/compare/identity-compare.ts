@@ -54,7 +54,7 @@ export function isOdd(n : Decimal) : boolean
 	const d = n.d;
 
 	return !!d && isInt(n) && Math.floor(n.e / Decimal.params.LOG_BASE) === d.length - 1 &&
-		(d[d.length - 1] & 1) === 1;
+		(d[d.length - 1]! & 1) === 1;
 }
 
 export function isEven(n : Decimal) : boolean
@@ -62,5 +62,5 @@ export function isEven(n : Decimal) : boolean
 	const d = n.d;
 
 	return !!d && isInt(n) && (Math.floor(n.e / Decimal.params.LOG_BASE) > d.length - 1 ||
-		(d[d.length - 1] & 1) === 0);
+		(d[d.length - 1]! & 1) === 0);
 }

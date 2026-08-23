@@ -1,4 +1,5 @@
 import { Decimal } from "../../Decimal.js";
+import type { RoundingCode } from "../../config/RoundingModes.js";
 import { checkInt32 } from "../utils/check-int.js";
 import { finalise } from "../utils/finalise.js";
 
@@ -15,7 +16,7 @@ import { finalise } from "../utils/finalise.js";
 // 'toSD() rounding mode not an integer: {rm}'
 // 'toSD() rounding mode out of range: {rm}'
 //
-export function toSignificantDigits(x: Decimal, sd : number = Decimal.precision, rm : number = Decimal.rounding) : Decimal
+export function toSignificantDigits(x: Decimal, sd : number = Decimal.precision, rm : RoundingCode = Decimal.roundingCode) : Decimal
 {
 	checkInt32(sd, 1, Decimal.params.MAX_DIGITS);
 	checkInt32(rm, 0, 8);

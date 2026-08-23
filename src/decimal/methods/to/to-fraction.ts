@@ -1,4 +1,4 @@
-import { Decimal } from "../../Decimal.js";
+import { Decimal, type DecimalFraction, type DecimalValue } from "../../Decimal.js";
 import { divide } from "../arithmetic/div.js";
 import { digitsToString } from "../utils/digits-to-string.js";
 import { getPrecision } from "../utils/get-precision.js"
@@ -11,9 +11,9 @@ import { getPrecision } from "../utils/get-precision.js"
 // denominator. If a maximum denominator is not specified, the denominator will be the lowest
 // value necessary to represent the number exactly.
 //
-// [maxD] {number|string|Decimal} Maximum denominator. Integer >= 1 and < Infinity.
+// [maxD] {DecimalValue} Maximum denominator. Integer >= 1 and < Infinity.
 //
-export function toFraction(x: Decimal, denominator ?: number | string | Decimal) : Decimal[]
+export function toFraction(x: Decimal, denominator ?: DecimalValue) : DecimalFraction
 {
 	let d0, d1, d2, k, n, n0, n1, pr, q, r,
 		xd = x.d,
@@ -87,5 +87,5 @@ export function toFraction(x: Decimal, denominator ?: number | string | Decimal)
 	Decimal.precision = pr;
 	Decimal.external = true;
 
-	return r;
+	return r as [Decimal, Decimal];
 }

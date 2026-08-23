@@ -1,4 +1,4 @@
-import { Decimal } from "../../Decimal.js";
+import { Decimal, type DecimalValue } from "../../Decimal.js";
 import { finalise } from "../utils/finalise.js";
 import { getBase10Exponent } from "../exponential/get-base-10-exponent.js";
 
@@ -22,7 +22,7 @@ import { getBase10Exponent } from "../exponential/get-base-10-exponent.js";
 //  I + N = N
 //  I + I = I
 //
-export function add(x: Decimal, yy : number | string | Decimal) : Decimal
+export function add(x: Decimal, yy : DecimalValue) : Decimal
 {
 	let carry, d, e, i, k, len, pr, rm, xd, yd,
 		y = new Decimal(yy);
@@ -52,7 +52,7 @@ export function add(x: Decimal, yy : number | string | Decimal) : Decimal
 	xd = x.d;
 	yd = y.d;
 	pr = Decimal.precision;
-	rm = Decimal.rounding;
+	rm = Decimal.roundingCode;
 
 	// If either is zero...
 	if (!xd[0] || !yd[0])
@@ -121,8 +121,9 @@ export function add(x: Decimal, yy : number | string | Decimal) : Decimal
 	// Only start adding at yd.length - 1 as the further digits of xd can be left as they are.
 	for (carry = 0; i;)
 	{
-		carry = (xd[--i] = xd[i] + yd[i] + carry) / Decimal.params.BASE | 0;
-		xd[i] %= Decimal.params.BASE;
+		--i;
+		carry = (xd[i] = xd[i]! + yd[i]! + carry) / Decimal.params.BASE | 0;
+		xd[i] = xd[i]! % Decimal.params.BASE;
 	}
 
 	if (carry)

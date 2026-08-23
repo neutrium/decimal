@@ -1,4 +1,4 @@
-import { Decimal } from '../../Decimal.js';
+import { Decimal, type DecimalValue } from '../../Decimal.js';
 import { DecimalParams } from '../../DecimalParameters.js';
 import { finalise } from '../utils/finalise.js';
 import { getBase10Exponent } from "../exponential/get-base-10-exponent.js"
@@ -22,7 +22,7 @@ import { getBase10Exponent } from "../exponential/get-base-10-exponent.js"
 //  I - N = N
 //  I - I = N
 //
-export function sub(x: Decimal, yy : number | string | Decimal) : Decimal
+export function sub(x: Decimal, yy : DecimalValue) : Decimal
 {
 	let d, e, i, j, k, len, pr, rm, xd, xe, xLTy, yd,
 		y = new Decimal(yy),
@@ -56,7 +56,7 @@ export function sub(x: Decimal, yy : number | string | Decimal) : Decimal
 	xd = x.d;
 	yd = y.d;
 	pr = Decimal.precision;
-	rm = Decimal.rounding;
+	rm = Decimal.roundingCode;
 
 	// If either is zero...
 	if (!xd[0] || !yd[0])
@@ -137,7 +137,7 @@ export function sub(x: Decimal, yy : number | string | Decimal) : Decimal
 		{
 			if (xd[i] != yd[i])
 			{
-				xLTy = xd[i] < yd[i];
+				xLTy = xd[i]! < yd[i]!;
 				break;
 			}
 		}
@@ -163,14 +163,15 @@ export function sub(x: Decimal, yy : number | string | Decimal) : Decimal
 	for (i = yd.length; i > k;)
 	{
 
-		if (xd[--i] < yd[i])
+		--i;
+		if (xd[i]! < yd[i]!)
 		{
 			for (j = i; j && xd[--j] === 0;) xd[j] = BASE - 1;
-			--xd[j];
-			xd[i] += BASE;
+			xd[j]!--;
+			xd[i] = xd[i]! + BASE;
 		}
 
-		xd[i] -= yd[i];
+		xd[i] = xd[i]! - yd[i]!;
 	}
 
 	// Remove trailing zeros.

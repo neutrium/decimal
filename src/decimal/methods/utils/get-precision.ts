@@ -5,7 +5,7 @@ export function getPrecision(digits : number[]) : number
 	let w = digits.length - 1,
 	len = w * Decimal.params.LOG_BASE + 1;
 
-	w = digits[w];
+	w = digits[w]!;
 
 	// If non-zero...
 	if (w)
@@ -14,7 +14,7 @@ export function getPrecision(digits : number[]) : number
 		for (; w % 10 == 0; w /= 10) len--;
 
 		// Add the number of digits of the first word.
-		for (w = digits[0]; w >= 10; w /= 10) len++;
+		for (w = digits[0]!; w >= 10; w /= 10) len++;
 	}
 
 	return len;

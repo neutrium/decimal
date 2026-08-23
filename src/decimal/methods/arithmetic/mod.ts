@@ -1,4 +1,4 @@
-import { Decimal } from '../../Decimal.js'
+import { Decimal, type DecimalValue } from '../../Decimal.js'
 import { finalise } from '../utils/finalise.js';
 import { divide } from './div.js';
 
@@ -24,7 +24,7 @@ import { divide } from './div.js';
 //   I % N =  N
 //   I % I =  N
 //
-export function mod(x: Decimal, yy : number | string | Decimal) : Decimal
+export function mod(x: Decimal, yy : DecimalValue) : Decimal
 {
 	let q,
 		y = new Decimal(yy),
@@ -39,13 +39,13 @@ export function mod(x: Decimal, yy : number | string | Decimal) : Decimal
 	// Return x if y is ±Infinity or x is ±0.
 	if (!y.d || x.d && !x.d[0])
 	{
-		return finalise(new Decimal(x), config.precision, config.rounding);
+		return finalise(new Decimal(x), config.precision, Decimal.roundingCode);
 	}
 
 	// Prevent rounding of intermediate calculations.
 	Decimal.external = false;
 
-	if (config.modulo == 9)
+	if (Decimal.moduloCode == 9)
 	{
 		// Euclidian division: q = sign(y) * floor(x / abs(y))
 		// result = x - q * y    where  0 <= result < abs(y)
@@ -54,7 +54,7 @@ export function mod(x: Decimal, yy : number | string | Decimal) : Decimal
 	}
 	else
 	{
-		q = divide(x, y, 0, config.modulo, 1);
+		q = divide(x, y, 0, Decimal.moduloCode, 1);
 	}
 
 	q = q.mul(y);

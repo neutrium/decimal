@@ -1,10 +1,11 @@
-import { Decimal } from "../../Decimal.js";
+import { Decimal, type DecimalValue } from "../../Decimal.js";
+import type { RoundingCode } from "../../config/RoundingModes.js";
 import { finalise } from "../utils/finalise.js";
 //
 // Return a new Decimal whose value is the value of `x` divided by `y`, rounded to
 // `precision` significant digits using rounding mode `rounding`.
 //
-export function div(x: Decimal, y : string | number | Decimal) : Decimal
+export function div(x: Decimal, y : DecimalValue) : Decimal
 {
 	return divide(x, new Decimal(y));
 }
@@ -13,17 +14,17 @@ export function div(x: Decimal, y : string | number | Decimal) : Decimal
 // Return a new Decimal whose value is the integer part of dividing the value of x
 // by the value of `y`, rounded to `precision` significant digits using rounding mode `rounding`.
 //
-export function divToInt(x: Decimal, y : string | number | Decimal) : Decimal
+export function divToInt(x: Decimal, y : DecimalValue) : Decimal
 {
 	const config = Decimal.config;
 
-	return finalise(divide(x, new Decimal(y), 0, 1, 1), config.precision, config.rounding);
+	return finalise(divide(x, new Decimal(y), 0, 1, 1), config.precision, Decimal.roundingCode);
 }
 
 //
 // Perform division in the specified base.
 //
-export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp? : number, base? : number) : Decimal
+export function divide(x : Decimal, y : Decimal, pr? : number, rm? : RoundingCode, dp? : number, base? : number) : Decimal
 {
 	const config = Decimal.config;
 	// Set defaults where optional parameters not provided
@@ -37,7 +38,7 @@ export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp?
 
 		for (x = x.slice(); i--;)
 		{
-			temp = x[i] * k + carry;
+			temp = x[i]! * k + carry;
 			x[i] = temp % base | 0;
 			carry = temp / base | 0;
 		}
@@ -47,7 +48,7 @@ export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp?
 		return x;
 	}
 
-	function compare(a : number[], b : number[], aL : number, bL : number) : number
+	function compare(a : readonly (number | undefined)[], b : readonly (number | undefined)[], aL : number, bL : number) : number
 	{
 		let i, r;
 
@@ -59,9 +60,9 @@ export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp?
 		{
 			for (i = r = 0; i < aL; i++)
 			{
-				if (a[i] != b[i])
+				if (a[i]! != b[i]!)
 				{
-					r = a[i] > b[i] ? 1 : -1;
+					r = a[i]! > b[i]! ? 1 : -1;
 					break;
 				}
 			}
@@ -70,27 +71,30 @@ export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp?
 		return r;
 	}
 
-	function subtract(a : number[], b : number[], aL : number, base : number) : void
+	function subtract(a : number[], b : readonly (number | undefined)[], aL : number, base : number) : void
 	{
 		let i = 0;
 
 		// Subtract b from a.
 		for (; aL--;)
 		{
-			a[aL] -= i;
-			i = a[aL] < b[aL] ? 1 : 0;
-			a[aL] = i * base + a[aL] - b[aL];
+			a[aL] = a[aL]! - i;
+			i = a[aL]! < b[aL]! ? 1 : 0;
+			a[aL] = i * base + a[aL]! - b[aL]!;
 		}
 
 		// Remove leading zeros.
 		for (; !a[0] && a.length > 1;) a.shift();
 	}
 
-	let cmp, e, i, k, logBase, more, prod, prodL, q, qd, rem, remL, rem0, sd, t, xi, xL, yd0,
+	let cmp, e, i, k, logBase, more, prodL, q, remL, rem0, sd, t, xi, xL, yd0,
 		yL, yz,
 		sign = x.s == y.s ? 1 : -1,
 		xd = x.d,
 		yd = y.d;
+	let prod: number[];
+	let qd: number[];
+	let rem: (number | undefined)[];
 
 	// Either NaN, Infinity or 0?
 	if (!xd || !xd[0] || !yd || !yd[0])
@@ -117,18 +121,19 @@ export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp?
 	yL = yd.length;
 	xL = xd.length;
 	q = new Decimal(sign);
-	qd = q.d = [];
+	qd = [];
+	q.d = qd;
 
 	// Result exponent may be one less than e.
 	// The digit array of a Decimal from toStringBinary may have trailing zeros.
 	for (i = 0; yd[i] == (xd[i] || 0); i++);
 
-	if (yd[i] > (xd[i] || 0)) e--;
+	if (yd[i]! > (xd[i] || 0)) e--;
 
 	if (pr == null)
 	{
 		sd = pr = config.precision;
-		rm = config.rounding;
+		rm = Decimal.roundingCode;
 	}
 	else if (dp)
 	{
@@ -153,7 +158,7 @@ export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp?
 		// divisor < 1e7
 		if (yL == 1)
 		{
-			let yd0 = yd[0];
+			const yd0 = yd[0]!;
 			k = 0;
 			sd++;
 
@@ -172,7 +177,7 @@ export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp?
 		else
 		{
 			// Normalise xd and yd so highest order digit of yd is >= base/2
-			k = base / (yd[0] + 1) | 0;
+			k = base / (yd[0]! + 1) | 0;
 
 			if (k > 1)
 			{
@@ -191,9 +196,9 @@ export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp?
 
 			yz = yd.slice();
 			yz.unshift(0);
-			yd0 = yd[0];
+			yd0 = yd[0]!;
 
-			if (yd[1] >= base / 2) ++yd0;
+			if (yd[1]! >= base / 2) ++yd0;
 
 			do
 			{
@@ -206,7 +211,7 @@ export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp?
 				if (cmp < 0)
 				{
 					// Calculate trial digit, k.
-					rem0 = rem[0];
+					rem0 = rem[0]!;
 					if (yL != remL) rem0 = rem0 * base + (rem[1] || 0);
 
 					// k will be how many times the divisor goes into the current remainder.
@@ -254,7 +259,7 @@ export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp?
 					if (prodL < remL) prod.unshift(0);
 
 					// Subtract product from remainder.
-					subtract(rem, prod, remL, base);
+					subtract(rem as number[], prod, remL, base);
 
 					// If product was < previous remainder.
 					if (cmp == -1)
@@ -270,7 +275,7 @@ export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp?
 							k++;
 
 							// Subtract divisor from remainder.
-							subtract(rem, yL < remL ? yz : yd, remL, base);
+						subtract(rem as number[], yL < remL ? yz : yd, remL, base);
 						}
 					}
 
@@ -314,10 +319,10 @@ export function divide(x : Decimal, y : Decimal, pr? : number, rm? : number, dp?
 	else
 	{
 		// To calculate q.e, first get the number of digits of qd[0].
-		for (i = 1, k = qd[0]; k >= 10; k /= 10) i++;
+		for (i = 1, k = qd[0]!; k >= 10; k /= 10) i++;
 		q.e = i + e * logBase - 1;
 
-		q = finalise(q, dp ? pr + q.e + 1 : pr, rm, more);
+		q = finalise(q, dp ? pr + q.e + 1 : pr, rm, Boolean(more));
 	}
 
 	return q;

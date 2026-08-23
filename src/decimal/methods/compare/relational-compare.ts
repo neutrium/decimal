@@ -1,4 +1,4 @@
-import { Decimal } from "../../Decimal.js";
+import { Decimal, type DecimalValue } from "../../Decimal.js";
 
 //
 // Return
@@ -7,7 +7,7 @@ import { Decimal } from "../../Decimal.js";
 //   0    if they have the same value,
 //   NaN  if the value of either Decimal is NaN.
 //
-export function cmp(x: Decimal, w : string | number | Decimal) : number
+export function cmp(x: Decimal, w : DecimalValue) : number
 {
 	let xdL, ydL,
 		xd = x.d,
@@ -41,7 +41,7 @@ export function cmp(x: Decimal, w : string | number | Decimal) : number
 	// Compare digit by digit.
 	for (let i = 0, j = xdL < ydL ? xdL : ydL; i < j; ++i)
 	{
-		if (xd[i] !== yd[i]) return xd[i] > yd[i] !== xs < 0 ? 1 : -1;
+		if (xd[i] !== yd[i]) return xd[i]! > yd[i]! !== xs < 0 ? 1 : -1;
 	}
 
 	// Compare lengths.
@@ -51,7 +51,7 @@ export function cmp(x: Decimal, w : string | number | Decimal) : number
 //
 // Return true if the value of `x` is equal to the value of `y`, otherwise return false.
 //
-export function eq(x: Decimal, y : string | number | Decimal) : boolean
+export function eq(x: Decimal, y : DecimalValue) : boolean
 {
 	return x.cmp(y) === 0;
 }
@@ -59,7 +59,7 @@ export function eq(x: Decimal, y : string | number | Decimal) : boolean
 //
 // Return true if the value of `x` is greater than the value of `y`, otherwise return false.
 //
-export function gt(x: Decimal, y : string | number | Decimal) : boolean
+export function gt(x: Decimal, y : DecimalValue) : boolean
 {
 	return x.cmp(y) > 0;
 }
@@ -68,7 +68,7 @@ export function gt(x: Decimal, y : string | number | Decimal) : boolean
 // Return true if the value of `x` is greater than or equal to the value of `y`,
 // otherwise return false.
 //
-export function gte(x: Decimal, y : string | number | Decimal) : boolean
+export function gte(x: Decimal, y : DecimalValue) : boolean
 {
 	let k = x.cmp(y);
 
@@ -78,7 +78,7 @@ export function gte(x: Decimal, y : string | number | Decimal) : boolean
 //
 // Return true if the value of `x` is less than `y`, otherwise return false.
 //
-export function lt(x: Decimal, y : string | number | Decimal) : boolean
+export function lt(x: Decimal, y : DecimalValue) : boolean
 {
 	return x.cmp(y) < 0;
 }
@@ -86,7 +86,7 @@ export function lt(x: Decimal, y : string | number | Decimal) : boolean
 //
 // Return true if the value of `x` is less than or equal to `y`, otherwise return false.
 //
-export function lte(x: Decimal, y : string | number | Decimal) : boolean
+export function lte(x: Decimal, y : DecimalValue) : boolean
 {
 	return x.cmp(y) < 1;
 }

@@ -5,3 +5,4 @@ export { div, divToInt } from "./div.js";
 export { mod } from "./mod.js";
 export { neg } from './neg.js';
 export { abs } from './abs.js';
+export { shift } from './shift.js';

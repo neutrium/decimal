@@ -1,4 +1,5 @@
 import { Decimal } from "../../Decimal.js";
+import type { RoundingCode } from "../../config/RoundingModes.js";
 import { checkInt32 } from "../utils/check-int.js";
 import { finalise } from "../utils/finalise.js";
 
@@ -11,7 +12,7 @@ import { finalise } from "../utils/finalise.js";
 // [dp] {number} Decimal places. Integer, 0 to MAX_DIGITS inclusive.
 // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
 //
-export function toDP(x: Decimal, dp ?: number, rm: number = Decimal.config.rounding) : Decimal
+export function toDP(x: Decimal, dp ?: number, rm: RoundingCode = Decimal.roundingCode) : Decimal
 {
 	if (dp === void 0)
 	{

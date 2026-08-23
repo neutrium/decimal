@@ -1,4 +1,4 @@
-import { Decimal } from "../../Decimal.js";
+import { Decimal, type DecimalValue } from "../../Decimal.js";
 import { finalise } from "../utils/finalise.js";
 import { divide } from "../arithmetic/div.js"
 import { sin, sinh } from "./sin.js";
@@ -30,16 +30,16 @@ export function tan(x: Decimal) : Decimal
 	}
 
 	const pr = Decimal.precision;
-	const rm = Decimal.rounding;
+	const rm = Decimal.roundingCode;
 	Decimal.precision = pr + 10;
-	Decimal.rounding = 1;
+	Decimal.roundingCode = 1;
 
 	x = sin(x);
 	x.s = 1;
 	x = divide(x, new Decimal(1).sub(x.mul(x)).sqrt(), pr + 10, 0);
 
 	Decimal.precision = pr;
-	Decimal.rounding = rm;
+	Decimal.roundingCode = rm;
 
 	return finalise(Decimal.quadrant == 2 || Decimal.quadrant == 4 ? x.neg() : x, pr, rm, true);
 }
@@ -64,7 +64,7 @@ export function atan(x: Decimal) : Decimal
 {
 	let i, j, k, n, px, t, r, wpr, x2;
 	const pr = Decimal.precision,
-			rm = Decimal.rounding;
+			rm = Decimal.roundingCode;
 
 	if (!x.isFinite())
 	{
@@ -93,7 +93,7 @@ export function atan(x: Decimal) : Decimal
 
 
 	Decimal.precision = wpr = pr + 10
-	Decimal.rounding = 1;
+	Decimal.roundingCode = 1;
 
 	// TODO? if (x >= 1 && pr <= PI_PRECISION) atan(x) = halfPi * x.s - atan(1 / x);
 
@@ -125,9 +125,9 @@ export function atan(x: Decimal) : Decimal
 		px = px.mul(x2);
 		r = t.add(px.div(n += 2));
 
-		if (r.d[j] !== void 0)
+		if (r.d![j] !== void 0)
 		{
-			for (i = j; r.d[i] === t.d[i] && i--;);
+			for (i = j; r.d![i] === t.d![i] && i--;);
 		}
 	}
 
@@ -138,7 +138,7 @@ export function atan(x: Decimal) : Decimal
 
 	Decimal.external = true;
 
-	return finalise(r, Decimal.precision = pr, Decimal.rounding = rm, true);
+	return finalise(r, Decimal.precision = pr, Decimal.roundingCode = rm, true);
 }
 
 //
@@ -148,8 +148,8 @@ export function atan(x: Decimal) : Decimal
 // Domain: [-Infinity, Infinity]
 // Range: [-pi, pi]
 //
-// y {number|string|Decimal} The y-coordinate.
-// x {number|string|Decimal} The x-coordinate.
+// y {DecimalValue} The y-coordinate.
+// x {DecimalValue} The x-coordinate.
 //
 // atan2(±0, -0)               = ±pi
 // atan2(±0, +0)               = ±0
@@ -165,12 +165,12 @@ export function atan(x: Decimal) : Decimal
 // atan2(NaN, x) = NaN
 // atan2(y, NaN) = NaN
 //
-export function atan2(yy : number | string | Decimal, xx : number | string | Decimal) :Decimal
+export function atan2(yy : DecimalValue, xx : DecimalValue) : Decimal
 {
 	let x = new Decimal(xx),
 		y = new Decimal(yy),
 	 	pr = Decimal.precision,
-		rm = Decimal.rounding,
+		rm = Decimal.roundingCode,
 		wpr = pr + 4,
 		r;
 
@@ -197,13 +197,13 @@ export function atan2(yy : number | string | Decimal, xx : number | string | Dec
 	else if (x.s < 0) // Both non-zero and finite
 	{
 		Decimal.precision = wpr;
-		Decimal.rounding = 1;
+		Decimal.roundingCode = 1;
 
 		r = atan(divide(y, x, wpr, 1));
 		x = getPi(wpr, 1);
 
 		Decimal.precision = pr;
-		Decimal.rounding = rm;
+		Decimal.roundingCode = rm;
 
 		r = y.s < 0 ? r.sub(x) : r.add(x);
 	}
@@ -242,11 +242,11 @@ export function tanh(x: Decimal) : Decimal
 	}
 
 	const pr = Decimal.precision;
-	const rm = Decimal.rounding;
+	const rm = Decimal.roundingCode;
 	Decimal.precision = pr + 7;
-	Decimal.rounding = 1;
+	Decimal.roundingCode = 1;
 
-	return divide(sinh(x), cosh(x), Decimal.precision = pr, Decimal.rounding = rm);
+	return divide(sinh(x), cosh(x), Decimal.precision = pr, Decimal.roundingCode = rm);
 }
 
 //
@@ -279,7 +279,7 @@ export function atanh(x: Decimal) : Decimal
 	}
 
 	const 	pr = Decimal.precision,
-			rm = Decimal.rounding,
+			rm = Decimal.roundingCode,
 			xsd = x.precision();
 
 	if (Math.max(xsd, pr) < 2 * -x.e - 1)
@@ -293,12 +293,12 @@ export function atanh(x: Decimal) : Decimal
 	x = divide(x.add(1), new Decimal(1).sub(x), wpr + pr, 1);
 
 	Decimal.precision = pr + 4;
-	Decimal.rounding = 1;
+	Decimal.roundingCode = 1;
 
 	x = x.ln();
 
 	Decimal.precision = pr;
-	Decimal.rounding = rm;
+	Decimal.roundingCode = rm;
 
 	return x.mul(0.5);
 }

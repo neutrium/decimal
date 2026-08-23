@@ -22,9 +22,9 @@ export function taylorSeries(n : number, x : Decimal, y : Decimal, isHyperbolic?
 		y = divide(t.mul(x2), new Decimal(n++ * n++), pr, 1);
 		t = u.add(y);
 
-		if (t.d[k] !== void 0)
+		if (t.d![k] !== void 0)
 		{
-			for (j = k; t.d[j] === u.d[j] && j--;);
+			for (j = k; t.d![j] === u.d![j] && j--;);
 
 			if (j == -1)
 			{
@@ -40,7 +40,7 @@ export function taylorSeries(n : number, x : Decimal, y : Decimal, isHyperbolic?
 	}
 
 	Decimal.external = true;
-	t.d.length = k + 1;
+	t.d!.length = k + 1;
 
 	return t;
 }

@@ -3,12 +3,22 @@
 	"version": "1.1.0",
 	"type": "module",
 	"exports": {
-		"." : "./dist/Decimal.js"
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
+		}
 	},
+	"files": [
+		"dist",
+		"src/decimal/**/*.ts",
+		"README.md",
+		"LICENSE"
+	],
 	"imports": {
 		"#dist/*.js": "./dist/*.js"
 	},
-	"typings": "dist/index",
+	"types": "./dist/index.d.ts",
 	"description": "The Neutrium Decimal library.",
 	"keywords": [
 		"neutrium",
@@ -16,11 +26,11 @@
 		"decimal",
 		"numbers"
 	],
-	"license": "CC-BY-4.0",
+	"license": "MIT",
 	"author": "Trevor Walker <trevorw@neutrium.net> (https://neutrium.net)",
 	"private": false,
 	"engines": {
-		"node": ">=0.10.0"
+		"node": ">=20.19.0"
 	},
 	"repository": {
 		"type": "git",
@@ -31,10 +41,16 @@
 	},
 	"dependencies": {},
 	"scripts": {
-		"clean": "rm -r ./dist/*",
+		"clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
 		"tsc": "tsc",
 		"build": "npm run tsc",
-		"prepublish": "npm run clean && npm run build",
+		"typecheck": "tsc --noEmit",
+		"test:types": "npm run build && tsc -p tsconfig.type-tests.json",
+		"test:declarations": "npm run build && tsc -p tsconfig.declarations.json",
+		"test:package": "npm run build && node scripts/validate-package.mjs",
+		"verify": "npm run typecheck && npm run test:types && npm run test:declarations && npm test && npm run test:package",
+		"prepack": "npm run clean && npm run build",
+		"prepublishOnly": "npm run verify",
 		"test": "vitest run",
 		"test:watch": "vitest"
 	},

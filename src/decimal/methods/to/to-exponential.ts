@@ -1,4 +1,5 @@
 import { Decimal } from "../../Decimal.js";
+import type { RoundingCode } from "../../config/RoundingModes.js";
 import { finiteToString } from "./finite-to-string.js";
 import { finalise } from "../utils/finalise.js";
 import { checkInt32 } from "../utils/check-int.js";
@@ -10,7 +11,7 @@ import { checkInt32 } from "../utils/check-int.js";
 // [dp] {number} Decimal places. Integer, 0 to MAX_DIGITS inclusive.
 // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
 //
-export function toExponential(x: Decimal, dp ?: number, rm ?: number) : string
+export function toExponential(x: Decimal, dp ?: number, rm ?: RoundingCode) : string
 {
 	let str;
 
@@ -24,7 +25,7 @@ export function toExponential(x: Decimal, dp ?: number, rm ?: number) : string
 
 		if (rm === void 0)
 		{
-			rm = Decimal.rounding;
+			rm = Decimal.roundingCode;
 		}
 		else
 		{

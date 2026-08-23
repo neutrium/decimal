@@ -1,4 +1,5 @@
 import { Decimal } from '../../Decimal.js';
+import type { RoundingCode } from '../../config/RoundingModes.js';
 import { checkOverflow } from '../utils/check-overflow.js'
 
 //
@@ -8,7 +9,7 @@ import { checkOverflow } from '../utils/check-overflow.js'
 export function finalise(
 	x : Decimal,
 	sd : number | null = null,
-	rm : number = Decimal.rounding,
+	rm : RoundingCode = Decimal.roundingCode,
 	isTruncated? : boolean
 ) : Decimal
 {
@@ -37,7 +38,7 @@ export function finalise(
 		// j: if > 0, the actual index of rd within w (if < 0, rd is a leading zero).
 
 		// Get the length of the first word of the digits array xd.
-		for (digits = 1, k = xd[0]; k >= 10; k /= 10)
+		for (digits = 1, k = xd[0]!; k >= 10; k /= 10)
 		{
 			digits++;
 		}
@@ -49,7 +50,7 @@ export function finalise(
 		{
 			i += LOG_BASE;
 			j = sd;
-			w = xd[xdi = 0];
+			w = xd[xdi = 0]!;
 
 			// Get the rounding digit at index j of w.
 			rd = w / Math.pow(10, digits - j - 1) % 10 | 0;
@@ -81,7 +82,7 @@ export function finalise(
 			}
 			else
 			{
-				w = k = xd[xdi];
+				w = k = xd[xdi]!;
 
 				// Get the number of digits of w.
 				for (digits = 1; k >= 10; k /= 10)
@@ -102,18 +103,18 @@ export function finalise(
 		}
 
 		// Are there any non-zero digits after the rounding digit?
-		isTruncated = isTruncated || sd < 0 || xd[xdi + 1] !== void 0 || (j < 0 ? w : w % Math.pow(10, digits - j - 1));
+		isTruncated = Boolean(isTruncated || sd < 0 || xd[xdi + 1] !== void 0 || (j < 0 ? w : w % Math.pow(10, digits - j - 1)));
 
 		// The expression `w % Math.pow(10, digits - j - 1)` returns all the digits of w to the right
 		// of the digit at (left-to-right) index j, e.g. if w is 908714 and j is 2, the expression
 		// will give 714.
 
 		roundUp = rm < 4
-		? (rd || isTruncated) && (rm == 0 || rm == (x.s < 0 ? 3 : 2))
+		? Boolean(rd || isTruncated) && (rm == 0 || rm == (x.s < 0 ? 3 : 2))
 		: rd > 5 || rd == 5 && (rm == 4 || isTruncated || rm == 6 &&
 
 		// Check whether the digit to the left of the rounding digit is odd.
-		((i > 0 ? j > 0 ? w / Math.pow(10, digits - j) : 0 : xd[xdi - 1]) % 10) & 1 ||
+		((i > 0 ? j > 0 ? w / Math.pow(10, digits - j) : 0 : xd[xdi - 1] ?? 0) % 10) & 1 ||
 		rm == (x.s < 0 ? 8 : 7));
 
 		if (sd < 1 || !xd[0])
@@ -163,8 +164,8 @@ export function finalise(
 				if (xdi == 0)
 				{
 					// i will be the length of xd[0] before k is added.
-					for (i = 1, j = xd[0]; j >= 10; j /= 10) i++;
-					j = xd[0] += k;
+				for (i = 1, j = xd[0]!; j >= 10; j /= 10) i++;
+				j = xd[0] = xd[0]! + k;
 					for (k = 1; j >= 10; j /= 10) k++;
 
 					// if i != k the length has increased.
@@ -178,7 +179,7 @@ export function finalise(
 				}
 				else
 				{
-					xd[xdi] += k;
+				xd[xdi] = xd[xdi]! + k;
 					if (xd[xdi] != BASE) break;
 					xd[xdi--] = 0;
 					k = 1;

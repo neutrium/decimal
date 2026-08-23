@@ -4,9 +4,9 @@ describe('constructor configuration', () => {
 	const defaults = {
 		maxE: Decimal.params.EXP_LIMIT,
 		minE: -Decimal.params.EXP_LIMIT,
-		modulo: 1,
+		modulo: 'down',
 		precision: 20,
-		rounding: 4,
+		rounding: 'half-up',
 		toExpNeg: -7,
 		toExpPos: 21
 	};
@@ -53,14 +53,14 @@ describe('constructor configuration', () => {
 	});
 
 	it('copies the parent configuration when cloning a clone', () => {
-		const Parent = Decimal.clone({ precision: 7, rounding: 1 });
+		const Parent = Decimal.clone({ precision: 7, rounding: 'down' });
 		const Child = Parent.clone({ precision: 9 });
 
 		Parent.precision = 6;
 
 		expect(Decimal.config).toEqual(defaults);
-		expect(Parent.config).toEqual({ ...defaults, precision: 6, rounding: 1 });
-		expect(Child.config).toEqual({ ...defaults, precision: 9, rounding: 1 });
+		expect(Parent.config).toEqual({ ...defaults, precision: 6, rounding: 'down' });
+		expect(Child.config).toEqual({ ...defaults, precision: 9, rounding: 'down' });
 	});
 
 	it('does not expose the mutable configuration object', () => {
@@ -70,14 +70,15 @@ describe('constructor configuration', () => {
 		config.rounding = 99;
 
 		expect(Decimal.precision).toBe(20);
-		expect(Decimal.rounding).toBe(4);
+		expect(Decimal.rounding).toBe('half-up');
 	});
 
 	it('validates direct precision and rounding assignments', () => {
 		expect(() => { Decimal.precision = 0; }).toThrow();
 		expect(() => { Decimal.rounding = 99; }).toThrow();
+		expect(() => { Decimal.rounding = 'bankers'; }).toThrow();
 		expect(Decimal.precision).toBe(20);
-		expect(Decimal.rounding).toBe(4);
+		expect(Decimal.rounding).toBe('half-up');
 	});
 
 	it('applies configuration updates atomically', () => {
@@ -86,26 +87,57 @@ describe('constructor configuration', () => {
 		}).toThrow();
 
 		expect(Decimal.precision).toBe(20);
-		expect(Decimal.rounding).toBe(4);
+		expect(Decimal.rounding).toBe('half-up');
 	});
 
 	it('restores base constructor state when a calculation throws', () => {
-		Decimal.config = { precision: 1020, rounding: 4 };
+		Decimal.config = { precision: 1020, rounding: 'half-up' };
 
 		expect(() => new Decimal(1).cos()).toThrowError('Precision limit exceeded');
 		expect(Decimal.precision).toBe(1020);
-		expect(Decimal.rounding).toBe(4);
+		expect(Decimal.rounding).toBe('half-up');
 		expect(Decimal.external).toBe(true);
 	});
 
 	it('restores clone state without changing the base constructor', () => {
-		const Clone = Decimal.clone({ precision: 1020, rounding: 4 });
+		const Clone = Decimal.clone({ precision: 1020, rounding: 'half-up' });
 
 		expect(() => new Clone(1).cos()).toThrowError('Precision limit exceeded');
 		expect(Clone.precision).toBe(1020);
-		expect(Clone.rounding).toBe(4);
+		expect(Clone.rounding).toBe('half-up');
 		expect(Decimal.precision).toBe(20);
-		expect(Decimal.rounding).toBe(4);
+		expect(Decimal.rounding).toBe('half-up');
 		expect(Decimal.external).toBe(true);
+	});
+
+	it.each([
+		['up', '1.3'],
+		['down', '1.2'],
+		['ceil', '1.3'],
+		['floor', '1.2'],
+		['half-up', '1.3'],
+		['half-down', '1.2'],
+		['half-even', '1.2'],
+		['half-ceil', '1.3'],
+		['half-floor', '1.2']
+	])('uses the %s rounding mode', (rounding, expected) => {
+		Decimal.rounding = rounding;
+
+		expect(Decimal.rounding).toBe(rounding);
+		expect(new Decimal('1.25').toFixed(1)).toBe(expected);
+		expect(new Decimal('1.25').toFixed(1, rounding)).toBe(expected);
+	});
+
+	it('accepts the human-readable euclid modulo mode', () => {
+		Decimal.config = { modulo: 'euclid' };
+
+		expect(Decimal.config.modulo).toBe('euclid');
+		expect(new Decimal(-5).mod(3).toString()).toBe('1');
+	});
+
+	it('rejects invalid rounding-mode arguments', () => {
+		expect(() => new Decimal('1.25').toFixed(1, 'bankers')).toThrowError(
+			'[DecimalError] Invalid rounding mode: bankers'
+		);
 	});
 });

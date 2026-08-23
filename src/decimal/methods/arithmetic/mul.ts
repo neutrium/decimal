@@ -1,4 +1,4 @@
-import { Decimal } from "../../Decimal.js";
+import { Decimal, type DecimalValue } from "../../Decimal.js";
 import { finalise } from "../utils/finalise.js";
 import { getBase10Exponent } from "../exponential/get-base-10-exponent.js"
 //
@@ -21,7 +21,7 @@ import { getBase10Exponent } from "../exponential/get-base-10-exponent.js"
 //  I * N = N
 //  I * I = I
 //
-export function mul(x: Decimal, yy : number | string | Decimal) : Decimal
+export function mul(x: Decimal, yy : DecimalValue) : Decimal
 {
 	let y = new Decimal(yy);
 
@@ -74,12 +74,12 @@ export function mul(x: Decimal, yy : number | string | Decimal) : Decimal
 		carry = 0;
 		for (k = xdL + i; k > i;)
 		{
-			t = r[k] + yd[i] * xd[k - i - 1] + carry;
+			t = r[k]! + yd[i]! * xd[k - i - 1]! + carry;
 			r[k--] = t % BASE | 0;
 			carry = t / BASE | 0;
 		}
 
-		r[k] = (r[k] + carry) % BASE | 0;
+		r[k] = (r[k]! + carry) % BASE | 0;
 	}
 
 	// Remove trailing zeros.
@@ -94,5 +94,5 @@ export function mul(x: Decimal, yy : number | string | Decimal) : Decimal
 	y.d = r;
 	y.e = getBase10Exponent(r, e);
 	//return y;
-	return Decimal.external ? finalise(y, Decimal.precision, Decimal.rounding) : y;
+	return Decimal.external ? finalise(y, Decimal.precision, Decimal.roundingCode) : y;
 }

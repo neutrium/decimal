@@ -35,16 +35,16 @@ export function sin(x: Decimal) : Decimal
 	}
 
 	pr = Decimal.precision;
-	rm = Decimal.rounding;
+	rm = Decimal.roundingCode;
 	Decimal.precision = pr + Math.max(x.e, x.precision()) + DecimalParams.LOG_BASE;
-	Decimal.rounding = 1;
+	Decimal.roundingCode = 1;
 
 	x = sine(toLessThanHalfPi(x));
 
 	Decimal.precision = pr;
-	Decimal.rounding = rm;
+	Decimal.roundingCode = rm;
 
-	return finalise(Decimal.quadrant > 2 ? x.neg() : x, pr, rm, true);
+	return finalise(Decimal.quadrant! > 2 ? x.neg() : x, pr, rm, true);
 }
 
 //
@@ -75,7 +75,7 @@ export function asin(x: Decimal) : Decimal
 
 	k = x.abs().cmp(1);
 	pr = Decimal.precision;
-	rm = Decimal.rounding;
+	rm = Decimal.roundingCode;
 
 	if (k !== -1)
 	{
@@ -94,12 +94,12 @@ export function asin(x: Decimal) : Decimal
 	// TODO? Special case asin(1/2) = pi/6 and asin(-1/2) = -pi/6
 
 	Decimal.precision = pr + 6;
-	Decimal.rounding = 1;
+	Decimal.roundingCode = 1;
 
 	x = atan(x.div(new Decimal(1).sub(x.mul(x)).sqrt().add(1)));
 
 	Decimal.precision = pr;
-	Decimal.rounding = rm;
+	Decimal.roundingCode = rm;
 
 	return x.mul(2);
 }
@@ -143,11 +143,11 @@ export function sinh(x: Decimal) : Decimal
 	}
 
 	pr = config.precision;
-	rm = config.rounding;
+	rm = Decimal.roundingCode;
 	Decimal.precision = pr + Math.max(x.e, x.precision()) + 4;
-	Decimal.rounding = 1;
+	Decimal.roundingCode = 1;
 
-	len = x.d.length;
+	len = x.d!.length;
 
 	if (len < 3)
 	{
@@ -185,7 +185,7 @@ export function sinh(x: Decimal) : Decimal
 	}
 
 	Decimal.precision = pr;
-	Decimal.rounding = rm;
+	Decimal.roundingCode = rm;
 
 	return finalise(x, pr, rm, true);
 }
@@ -211,16 +211,16 @@ export function asinh(x: Decimal) : Decimal
 	if (!x.isFinite() || x.isZero()) return new Decimal(x);
 
 	pr = Decimal.precision;
-	rm = Decimal.rounding;
+	rm = Decimal.roundingCode;
 	Decimal.precision = pr + 2 * Math.max(Math.abs(x.e), x.precision()) + 6;
-	Decimal.rounding = 1;
+	Decimal.roundingCode = 1;
 	Decimal.external = false;
 
 	x = x.mul(x).add(1).sqrt().add(x);
 
 	Decimal.external = true;
 	Decimal.precision = pr;
-	Decimal.rounding = rm;
+	Decimal.roundingCode = rm;
 
 	return x.ln();
 }
@@ -234,7 +234,7 @@ export function sine(x : Decimal) : Decimal
 	if(x.isFinite())
 	{
 		let k,
-			len = x.d.length;
+		len = x.d!.length;
 
 		if (len < 3)
 		{

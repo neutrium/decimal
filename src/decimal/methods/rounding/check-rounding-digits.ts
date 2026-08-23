@@ -1,17 +1,18 @@
 import { Decimal } from "../../Decimal.js";
+import type { RoundingCode } from "../../config/RoundingModes.js";
 
 //
 // Check 5 rounding digits if `repeating` is null, 4 otherwise.
 // `repeating == null` if caller is `log` or `pow`,
 // `repeating != null` if caller is `naturalLogarithm` or `naturalExponential`.
 //
-export function checkRoundingDigits(d : number[], i : number, rm : number, repeating ?: number)
+export function checkRoundingDigits(d : number[], i : number, rm : RoundingCode, repeating ?: number): boolean
 {
 	let di, k, r, rd,
 		LOG_BASE = Decimal.params.LOG_BASE;
 
 	// Get the length of the first word of the array d.
-	for (k = d[0]; k >= 10; k /= 10) --i;
+	for (k = d[0]!; k >= 10; k /= 10) --i;
 
 	// Is the rounding digit in the first word of d?
 	if (--i < 0)
@@ -29,7 +30,7 @@ export function checkRoundingDigits(d : number[], i : number, rm : number, repea
 	// E.g. if within the word 3487563 the first rounding digit is 5,
 	// then i = 4, k = 1000, rd = 3487563 % 1000 = 563
 	k = Math.pow(10, LOG_BASE - i);
-	rd = d[di] % k | 0;
+	rd = d[di]! % k | 0;
 
 	if (repeating == null)
 	{
@@ -42,8 +43,8 @@ export function checkRoundingDigits(d : number[], i : number, rm : number, repea
 		else
 		{
 			r = (rm < 4 && rd + 1 == k || rm > 3 && rd + 1 == k / 2) &&
-			(d[di + 1] / k / 100 | 0) == Math.pow(10, i - 2) - 1 ||
-			(rd == k / 2 || rd == 0) && (d[di + 1] / k / 100 | 0) == 0;
+			(d[di + 1]! / k / 100 | 0) == Math.pow(10, i - 2) - 1 ||
+			(rd == k / 2 || rd == 0) && (d[di + 1]! / k / 100 | 0) == 0;
 		}
 	}
 	else
@@ -59,7 +60,7 @@ export function checkRoundingDigits(d : number[], i : number, rm : number, repea
 		{
 			r = ((repeating || rm < 4) && rd + 1 == k ||
 			(!repeating && rm > 3) && rd + 1 == k / 2) &&
-			(d[di + 1] / k / 1000 | 0) == Math.pow(10, i - 3) - 1;
+			(d[di + 1]! / k / 1000 | 0) == Math.pow(10, i - 3) - 1;
 		}
 	}
 

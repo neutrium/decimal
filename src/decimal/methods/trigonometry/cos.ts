@@ -1,4 +1,5 @@
 import { Decimal } from "../../Decimal.js";
+import type { RoundingCode } from "../../config/RoundingModes.js";
 import { finalise } from "../utils/finalise.js";
 import { taylorSeries } from "./taylor-series.js";
 import { toLessThanHalfPi } from "./to-lte-pi.js";
@@ -19,7 +20,7 @@ import { getPi } from "./get-pi.js";
 export function cos(x: Decimal) : Decimal
 {
 	let pr : number,
-		rm : number;
+		rm : RoundingCode;
 
 	if (!x.d)
 	{
@@ -33,14 +34,14 @@ export function cos(x: Decimal) : Decimal
 	}
 
 	pr = Decimal.precision;
-	rm = Decimal.rounding;
+	rm = Decimal.roundingCode;
 	Decimal.precision = pr + Math.max(x.e, x.precision()) + Decimal.params.LOG_BASE;
-	Decimal.rounding = 1;
+	Decimal.roundingCode = 1;
 
 	x = cosine(toLessThanHalfPi(x));
 
 	Decimal.precision = pr;
-	Decimal.rounding = rm;
+	Decimal.roundingCode = rm;
 
 	return finalise(Decimal.quadrant == 2 || Decimal.quadrant == 3 ? x.neg() : x, pr, rm, true);
 }
@@ -84,10 +85,10 @@ export function cosh(x: Decimal) : Decimal
 	}
 
 	pr = Decimal.precision;
-	rm = Decimal.rounding;
+	rm = Decimal.roundingCode;
 	Decimal.precision = pr + Math.max(x.e, x.precision()) + 4;
-	Decimal.rounding = 1;
-	len = x.d.length;
+	Decimal.roundingCode = 1;
+	len = x.d!.length;
 
 	// Argument reduction: cos(4x) = 1 - 8cos^2(x) + 8cos^4(x) + 1
 	// i.e. cos(x) = 1 - cos^2(x/4)(8 - 8cos^2(x/4))
@@ -118,7 +119,7 @@ export function cosh(x: Decimal) : Decimal
 		x = one.sub(cosh2_x.mul(d8.sub(cosh2_x.mul(d8))));
 	}
 
-	return finalise(x, Decimal.precision = pr, Decimal.rounding = rm, true);
+	return finalise(x, Decimal.precision = pr, Decimal.roundingCode = rm, true);
 }
 
 //
@@ -153,16 +154,16 @@ export function acosh(x: Decimal) : Decimal
 	}
 
 	pr = Decimal.precision;
-	rm = Decimal.rounding;
+	rm = Decimal.roundingCode;
 	Decimal.precision = pr + Math.max(Math.abs(x.e), x.precision()) + 4;
-	Decimal.rounding = 1;
+	Decimal.roundingCode = 1;
 	Decimal.external = false;
 
 	x = x.mul(x).sub(1).sqrt().add(x);
 
 	Decimal.external = true;
 	Decimal.precision = pr;
-	Decimal.rounding = rm;
+	Decimal.roundingCode = rm;
 
 	return x.ln();
 }
@@ -188,7 +189,7 @@ export function acos(x: Decimal) : Decimal
 	let halfPi,
 		k = x.abs().cmp(1),
 		pr = Decimal.precision,
-		rm = Decimal.rounding;
+		rm = Decimal.roundingCode;
 
 	if (k !== -1)
 	{
@@ -207,13 +208,13 @@ export function acos(x: Decimal) : Decimal
 	// TODO? Special case acos(0.5) = pi/3 and acos(-0.5) = 2*pi/3
 
 	Decimal.precision = pr + 6;
-	Decimal.rounding = 1;
+	Decimal.roundingCode = 1;
 
 	x = x.asin();
 	halfPi = getPi(pr + 4, rm).mul(0.5);
 
 	Decimal.precision = pr;
-	Decimal.rounding = rm;
+	Decimal.roundingCode = rm;
 
 	return halfPi.sub(x);
 }
@@ -225,7 +226,7 @@ export function acos(x: Decimal) : Decimal
 function cosine(x : Decimal) : Decimal
 {
 	let k, y,
-		len = x.d.length;
+		len = x.d!.length;
 
 	// Argument reduction: cos(4x) = 8*(cos^4(x) - cos^2(x)) + 1
 	// i.e. cos(x) = 8*(cos^4(x/4) - cos^2(x/4)) + 1

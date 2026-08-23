@@ -40,8 +40,8 @@ export function sqrt(x: Decimal) : Decimal
 
 		if ((n.length + e) % 2 == 0) n += '0';
 
-		s = Math.sqrt(n);
-		e = Math.floor((e + 1) / 2) - <number>(e < 0 || e % 2);
+		s = Math.sqrt(Number(n));
+		e = Math.floor((e + 1) / 2) - Number(e < 0 || e % 2 !== 0);
 
 		if (s == 1 / 0)
 		{
@@ -112,5 +112,5 @@ export function sqrt(x: Decimal) : Decimal
 
 	Decimal.external = true;
 
-	return finalise(r, e, Decimal.rounding, m);
+	return finalise(r, e, Decimal.roundingCode, m);
 }

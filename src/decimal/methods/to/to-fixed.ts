@@ -1,4 +1,5 @@
 import { Decimal } from "../../Decimal.js";
+import type { RoundingCode } from "../../config/RoundingModes.js";
 import { DecimalParams } from "../../DecimalParameters.js";
 import { checkInt32 } from "../utils/check-int.js";
 import { finalise } from "../utils/finalise.js";
@@ -19,7 +20,7 @@ import { finiteToString } from "./finite-to-string.js";
 // (-0).toFixed(3) is '0.000'.
 // (-0.5).toFixed(0) is '-0'.
 //
-export function toFixed(x: Decimal, dp ?: number, rm: number = Decimal.config.rounding) : string
+export function toFixed(x: Decimal, dp ?: number, rm: RoundingCode = Decimal.roundingCode) : string
 {
 	var str, y;
 

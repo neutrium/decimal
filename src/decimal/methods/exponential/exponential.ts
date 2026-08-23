@@ -42,7 +42,7 @@ export function naturalExponential(x : Decimal, sd? : number) : Decimal
 		rep = 0,
 		i = 0,
 		k = 0,
-		rm = Decimal.rounding,
+		rm = Decimal.roundingCode,
 		pr = Decimal.precision;
 
 	// 0/NaN/Infinity?
@@ -99,7 +99,7 @@ export function naturalExponential(x : Decimal, sd? : number) : Decimal
 			if (sd == null)
 			{
 
-				if (rep < 3 && checkRoundingDigits(sum.d, wpr - guard, rm, rep))
+				if (rep < 3 && checkRoundingDigits(sum.d!, wpr - guard, rm, rep))
 				{
 					Decimal.precision = wpr += 10
 					denominator = pow = t = new Decimal(1);
@@ -122,4 +122,3 @@ export function naturalExponential(x : Decimal, sd? : number) : Decimal
 		sum = t;
 	}
 }
-

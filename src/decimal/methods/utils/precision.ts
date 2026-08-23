@@ -1,11 +1,11 @@
-import { Decimal } from "../../Decimal.js"
+import { Decimal, type PrecisionTrailingZeros } from "../../Decimal.js"
 import { getPrecision } from "./get-precision.js";
 
 //
 // Return the number of significant digits of the value of this Decimal.
 // [z] {boolean|number} Whether to count integer-part trailing zeros: true, false, 1 or 0.
 //
-export function precision(x: Decimal, z ?: boolean | number) : number
+export function precision(x: Decimal, z ?: PrecisionTrailingZeros) : number
 {
 	let k;
 

@@ -1,4 +1,5 @@
 import { Decimal } from '../../Decimal.js';
+import type { RoundingCode } from '../../config/RoundingModes.js';
 import { checkInt32 } from '../utils/check-int.js';
 import { finiteToString } from './finite-to-string.js';
 import { finalise } from '../utils/finalise.js';
@@ -13,7 +14,7 @@ import { finalise } from '../utils/finalise.js';
 // [sd] {number} Significant digits. Integer, 1 to MAX_DIGITS inclusive.
 // [rm] {number} Rounding mode. Integer, 0 to 8 inclusive.
 //
-export function toPrecision(x: Decimal, sd ?: number, rm : number = Decimal.config.rounding) : string
+export function toPrecision(x: Decimal, sd ?: number, rm : RoundingCode = Decimal.roundingCode) : string
 {
 	let str: string;
 	const config = Decimal.config;

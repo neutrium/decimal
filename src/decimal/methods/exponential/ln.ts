@@ -25,7 +25,7 @@ export function naturalLogarithm(y : Decimal, sd? : number) : Decimal
 		guard = 10,
 		x = y,
 		xd = x.d,
-		rm = Decimal.rounding,
+		rm = Decimal.roundingCode,
 		pr = Decimal.precision;
 
 	// Is x negative or Infinity, NaN, 0 or 1?
@@ -62,7 +62,7 @@ export function naturalLogarithm(y : Decimal, sd? : number) : Decimal
 		// max n is 21 (gives 0.9, 1.0 or 1.1) (9e15 / 21 = 4.2e14).
 		//while (c0 < 9 && c0 != 1 || c0 == 1 && c.charAt(1) > 1) {
 		// max n is 6 (gives 0.7 - 1.3)
-		while (c0 < 7 && c0 != 1 || c0 == 1 && c.charAt(1) > 3)
+		while (+c0 < 7 && +c0 != 1 || +c0 == 1 && +c.charAt(1) > 3)
 		{
 			x = x.mul(y);
 			c = digitsToString(x.d);
@@ -72,7 +72,7 @@ export function naturalLogarithm(y : Decimal, sd? : number) : Decimal
 
 		e = x.e;
 
-		if (c0 > 1)
+		if (+c0 > 1)
 		{
 			x = new Decimal('0.' + c);
 			e++;
@@ -139,7 +139,7 @@ export function naturalLogarithm(y : Decimal, sd? : number) : Decimal
 			// `wpr - guard` is the index of first rounding digit.
 			if (sd == null)
 			{
-				if (checkRoundingDigits(sum.d, wpr - guard, rm, rep))
+				if (checkRoundingDigits(sum.d!, wpr - guard, rm, rep))
 				{
 					Decimal.precision = wpr += guard;
 					t = numerator = x = divide(x1.sub(1), x1.add(1), wpr, 1);

@@ -3,13 +3,20 @@
 		"module": "Node16",
 		"target": "ES2022",
 		"moduleResolution": "node16",
-		"noImplicitAny": false,
-		"sourceMap": false,
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+		"noImplicitReturns": true,
+		"verbatimModuleSyntax": true,
+		"isolatedDeclarations": true,
+		"sourceMap": true,
+		"inlineSources": true,
 		"declaration": true,
+		"declarationMap": true,
+		"stripInternal": true,
 		"outDir": "dist/",
 		"lib": [
-			"ES2022",
-			"DOM"
+			"ES2022"
 		]
 	},
 	"files": [

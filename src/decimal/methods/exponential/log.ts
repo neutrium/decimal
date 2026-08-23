@@ -1,4 +1,4 @@
-import { Decimal } from "../../Decimal.js";
+import { Decimal, type DecimalValue } from "../../Decimal.js";
 import { divide } from "../arithmetic/div.js";
 import { finalise } from "../utils/finalise.js";
 import { checkRoundingDigits } from "../rounding/check-rounding-digits.js"
@@ -32,12 +32,12 @@ import { digitsToString } from "../utils/digits-to-string.js";
 // log[b](Infinity) = Infinity
 // log[b](NaN)      = NaN
 //
-export function log(arg: Decimal, baseN : number | string | Decimal) : Decimal
+export function log(arg: Decimal, baseN : DecimalValue) : Decimal
 {
 	let isBase10, d, denominator, k, inf, num, sd, r,
 		base : Decimal,
 		pr = Decimal.precision,
-		rm = Decimal.rounding,
+		rm = Decimal.roundingCode,
 		guard = 5;
 
 	// Default base is 10.
@@ -105,7 +105,7 @@ export function log(arg: Decimal, baseN : number | string | Decimal) : Decimal
 	// will be given as 2.6 as there are 15 zeros immediately after the requested decimal place, so
 	// the exact result would be assumed to be 2.6, which rounded using ROUND_CEIL to 1 decimal
 	// place is still 2.6.
-	if (checkRoundingDigits(r.d, k = pr, rm))
+	if (checkRoundingDigits(r.d!, k = pr, rm))
 	{
 		do
 		{
@@ -125,7 +125,7 @@ export function log(arg: Decimal, baseN : number | string | Decimal) : Decimal
 				break;
 			}
 
-		} while (checkRoundingDigits(r.d, k += 10, rm));
+		} while (checkRoundingDigits(r.d!, k += 10, rm));
 	}
 
 	Decimal.external = true;

@@ -1,6 +1,17 @@
 import { PI_STR, LN10_STR } from "./constants.js"
 
-export const DecimalParams = {
+/** Numeric limits and storage parameters used by Decimal. */
+export interface DecimalParameters {
+	readonly BASE: number;
+	readonly LOG_BASE: number;
+	readonly MAX_SAFE_INTEGER: number;
+	readonly MAX_DIGITS: number;
+	readonly EXP_LIMIT: number;
+	readonly PI_PRECISION: number;
+	readonly LN10_PRECISION: number;
+}
+
+export const DecimalParams: DecimalParameters = Object.freeze({
 	BASE: 1e7,
 	LOG_BASE: 7,
 	MAX_SAFE_INTEGER: 9007199254740991,
@@ -15,5 +26,4 @@ export const DecimalParams = {
 	PI_PRECISION: (PI_STR.length - 1),
 
 	LN10_PRECISION: (LN10_STR.length - 1)
-}
-
+});

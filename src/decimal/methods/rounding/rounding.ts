@@ -26,6 +26,5 @@ export function round(xx: Decimal) : Decimal
 {
 	let x = new Decimal(xx);
 
-	return finalise(x, x.e + 1, Decimal.config.rounding);
+	return finalise(x, x.e + 1, Decimal.roundingCode);
 }
-

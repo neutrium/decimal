@@ -40,10 +40,10 @@ export function cbrt(x: Decimal) : Decimal
 
 		// Adjust n exponent so it is a multiple of 3 away from x exponent.
 		if (s = (e - n.length + 1) % 3) n += (s == 1 || s == -2 ? '0' : '00');
-		s = Math.pow(n, 1 / 3);
+		s = Math.pow(Number(n), 1 / 3);
 
 		// Rarely, e may be one less than the result exponent value.
-		e = Math.floor((e + 1) / 3) - <number><any>((e % 3) == (e < 0 ? -1 : 2));
+		e = Math.floor((e + 1) / 3) - Number((e % 3) == (e < 0 ? -1 : 2));
 
 		if (s == 1 / 0)
 		{
@@ -116,5 +116,5 @@ export function cbrt(x: Decimal) : Decimal
 	}
 	Decimal.external = true;
 
-	return finalise(r, e, Decimal.rounding, m);
+	return finalise(r, e, Decimal.roundingCode, m);
 }

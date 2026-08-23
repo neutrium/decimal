@@ -6,7 +6,7 @@ import { Decimal } from "../../Decimal.js";
 export function getBase10Exponent(digits : number[], e : number) : number
 {
 	// First get the number of digits of the first word of the digits array.
-	for (var i = 1, w = digits[0]; w >= 10; w /= 10) i++;
+	for (var i = 1, w = digits[0]!; w >= 10; w /= 10) i++;
 
 	return i + e * Decimal.params.LOG_BASE - 1;
 }

@@ -11,20 +11,20 @@ export function digitsToString(d : number[] | null) : string
 	let i, k, ws,
 		indexOfLastWord = d.length - 1,
 		str = '',
-		w = d[0];
+		w = d[0]!;
 
 	if (indexOfLastWord > 0)
 	{
 		str += w;
 		for (i = 1; i < indexOfLastWord; i++)
 		{
-			ws = d[i] + '';
+			ws = d[i]! + '';
 			k = Decimal.params.LOG_BASE - ws.length;
 			if (k) str += getZeroString(k);
 			str += ws;
 		}
 
-		w = d[i];
+		w = d[i]!;
 		ws = w + '';
 		k = Decimal.params.LOG_BASE - ws.length;
 
