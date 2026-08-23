@@ -216,7 +216,7 @@ export class Decimal
 	toSD = (sd ?: number, rm ?: number) : Decimal => toSignificantDigits(this, sd, rm);
 	toExponential = (dp ?: number, rm ?: number) : string => toExponential(this, dp, rm);
 	toPrecision = (sd ?: number, rm ?: number) => toPrecision(this, sd, rm)
-	toFraction = (denominator : number | string | Decimal) => toFraction(this, denominator);
+	toFraction = (denominator ?: number | string | Decimal) => toFraction(this, denominator);
 
 
 	private static setConfig(config: any)

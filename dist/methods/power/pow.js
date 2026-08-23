@@ -48,7 +48,7 @@ export function pow(x, yy) {
     let e, k, pr, r, rm, sign, yIsInt, y = new Decimal(yy), yn = +y;
     // Either ±Infinity, NaN or ±0?
     if (!x.d || !y.d || !x.d[0] || !y.d[0]) {
-        return new Decimal(Math.pow(+x, yn));
+        return new Decimal(Math.pow(x.toNumber(), yn));
     }
     x = new Decimal(x);
     if (x.eq(1))

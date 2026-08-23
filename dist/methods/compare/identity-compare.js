@@ -36,8 +36,12 @@ export function isZero(x) {
     return !!x.d && x.d[0] === 0;
 }
 export function isOdd(n) {
-    return (n.d[n.d.length - 1] & 1) === 1;
+    const d = n.d;
+    return !!d && isInt(n) && Math.floor(n.e / Decimal.params.LOG_BASE) === d.length - 1 &&
+        (d[d.length - 1] & 1) === 1;
 }
 export function isEven(n) {
-    return (n.d[n.d.length - 1] & 1) === 0;
+    const d = n.d;
+    return !!d && isInt(n) && (Math.floor(n.e / Decimal.params.LOG_BASE) > d.length - 1 ||
+        (d[d.length - 1] & 1) === 0);
 }

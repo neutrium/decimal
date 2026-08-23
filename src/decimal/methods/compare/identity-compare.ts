@@ -51,10 +51,16 @@ export function isZero(x: Decimal) : boolean
 
 export function isOdd(n : Decimal) : boolean
 {
-	return (n.d[n.d.length - 1] & 1) === 1;
+	const d = n.d;
+
+	return !!d && isInt(n) && Math.floor(n.e / Decimal.params.LOG_BASE) === d.length - 1 &&
+		(d[d.length - 1] & 1) === 1;
 }
 
 export function isEven(n : Decimal) : boolean
 {
-	return (n.d[n.d.length - 1] & 1) === 0;
+	const d = n.d;
+
+	return !!d && isInt(n) && (Math.floor(n.e / Decimal.params.LOG_BASE) > d.length - 1 ||
+		(d[d.length - 1] & 1) === 0);
 }

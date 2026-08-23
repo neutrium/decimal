@@ -3,5 +3,5 @@
 // Zero keeps its sign.
 //
 export function toNumber(x) {
-    return +x;
+    return Number(x.toValue());
 }

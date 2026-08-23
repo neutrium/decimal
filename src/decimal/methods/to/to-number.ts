@@ -6,5 +6,5 @@ import { Decimal } from "../../Decimal.js";
 //
 export function toNumber(x: Decimal) : number
 {
-	return +x;
+	return Number(x.toValue());
 }

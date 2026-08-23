@@ -41,5 +41,5 @@ export function toLessThanHalfPi(x : Decimal) : Decimal
 		Decimal.quadrant = isOdd(t) ? (isNeg ? 1 : 4) : (isNeg ? 3 : 2);
 	}
 
-	return x.mul(pi).abs();
+	return x.sub(pi).abs();
 }

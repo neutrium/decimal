@@ -13,7 +13,7 @@ import { getPrecision } from "../utils/get-precision.js";
 // [maxD] {number|string|Decimal} Maximum denominator. Integer >= 1 and < Infinity.
 //
 export function toFraction(x, denominator) {
-    let d0, d1, d2, k, n, n0, n1, pr, q, r, xd = x.d, maxD = denominator ? new Decimal(denominator) : null;
+    let d0, d1, d2, k, n, n0, n1, pr, q, r, xd = x.d, maxD = denominator == null ? null : new Decimal(denominator);
     if (!xd) {
         return [new Decimal(x)];
     }
