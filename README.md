@@ -257,7 +257,7 @@ collections must be spread by the caller.
 | `toDP(dp?, rounding?)` | `Decimal` | Round to at most `dp` decimal places. With no `dp`, return an equal new Decimal. |
 | `toSD(sd?, rounding?)` | `Decimal` | Round to at most `sd` significant digits. Defaults to configured precision. |
 | `toExponential(dp?, rounding?)` | `string` | Exponential notation with optional decimal-place count. |
-| `toFixed(dp?, rounding?)` | `string` | Fixed-point notation with optional decimal-place count. |
+| `toFixed(dp?, rounding?)` | `string` | Fixed-point notation with optional decimal-place count; preserves negative zero. |
 | `toPrecision(sd?, rounding?)` | `string` | Precision notation with optional significant-digit count. |
 | `toFraction(maxDenominator?)` | `readonly [Decimal, Decimal] \| readonly [Decimal]` | Numerator and denominator, or a one-item tuple for a non-finite value. |
 | `toNumber()` | `number` | Convert to a JavaScript number, preserving negative zero. |

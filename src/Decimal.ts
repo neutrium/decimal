@@ -600,7 +600,7 @@ export class Decimal
 	 * Format this value in fixed-point notation.
 	 * @param dp - Decimal places to emit. Omit to retain all coefficient digits.
 	 * @param rm - Rounding mode; defaults to the configured mode.
-	 * @returns The fixed-point string, preserving a negative sign when rounding negative values to zero.
+	 * @returns The fixed-point string, preserving negative zero and negative values rounded to zero.
 	 */
 	toFixed(dp ?: number, rm ?: RoundingMode) : string
 	{

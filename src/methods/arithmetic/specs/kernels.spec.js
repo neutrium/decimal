@@ -116,9 +116,10 @@ describe('Optimized arithmetic kernels', () => {
 			{
 				const x = new D(a);
 				const y = new D(b);
+				const negativeQuotient = new D(-a).divToInt(y);
 				expect(x.divToInt(y).toFixed()).toBe((a / b).toString());
-				expect(new D(-a).divToInt(y).toFixed()).toBe((-a / b).toString());
-				if (a < b) expect(new D(-a).divToInt(y).toValue()).toBe('-0');
+				expect(negativeQuotient.toFixed()).toBe(a < b ? '-0' : (-a / b).toString());
+				if (a < b) expect(negativeQuotient.toValue()).toBe('-0');
 				expect(new D(a * b).div(y).toFixed()).toBe(a.toString());
 			}
 		}

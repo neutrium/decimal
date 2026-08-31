@@ -1,6 +1,6 @@
 {
 	"name": "@neutrium/decimal",
-	"version": "2.0.1",
+	"version": "2.1.1",
 	"packageManager": "pnpm@10.34.5",
 	"type": "module",
 	"sideEffects": false,
@@ -55,7 +55,7 @@
 		"test:declarations": "pnpm run build && tsc -p tsconfig.declarations.json",
 		"test:package": "pnpm run clean && pnpm run build && node scripts/validate-package.mjs",
 		"verify": "pnpm run typecheck && pnpm run docs:check && pnpm run test:architecture && pnpm run test:types && pnpm run test:declarations && pnpm test && pnpm run test:package",
-		"prepack": "pnpm run clean && pnpm run build",
+		"prepack": "pnpm run clean && pnpm run build && pnpm run docs",
 		"prepublishOnly": "pnpm run verify",
 		"test": "vitest run",
 		"test:watch": "vitest"
