@@ -26,7 +26,7 @@ const result = new Decimal('0.1').add('0.2');
 result.toString();         // '0.3'
 
 // Native Javascript
-let x = 0.1 + 0.2;         
+let x = 0.1 + 0.2;
 console.log(x)             // 0.30000000000000004
 ```
 
@@ -91,7 +91,7 @@ Decimal-returning operations, `Decimal.PI`, `Decimal.atan2()`, and `toFraction()
 You can specify several parameters to change `Decimal` behaviour.
 
 | Property | Description | Type | Valid values | Default |
-| --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | `precision` | The maximum number of significant digits of the result of an operation  | integer | `1` to `1e9` | `20` |
 | `maxPrefixedDigits` | Limits the number of decimal coefficient digits created while converting binary, octal, or hexadecimal strings | integer | `1` to `1e9` | `1e6` |
 | `maxOutputDigits` | Limits the mantissa digits produced by string-formatting operations. It includes leading and padded zeros, but excludes the sign, decimal point, and scientific exponent suffix | integer | `1` to `1e9` | `1e6` |
@@ -281,7 +281,7 @@ JSON.stringify(new Decimal('-0'));  // '"-0"'
 JSON.stringify(new Decimal(NaN));   // '"NaN"'
 ```
 
-JSON serialisation intentionally produces strings rather than JSON numbers so that finite values retain all digits and `-0`, `NaN`, and infinities retain their Decimal representation. 
+JSON serialisation intentionally produces strings rather than JSON numbers so that finite values retain all digits and `-0`, `NaN`, and infinities retain their Decimal representation.
 
 The `+` operator uses default coercion and therefore concatenates Decimal values as strings. Other arithmetic operators and relational operators request numeric coercion and may lose precision. Use `add`, `sub`, `mul`, `div`, and the Decimal comparison methods for exact Decimal operations.
 
