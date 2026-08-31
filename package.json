@@ -1,7 +1,7 @@
 {
 	"name": "@neutrium/decimal",
 	"version": "2.0.0",
-	"packageManager": "pnpm@11.5.0",
+	"packageManager": "pnpm@10.34.5",
 	"type": "module",
 	"sideEffects": false,
 	"exports": {
