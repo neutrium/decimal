@@ -11,6 +11,7 @@ import { neg } from "../arithmetic/neg.js";
 import { isFinite, isZero } from "../compare/identity-compare.js";
 import { precision } from "../utils/precision.js";
 import { getDecimalState } from '../../DecimalState.js';
+import { reciprocalPowerOfFive } from "./argument-reduction-scale.js";
 
 //
 // Return a new Decimal whose value is the sine of the value in radians of `x`.
@@ -83,8 +84,7 @@ export function sine(x : Decimal, context : CalculationContext) : Decimal
 		k = 1.4 * Math.sqrt(len);
 		k = k > 16 ? 16 : k | 0;
 
-		// Max k before Math.pow precision loss is 22
-		x = mul(x, Math.pow(5, -k), context);
+		x = mul(x, reciprocalPowerOfFive(k), context);
 		x = taylorSeries(2, x, x, undefined, context);
 
 		// Reverse argument reduction

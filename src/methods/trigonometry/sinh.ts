@@ -7,6 +7,7 @@ import { mul } from '../arithmetic/mul.js';
 import { isFinite, isZero } from '../compare/identity-compare.js';
 import { finalise } from '../utils/finalise.js';
 import { precision } from '../utils/precision.js';
+import { reciprocalPowerOfFive } from './argument-reduction-scale.js';
 import { taylorSeries } from './taylor-series.js';
 
 // Return the hyperbolic sine of x.
@@ -29,7 +30,7 @@ export function sinh(x: Decimal, context: CalculationContext): Decimal
 	else
 	{
 		let reductions = Math.min(16, 1.4 * Math.sqrt(length) | 0);
-		x = mul(x, Math.pow(5, -reductions), workingContext);
+		x = mul(x, reciprocalPowerOfFive(reductions), workingContext);
 		x = taylorSeries(2, x, x, true, workingContext);
 
 		const five = workingContext.create(5);

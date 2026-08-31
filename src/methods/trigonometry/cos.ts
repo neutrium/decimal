@@ -10,6 +10,7 @@ import { mul } from "../arithmetic/mul.js";
 import { neg } from "../arithmetic/neg.js";
 import { precision } from "../utils/precision.js";
 import { getDecimalState } from '../../DecimalState.js';
+import { reciprocalPowerOfFour } from "./argument-reduction-scale.js";
 
 //
 // Return a new Decimal whose value is the cosine of the value in radians of `x`
@@ -64,7 +65,7 @@ export function cos(x: Decimal, context : CalculationContext) : Decimal
 //
 function cosine(x : Decimal, context : CalculationContext) : Decimal
 {
-	let k, y,
+	let k,
 		len = getDecimalState(x).d!.length;
 
 	// Argument reduction: cos(4x) = 8*(cos^4(x) - cos^2(x)) + 1
@@ -74,16 +75,20 @@ function cosine(x : Decimal, context : CalculationContext) : Decimal
 	if (len < 32)
 	{
 		k = Math.ceil(len / 3);
-		y = Math.pow(4, -k).toString();
 	}
 	else
 	{
 		k = 16;
-		y = '2.3283064365386962890625e-10';
 	}
 
 	const seriesContext = context.with({ precision: context.precision + k });
-	x = taylorSeries(1, mul(x, y, seriesContext), seriesContext.create(1), undefined, seriesContext);
+	x = taylorSeries(
+		1,
+		mul(x, reciprocalPowerOfFour(k), seriesContext),
+		seriesContext.create(1),
+		undefined,
+		seriesContext
+	);
 
 	// Reverse argument reduction
 	for (var i = k; i--;)

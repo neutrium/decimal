@@ -7,6 +7,7 @@ import { sub } from "../arithmetic/add-subtract.js";
 import { isFinite, isZero } from '../compare/identity-compare.js';
 import { finalise } from '../utils/finalise.js';
 import { precision } from '../utils/precision.js';
+import { reciprocalPowerOfFour } from './argument-reduction-scale.js';
 import { taylorSeries } from './taylor-series.js';
 
 // Return the hyperbolic cosine of x.
@@ -32,9 +33,7 @@ export function cosh(x: Decimal, context: CalculationContext): Decimal
 	});
 	const length = getDecimalState(x).d!.length;
 	const reductions = length < 32 ? Math.ceil(length / 3) : 16;
-	const scale = length < 32
-		? Math.pow(4, -reductions).toString()
-		: '2.3283064365386962890625e-10';
+	const scale = reciprocalPowerOfFour(reductions);
 
 	x = taylorSeries(1, mul(x, scale, workingContext), workingContext.create(1), true, workingContext);
 
