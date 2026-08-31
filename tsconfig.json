@@ -1,25 +1,29 @@
 {
 	"compilerOptions": {
-		"module": "Node16",
 		"target": "ES2022",
-		"moduleResolution": "node16",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
 		"exactOptionalPropertyTypes": true,
 		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
 		"verbatimModuleSyntax": true,
 		"isolatedDeclarations": true,
 		"sourceMap": true,
-		"inlineSources": true,
+		"inlineSources": false,
 		"declaration": true,
 		"declarationMap": true,
 		"stripInternal": true,
-		"outDir": "dist/",
+		"rootDir": "./src",
+		"outDir": "./dist",
 		"lib": [
 			"ES2022"
 		]
 	},
-	"files": [
-		"./src/decimal/index.ts"
+	"include": [
+		"./src/**/*.ts",
+		"./src/methods/utils/specs/decimal-state.js"
 	]
 }

@@ -1,9 +1,0 @@
-export { toDP } from './to-dp.js';
-export { toFixed } from './to-fixed.js'
-export { toExponential } from './to-exponential.js'
-export { toNumber } from './to-number.js'
-export { toString } from './to-string.js'
-export { toValue } from './to-value.js'
-export { toSignificantDigits } from './to-significant-digits.js'
-export { toPrecision } from './to-precision.js';
-export { toFraction } from './to-fraction.js';

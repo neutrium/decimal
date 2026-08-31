@@ -1,7 +1,9 @@
 {
 	"name": "@neutrium/decimal",
-	"version": "1.1.0",
+	"version": "2.0.0",
+	"packageManager": "pnpm@11.5.0",
 	"type": "module",
+	"sideEffects": false,
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
@@ -11,13 +13,10 @@
 	},
 	"files": [
 		"dist",
-		"src/decimal/**/*.ts",
+		"src/**/*.ts",
 		"README.md",
 		"LICENSE"
 	],
-	"imports": {
-		"#dist/*.js": "./dist/*.js"
-	},
 	"types": "./dist/index.d.ts",
 	"description": "The Neutrium Decimal library.",
 	"keywords": [
@@ -29,6 +28,9 @@
 	"license": "MIT",
 	"author": "Trevor Walker <trevorw@neutrium.net> (https://neutrium.net)",
 	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
 	"engines": {
 		"node": ">=20.19.0"
 	},
@@ -39,22 +41,28 @@
 	"bugs": {
 		"url": "https://github.com/neutrium/decimal/issues"
 	},
-	"dependencies": {},
 	"scripts": {
 		"clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
 		"tsc": "tsc",
-		"build": "npm run tsc",
+		"build": "pnpm run tsc",
+		"benchmark": "pnpm run build && node --expose-gc scripts/benchmark.mjs",
+		"benchmark:json": "tsc && node --expose-gc scripts/benchmark.mjs --json",
+		"docs": "typedoc",
+		"docs:check": "typedoc --emit none",
 		"typecheck": "tsc --noEmit",
-		"test:types": "npm run build && tsc -p tsconfig.type-tests.json",
-		"test:declarations": "npm run build && tsc -p tsconfig.declarations.json",
-		"test:package": "npm run build && node scripts/validate-package.mjs",
-		"verify": "npm run typecheck && npm run test:types && npm run test:declarations && npm test && npm run test:package",
-		"prepack": "npm run clean && npm run build",
-		"prepublishOnly": "npm run verify",
+		"test:architecture": "node scripts/check-architecture.mjs",
+		"test:types": "pnpm run build && tsc -p tsconfig.type-tests.json",
+		"test:declarations": "pnpm run build && tsc -p tsconfig.declarations.json",
+		"test:package": "pnpm run clean && pnpm run build && node scripts/validate-package.mjs",
+		"verify": "pnpm run typecheck && pnpm run docs:check && pnpm run test:architecture && pnpm run test:types && pnpm run test:declarations && pnpm test && pnpm run test:package",
+		"prepack": "pnpm run clean && pnpm run build",
+		"prepublishOnly": "pnpm run verify",
 		"test": "vitest run",
 		"test:watch": "vitest"
 	},
 	"devDependencies": {
+		"esbuild": "^0.28.2",
+		"typedoc": "0.28.20",
 		"typescript": "^5.9.2",
 		"vitest": "^4.1.11"
 	}

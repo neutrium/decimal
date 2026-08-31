@@ -1,10 +1,38 @@
 .DS_STORE
 
-#################
-## npm
-#################
-
-npm-debug.log
+# Add npm cache artifacts created in the repository root:
+# Package-manager caches
+/_cacache/
+/_logs/
+/_update-notifier-last-checked
 node_modules/
-bower_components/
+.pnpm-store/
+
+# Build output and compiler caches
 dist/
+target/
+*.tsbuildinfo
+.cache/
+
+# Test and benchmark output
+reports/
+
+# Logs
+*.log
+pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Editor and operating-system files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
