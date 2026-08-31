@@ -13,6 +13,7 @@ dist/
 target/
 *.tsbuildinfo
 .cache/
+/docs/api/
 
 # Test and benchmark output
 reports/
