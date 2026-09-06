@@ -186,21 +186,8 @@ function decimalFromScaledCoefficient(
 /** Use the runtime's sub-quadratic BigInt kernel once it is faster than word convolution. */
 function multiplyDigitsWithBigInt(a : readonly number[], b : readonly number[]) : number[]
 {
-	const base = BigInt(DecimalConstants.BASE);
-	let x = 0n;
-
-	for (const digit of a)
-	{
-		x = x * base + BigInt(digit);
-	}
-
-	let y = x;
-
-	if (a !== b)
-	{
-		y = 0n;
-		for (const digit of b) y = y * base + BigInt(digit);
-	}
+	const x = digitsToBigInt(a);
+	const y = a === b ? x : digitsToBigInt(b);
 
 	const coefficient = (x * y).toString();
 	const expectedLength = a.length + b.length;
@@ -225,6 +212,20 @@ function multiplyDigitsWithBigInt(a : readonly number[], b : readonly number[]) 
 	}
 
 	return result;
+}
+
+/** Convert base-1e7 coefficient words to an exact BigInt in one native parse. */
+function digitsToBigInt(digits : readonly number[]) : bigint
+{
+	const chunks = new Array<string>(digits.length);
+	chunks[0] = String(digits[0]!);
+
+	for (let i = 1; i < digits.length; i++)
+	{
+		chunks[i] = String(digits[i]!).padStart(DecimalConstants.LOG_BASE, '0');
+	}
+
+	return BigInt(chunks.join(''));
 }
 
 function multiplyDigits(a : readonly number[], b : readonly number[]) : number[]

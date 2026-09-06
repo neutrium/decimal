@@ -8,7 +8,7 @@ const args = new Set(process.argv.slice(2));
 
 if (args.has('--help'))
 {
-	console.log(`Usage: pnpm run benchmark -- [--json] [--filter=<text>]
+	console.log(`Usage: pnpm run benchmark -- [--json] [--smoke] [--filter=<text>]
 
 Environment variables:
   BENCH_ITERATIONS  Base iteration count (default: 50000)
@@ -24,11 +24,14 @@ const warmupLimit = readPositiveInteger('BENCH_WARMUP', 5_000);
 const argumentFilter = process.argv.slice(2).find(value => value.startsWith('--filter='))?.slice(9);
 const filter = argumentFilter ?? process.env.BENCH_FILTER ?? '';
 const json = args.has('--json');
+const smoke = args.has('--smoke');
 let sink = 0;
 
 const D20 = lazy(() => Decimal.clone({ precision: 20 }));
 const D200 = lazy(() => Decimal.clone({ precision: 200 }));
 const D800 = lazy(() => Decimal.clone({ precision: 800 }));
+const D2100 = lazy(() => Decimal.clone({ precision: 2_100 }));
+const D15000 = lazy(() => Decimal.clone({ precision: 15_000 }));
 const D20Context = lazy(() => new CalculationContext(D20(), D20().config));
 const decimal1000 = lazy(() => '1234567890'.repeat(100));
 const hexadecimal1024 = lazy(() => '0x' + 'fedcba9876543210'.repeat(64));
@@ -44,6 +47,14 @@ const multiplyValues = lazy(() => {
 		left: new D('1234567890'.repeat(20)),
 		right: new D('9876543210'.repeat(20))
 	};
+});
+const multiply1000DigitValues = lazy(() => {
+	const D = D2100();
+	return { left: new D('1234567890'.repeat(100)), right: new D('9876543210'.repeat(100)) };
+});
+const multiply7000DigitValues = lazy(() => {
+	const D = D15000();
+	return { left: new D('1234567'.repeat(1000)), right: new D('7654321'.repeat(1000)) };
 });
 const divide200Values = lazy(() => {
 	const D = D200();
@@ -81,6 +92,8 @@ const definitions = [
 	benchmark('arithmetic/multiply-200-digits', 0.02, () => { const { left, right } = multiplyValues(); return () => coefficientLength(left.mul(right)); }),
 	benchmark('arithmetic/square-200-digits', 0.02, () => { const { left } = multiplyValues(); return () => coefficientLength(left.mul(left)); }),
 	benchmark('arithmetic/square-800-digits', 0.001, () => { const { left } = divide800Values(); return () => coefficientLength(left.mul(left)); }),
+	benchmark('arithmetic/multiply-1000-digits-full-precision', 0.001, () => { const { left, right } = multiply1000DigitValues(); return () => coefficientLength(left.mul(right)); }),
+	benchmark('arithmetic/multiply-7000-digits-full-precision', 0.0001, () => { const { left, right } = multiply7000DigitValues(); return () => coefficientLength(left.mul(right)); }),
 	benchmark('arithmetic/division-200-digits', 0.01, () => { const { left, right } = divide200Values(); return () => firstWord(left.div(right)); }),
 	benchmark('arithmetic/division-800-digits', 0.001, () => { const { left, right } = divide800Values(); return () => firstWord(left.div(right)); }),
 	benchmark('arithmetic/integer-division-large-exponent', 0.01, () => { const value = new (D20())('1e1000000'); return () => firstWord(value.divToInt(3)); }),
@@ -88,7 +101,6 @@ const definitions = [
 	benchmark('arithmetic/add-1000000-digits-at-20-digit-precision', 0.000002, () => { const value = new (D20())('8'.repeat(1_000_000)); return () => firstWord(value.add(value)); }),
 	benchmark('arithmetic/square-1000000-digits-at-20-digit-precision', 0.000002, () => { const value = new (D20())('9'.repeat(1_000_000)); return () => firstWord(value.mul(value)); }),
 	benchmark('constant/pi-clone', 0.2, () => { const D = D20(); void D.PI; return () => coefficientLength(D.PI); }),
-	benchmark('constant/ln10-clone', 0.2, () => { const D = D20(); void D.LN10; return () => coefficientLength(D.LN10); }),
 	benchmark('transcendental/sin-200-digits', 0.0002, () => { const value = new (D200())('1.234567890123456789'); return () => firstWord(value.sin()); }),
 	benchmark('transcendental/ln-200-digits', 0.0002, () => { const value = new (D200())('1.234567890123456789'); return () => firstWord(value.ln()); }),
 	benchmark('transcendental/exp-200-digits', 0.0002, () => { const value = new (D200())('1.234567890123456789'); return () => firstWord(value.exp()); }),
@@ -98,8 +110,10 @@ const definitions = [
 	benchmark('roots/cbrt-20-digits', 0.01, () => { const { left } = smallValues(); return () => firstWord(left.cbrt()); }),
 	benchmark('roots/sqrt-800-digits', 0.0002, () => { const value = new (D800())('1.234567890123456789'); return () => firstWord(value.sqrt()); }),
 	benchmark('roots/cbrt-800-digits', 0.0002, () => { const value = new (D800())('1.234567890123456789'); return () => firstWord(value.cbrt()); }),
-	benchmark('collection/min-10000-decimals', 0.001, () => { const D = D20(), values = Array.from({ length: 10_000 }, (_, i) => new D(i)); return () => firstWord(D.min(...values)); }),
-	benchmark('collection/max-10000-decimals', 0.001, () => { const D = D20(), values = Array.from({ length: 10_000 }, (_, i) => new D(i)); return () => firstWord(D.max(...values)); }),
+	benchmark('collection/min-10000-decimals-spread', 0.001, () => { const D = D20(), values = Array.from({ length: 10_000 }, (_, i) => new D(i)); return () => firstWord(D.min(...values)); }),
+	benchmark('collection/max-10000-decimals-spread', 0.001, () => { const D = D20(), values = Array.from({ length: 10_000 }, (_, i) => new D(i)); return () => firstWord(D.max(...values)); }),
+	benchmark('collection/min-10000-decimals-iterable', 0.001, () => { const D = D20(), values = Array.from({ length: 10_000 }, (_, i) => new D(i)); return () => firstWord(D.min(values)); }),
+	benchmark('collection/max-10000-decimals-iterable', 0.001, () => { const D = D20(), values = Array.from({ length: 10_000 }, (_, i) => new D(i)); return () => firstWord(D.max(values)); }),
 ];
 
 function coefficientLength(value)
@@ -124,6 +138,17 @@ const cases = definitions
 if (cases.length === 0)
 {
 	throw new Error(`No benchmarks matched filter: ${filter}`);
+}
+
+if (smoke)
+{
+	for (const test of cases)
+	{
+		consume(test.operation());
+	}
+
+	console.log(`Initialized and ran ${cases.length} benchmark cases (sink=${sink}).`);
+	process.exit(0);
 }
 
 const results = cases.map(runBenchmark);

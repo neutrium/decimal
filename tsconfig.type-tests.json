@@ -13,6 +13,7 @@
 		"skipLibCheck": false
 	},
 	"files": [
-		"./type-tests/public-api.test.ts"
+		"./type-tests/public-api.test.ts",
+		"./type-tests/tier-entrypoints.test.ts"
 	]
 }

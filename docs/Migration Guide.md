@@ -3,6 +3,34 @@
 This guide covers the breaking changes when upgrading `@neutrium/decimal`. See the
 [README](../README.md) for the complete current API.
 
+## Migrating from 2.1 to 2.2
+
+### Pass iterables directly to `Decimal.min()` and `Decimal.max()`
+
+Version 2.2 adds overloads that accept one finite, non-empty iterable. Existing scalar
+and spread calls remain supported, so this change is backwards-compatible.
+
+```js
+const values = [3, 1, 7];
+
+// 2.1 and 2.2
+Decimal.min(...values).toString(); // '1'
+Decimal.max(...values).toString(); // '7'
+
+// 2.2
+Decimal.min(values).toString();          // '1'
+Decimal.max(new Set(values)).toString(); // '7'
+Decimal.min(function* () {
+  yield 3;
+  yield 1;
+  yield 7;
+}()).toString();                         // '1'
+```
+
+Strings continue to be treated as scalar decimal values rather than character
+iterables. Passing an empty iterable, an infinite iterable, or an iterable together
+with additional scalar arguments is not supported.
+
 ## Migrating from 1.x to 2.0
 
 Install the new major version, then address the breaking changes below:

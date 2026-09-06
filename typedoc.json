@@ -1,15 +1,22 @@
 {
 	"$schema": "https://typedoc.org/schema.json",
 	"name": "@neutrium/decimal API",
-	"entryPoints": ["src/index.ts"],
+	"entryPoints": [
+		"src/index.ts",
+		"src/core.ts",
+		"src/arithmetic.ts",
+		"src/scientific.ts"
+	],
 	"tsconfig": "tsconfig.json",
 	"out": "docs/api",
-	"readme": "none",
+	"readme": "./README.md",
+	"customFooterHtml": "<a href=\"https://neutrium.github.io/decimal/demo/\">Interactive Precision Lab</a>",
 	"includeVersion": true,
 	"excludeInternal": true,
 	"excludePrivate": true,
 	"excludeProtected": true,
-	"disableSources": true,
+	"disableSources": false,
+	"gitRevision": "master",
 	"cleanOutputDir": true,
 	"validation": {
 		"notExported": true,

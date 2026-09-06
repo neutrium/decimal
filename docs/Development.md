@@ -17,11 +17,27 @@ pnpm install --frozen-lockfile
 ```sh
 pnpm test             # Run the Vitest suite
 pnpm run typecheck    # Check all TypeScript source, including unused locals and parameters
-pnpm run docs         # Generate the TypeDoc API reference in docs/api
+pnpm run demo         # Start the interactive demo development server
+pnpm run docs         # Build the TypeDoc API reference and production demo in docs/api
 pnpm run docs:check   # Validate public API documentation without writing output
 pnpm run verify       # Run all source, declaration, package, and runtime checks
 pnpm run benchmark    # Run deterministic performance benchmarks
 ```
+
+## Documentation and demo
+
+Run `pnpm run demo` to serve the interactive demo locally at
+`http://127.0.0.1:4173/demo/`. The development server watches the demo and library
+source files for changes.
+
+Run `pnpm run docs` to create the complete production documentation site in
+`docs/api`. This generates the TypeDoc API reference and builds the demo into
+`docs/api/demo`, using relative asset and API links suitable for GitHub Pages.
+
+The `Documentation` GitHub Actions workflow runs this production build automatically
+after every push to `master`. It uploads `docs/api` as the Pages artifact and deploys
+it to the `github-pages` environment. The workflow can also be started manually with
+`workflow_dispatch` from the repository's Actions page.
 
 ## Benchmarking
 

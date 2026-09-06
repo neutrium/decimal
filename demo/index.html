@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="Explore exact arbitrary-precision decimal arithmetic and compare it with native JavaScript numbers.">
+		<meta name="theme-color" content="#426094">
+		<title>Precision Lab · @neutrium/decimal</title>
+		<link rel="icon" type="image/png" href="./assets/neutrium-logo.png">
+		<link rel="stylesheet" href="./styles.css">
+		<script type="module" src="./app.ts"></script>
+	</head>
+	<body>
+		<a class="skip-link" href="#lab">Skip to precision lab</a>
+		<header class="topbar">
+			<a class="brand" href="../" aria-label="@neutrium/decimal API home">
+				<span class="brand-mark" aria-hidden="true"><img src="./assets/neutrium-logo.png" alt=""></span>
+				<span>@neutrium/decimal</span>
+			</a>
+			<nav class="topnav" aria-label="Primary navigation">
+				<a href="../">API reference</a>
+				<a href="https://github.com/neutrium/decimal">GitHub</a>
+			</nav>
+		</header>
+
+		<main id="lab" class="page">
+			<section class="intro" aria-labelledby="page-title">
+				<div>
+					<p class="eyebrow">Interactive decimal demo</p>
+					<h1 id="page-title">Precision at your discretion.</h1>
+				</div>
+				<p class="intro-copy">Run the same calculation through native JavaScript and an independently configured Decimal constructor. Change a setting; see every digit respond.</p>
+			</section>
+			<div id="presets" class="presets" aria-label="Example calculations"></div>
+
+			<div class="workspace-grid">
+				<section class="panel calculator-panel" aria-labelledby="calculator-title">
+					<div class="panel-heading">
+						<div>
+							<p class="section-index">01 / Compare</p>
+							<h2 id="calculator-title">Live calculation</h2>
+						</div>
+						<div class="live-badge"><span></span> Live</div>
+					</div>
+
+					<form id="calculator-form">
+						<div class="expression-grid">
+							<label class="field">
+								<span>First value</span>
+								<input id="left-value" type="text" inputmode="decimal" spellcheck="false" autocomplete="off" aria-describedby="input-help">
+							</label>
+							<label class="field operator-field">
+								<span>Operation</span>
+								<select id="operation"></select>
+							</label>
+							<div id="right-field">
+								<label class="field">
+									<span>Second value</span>
+									<input id="right-value" type="text" inputmode="decimal" spellcheck="false" autocomplete="off">
+								</label>
+							</div>
+						</div>
+						<p id="input-help" class="field-help">Values stay as strings on the Decimal path, avoiding an early conversion to binary floating point.</p>
+
+						<div class="settings-grid">
+							<label class="field precision-field">
+								<span>Precision <output id="precision-output" for="precision">20</output></span>
+								<input id="precision" type="range" min="1" max="80" value="20">
+							</label>
+							<label class="field">
+								<span>Rounding</span>
+								<select id="rounding"></select>
+							</label>
+							<label id="modulo-field" class="field setting-shell">
+								<span>Modulo mode</span>
+								<select id="modulo"></select>
+							</label>
+						</div>
+					</form>
+
+					<p id="calculation-error" class="error-message" role="alert" hidden></p>
+
+					<div class="comparison" aria-live="polite">
+						<article class="result-card decimal-card">
+							<div class="result-label"><span>Decimal</span><strong>Exact path</strong></div>
+							<output id="decimal-result" class="result-value"></output>
+							<span id="digit-count" class="result-meta"></span>
+						</article>
+						<article class="result-card native-card">
+							<div class="result-label"><span>Number</span><strong>Native JS</strong></div>
+							<output id="native-result" class="result-value"></output>
+							<span class="result-meta">IEEE 754 double precision</span>
+						</article>
+					</div>
+
+					<div id="comparison-status" class="comparison-status" data-state="different">
+						<span class="status-icon" aria-hidden="true"></span>
+						<div>
+							<strong id="comparison-text"></strong>
+							<p id="insight-text"></p>
+						</div>
+					</div>
+				</section>
+
+				<aside class="panel code-panel" aria-labelledby="code-title">
+					<div class="panel-heading compact">
+						<div>
+							<p class="section-index">02 / Use it</p>
+							<h2 id="code-title">Your configuration</h2>
+						</div>
+						<button id="copy-code" class="copy-button" type="button">Copy code</button>
+					</div>
+					<pre><code id="code-output"></code></pre>
+					<div class="install-block">
+						<span>Install</span>
+						<code>pnpm add @neutrium/decimal</code>
+					</div>
+					<div class="feature-list">
+						<div><span>01</span><p><strong>Immutable</strong>Every operation returns a new value.</p></div>
+						<div><span>02</span><p><strong>Isolated</strong>Cloned constructors keep independent settings.</p></div>
+						<div><span>03</span><p><strong>Typed</strong>First-class TypeScript declarations included.</p></div>
+					</div>
+				</aside>
+			</div>
+
+			<section class="panel rounding-panel" aria-labelledby="rounding-title">
+				<div class="rounding-copy">
+					<p class="section-index">03 / Inspect</p>
+					<h2 id="rounding-title">Every tie has a policy.</h2>
+					<p>Rounding is a business decision, not a formatting detail. Compare all nine supported modes at one boundary.</p>
+					<div class="rounding-inputs">
+						<label class="field">
+							<span>Value</span>
+							<input id="rounding-value" type="text" value="2.5" inputmode="decimal" spellcheck="false">
+						</label>
+						<label class="field places-field">
+							<span>Decimal places</span>
+							<input id="rounding-places" type="number" value="0" min="0" max="20">
+						</label>
+					</div>
+				</div>
+				<div class="table-shell">
+					<table>
+						<thead><tr><th>Mode</th><th>Result</th><th>Rule</th></tr></thead>
+						<tbody id="rounding-body"></tbody>
+					</table>
+				</div>
+			</section>
+		</main>
+
+		<footer class="footnote">
+			<p>Built from the current <code>@neutrium/decimal</code> source.</p>
+			<a href="../classes/index.Decimal.html">Explore the Decimal API <span aria-hidden="true">→</span></a>
+		</footer>
+	</body>
+</html>

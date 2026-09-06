@@ -1,0 +1,14 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"allowImportingTsExtensions": true,
+		"declaration": false,
+		"declarationMap": false,
+		"isolatedDeclarations": false,
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"noEmit": true,
+		"rootDir": "..",
+		"sourceMap": false
+	},
+	"include": ["./**/*.ts"]
+}

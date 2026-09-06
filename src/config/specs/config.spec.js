@@ -61,6 +61,27 @@ describe('constructor configuration', () => {
 		expect(Clone.PI.toString().startsWith('3.1415926535')).toBe(true);
 	});
 
+	it('rounds PI to the active precision and rounding mode', () => {
+		const Down = Decimal.clone({ precision: 4, rounding: 'down' });
+		const Up = Decimal.clone({ precision: 4, rounding: 'up' });
+
+		expect(Down.PI.toString()).toBe('3.141');
+		expect(Down.PI.precision()).toBe(4);
+		expect(Up.PI.toString()).toBe('3.142');
+		expect(Up.PI.precision()).toBe(4);
+
+		Down.config = { precision: 8 };
+		expect(Down.PI.toString()).toBe('3.1415926');
+	});
+
+	it('enforces the stored PI precision limit', () => {
+		const TooPrecise = Decimal.clone({ precision: 1025 });
+
+		expect(TooPrecise.PI.precision()).toBe(1025);
+		TooPrecise.config = { precision: 1026 };
+		expect(() => TooPrecise.PI).toThrowError('Precision limit exceeded');
+	});
+
 	it('uses cloned exponent limits while constructing values', () => {
 		const Limited = Decimal.clone({ maxE: 2, minE: -2 });
 
@@ -169,6 +190,20 @@ describe('constructor configuration', () => {
 
 		expect(Decimal.config.precision).toBe(20);
 		expect(Decimal.config.rounding).toBe('half-up');
+	});
+
+	it('reuses the active snapshot for configuration updates with no effective changes', () => {
+		const Clone = Decimal.clone({ precision: 7 });
+		const original = Clone.config;
+
+		Clone.config = {};
+		expect(Clone.config).toBe(original);
+
+		Clone.config = { precision: 7, rounding: original.rounding };
+		expect(Clone.config).toBe(original);
+
+		Clone.config = { precision: 8 };
+		expect(Clone.config).not.toBe(original);
 	});
 
 	it('keeps constructor configuration out of shadowable static properties', () => {

@@ -4,6 +4,8 @@ Arbitrary-precision decimal arithmetic for JavaScript and TypeScript.
 
 `@neutrium/decimal` provides configurable precision and rounding, scientific functions, comparisons, and formatting without the floating-point surprises of JavaScript numbers.
 
+[Try the interactive demo](https://neutrium.github.io/decimal/demo/) to explore the functionality and compare `Decimal` calculations with native JavaScript.
+
 ## Installation
 
 ```sh
@@ -12,8 +14,7 @@ pnpm install @neutrium/decimal
 
 The package has no runtime dependencies and includes JavaScript source maps, TypeScript declarations, and declaration maps.
 
-Applications upgrading from 1.x should follow the
-[2.0 migration guide](./docs/Migration%20Guide.md).
+Applications upgrading from 1.x should follow the [2.0 migration guide](https://github.com/neutrium/decimal/blob/master/docs/Migration%20Guide.md).
 
 ## Quick start
 
@@ -25,14 +26,37 @@ const result = new Decimal('0.1').add('0.2');
 
 result.toString();         // '0.3'
 
-// Native Javascript
-let x = 0.1 + 0.2;
-console.log(x)             // 0.30000000000000004
+// Native JavaScript
+const nativeResult = 0.1 + 0.2;
+console.log(nativeResult); // 0.30000000000000004
 ```
 
 Pass decimal values as strings when their exact value cannot be represented by a JavaScript `number`, particularly for long values and decimal fractions.
 
 For browser applications, import the package through an ESM-aware bundler such as [Vite](https://vite.dev/) or [webpack](https://webpack.js.org/). The package is marked as side-effect-free, so compatible bundlers can remove unused imports.
+
+## Feature tiers
+
+Import from `@neutrium/decimal` by default to use the full API. If bundle size is a priority, choose the smallest entry point that contains the operations your application needs:
+
+| Entry point | Includes | Approximate minified bundle |
+| --- | --- | ---: |
+| `@neutrium/decimal/core` | Representation, parsing, comparison, predicates, and string/number formatting | 17.4 KB |
+| `@neutrium/decimal/arithmetic` | Core plus arithmetic, rounding, shifting, and fractions | 29.2 KB |
+| `@neutrium/decimal/scientific` | Arithmetic plus powers, logarithms, trigonometry, `PI`, and `atan2` (the complete API) | 43.3 KB |
+| `@neutrium/decimal` | Alias for the scientific tier; retained for compatibility | 43.3 KB |
+
+Each entry point exports a `Decimal` constructor and the shared configuration, error, input, rounding, modulo, and limits types. The core, arithmetic, and scientific constructors have independent configurations; the root and scientific entry points expose the same complete constructor.
+
+Values are interoperable across tiers, so a richer tier can consume a value directly without converting it to a string:
+
+```js
+import { Decimal as CoreDecimal } from '@neutrium/decimal/core';
+import { Decimal as ArithmeticDecimal } from '@neutrium/decimal/arithmetic';
+
+const parsed = new CoreDecimal('9007199254740993.0000000000000000001');
+const calculated = new ArithmeticDecimal(parsed).add(1);
+```
 
 ## Creating decimals
 
@@ -48,11 +72,11 @@ new Decimal(Infinity).toString();                   // 'Infinity'
 new Decimal(NaN).toString();                        // 'NaN'
 ```
 
-The number of digits of value is not limited, except by JavaScript's maximum array size and, in practice, the processing time required.
+The number of digits in `value` is not limited, except by JavaScript's maximum array size and, in practice, the processing time required.
 
 Decimal strings may use fixed-point or exponential notation. Numeric separators are accepted between digits, and prefixed binary, octal, and hexadecimal strings are also supported.
 
-In exponential notation, e or E defines a power-of-ten exponent for decimal values, and p or P defines a power-of-two exponent for non-decimal values, i.e. binary, hexadecimal or octal.
+In exponential notation, `e` or `E` defines a power-of-ten exponent for decimal values, while `p` or `P` defines a power-of-two exponent for binary, octal, or hexadecimal values.
 
 ```js
 new Decimal('0.046_875').toString();                // '0.046875'
@@ -88,19 +112,19 @@ Decimal-returning operations, `Decimal.PI`, `Decimal.atan2()`, and `toFraction()
 
 ## Configuration
 
-You can specify several parameters to change `Decimal` behaviour.
+Configure `Decimal` behaviour through the following properties.
 
 | Property | Description | Type | Valid values | Default |
 | --- | --- | --- | --- | --- |
-| `precision` | The maximum number of significant digits of the result of an operation  | integer | `1` to `1e9` | `20` |
+| `precision` | The maximum number of significant digits in the result of an operation | integer | `1` to `1e9` | `20` |
 | `maxPrefixedDigits` | Limits the number of decimal coefficient digits created while converting binary, octal, or hexadecimal strings | integer | `1` to `1e9` | `1e6` |
 | `maxOutputDigits` | Limits the mantissa digits produced by string-formatting operations. It includes leading and padded zeros, but excludes the sign, decimal point, and scientific exponent suffix | integer | `1` to `1e9` | `1e6` |
-| `rounding` | The default rounding mode used when rounding the result of an operation to precision significant digits | `RoundingMode` | See [rounding modes](#rounding-modes) | `'half-up'` |
+| `rounding` | The default rounding mode used when rounding an operation's result to the configured number of significant digits | `RoundingMode` | See [rounding modes](#rounding-modes) | `'half-up'` |
 | `modulo` | The modulo mode used when calculating the modulus | `ModuloMode` | See [modulo modes](#modulo-modes) | `'down'` |
-| `toExpNeg` | The negative exponent value at and below which toString returns exponential notation | integer | `-9e15` to `0` | `-7` |
-| `toExpPos` | The positive exponent value at and above which toString returns exponential notation | integer | `0` to `9e15` | `21` |
-| `minE` | The negative exponent limit, i.e. the exponent value below which underflow to zero occurs  | integer | `-9e15` to `0` | `-9e15` |
-| `maxE` | The positive exponent limit, i.e. the exponent value above which overflow to Infinity occurs  | integer | `0` to `9e15` | `9e15` |
+| `toExpNeg` | The negative exponent value at and below which `toString()` returns exponential notation | integer | `-9e15` to `0` | `-7` |
+| `toExpPos` | The positive exponent value at and above which `toString()` returns exponential notation | integer | `0` to `9e15` | `21` |
+| `minE` | The negative exponent limit, i.e. the exponent value below which underflow to zero occurs | integer | `-9e15` to `0` | `-9e15` |
+| `maxE` | The positive exponent limit, i.e. the exponent value above which overflow to Infinity occurs | integer | `0` to `9e15` | `9e15` |
 
 Configuration is scoped to a Decimal constructor. Assign any subset of the properties to `Decimal.config`:
 
@@ -134,12 +158,11 @@ A rounding mode may be specified using the constructor configuration and occasio
 | `'half-ceil'` | To nearest; ties toward positive Infinity |
 | `'half-floor'` | To nearest; ties toward negative Infinity |
 
-Methods that accept an optional rounding mode use the constructor's configured mode when it is
-omitted.
+Methods that accept an optional rounding mode use the constructor's configured mode when it is omitted.
 
 ### Modulo modes
 
-The modulo mode determines how the quotient is rounded before calculating `remainder = dividend - divisor * quotient`. It accepts every `RoundingMode` plus `'euclid'`. Common Modulo modes are listed below:
+The modulo mode determines how the quotient is rounded before calculating `remainder = dividend - divisor * quotient`. It accepts every `RoundingMode` plus `'euclid'`. Common modulo modes are listed below:
 
 | Value         | Remainder behavior                                      |
 | ------------- | ------------------------------------------------------- |
@@ -148,29 +171,27 @@ The modulo mode determines how the quotient is rounded before calculating `remai
 | `'half-even'` | IEEE 754 remainder                                      |
 | `'euclid'`    | Always non-negative                                     |
 
-
-
 ## API
 
-Decimal instances have several categories of methods that can be utilised to perform calculations while maintaining precision. These categories are listed in the following sections.
+`Decimal` instances provide the following categories of precision-preserving operations.
 
-The `DecimalValue` type used below is `string | number | bigint | Decimal`. Unless noted otherwise, methods return a new Decimal and do not change the receiver.
+The `DecimalValue` type used below is `string | number | bigint | DecimalLike`. Unless noted otherwise, methods return a new `Decimal` and do not change the receiver.
 
-Refer to the [API references](docs/api/index.html) for comprehensive documentation of exported classes, methods, properties, and types from the package entry point and the [API Usage document](‘docs/API%20Method%20Examples.md’) for further api documentation and examples.
+Refer to the [API reference](https://neutrium.github.io/decimal/) for comprehensive library documentation, and specifically the [Decimal class](https://neutrium.github.io/decimal/classes/index.Decimal.html) for details of the complete API.
 
-### Static Methods
+### Static methods
 
 | Member | Description |
 | --- | --- |
 | `Decimal.config` | Get a readonly configuration snapshot or assign partial configuration. |
 | `Decimal.clone(config?)` | Create an independently configured Decimal constructor. |
 | `Decimal.atan2(y, x)` | Return the angle in radians from the positive x-axis to `(x, y)`. |
-| `Decimal.min(value, ...values)` | Return the minimum using the receiving constructor. |
-| `Decimal.max(value, ...values)` | Return the maximum using the receiving constructor. |
+| `Decimal.min(value, ...values)` or `Decimal.min(values)` | Return the minimum using the receiving constructor. |
+| `Decimal.max(value, ...values)` or `Decimal.max(values)` | Return the maximum using the receiving constructor. |
 | `Decimal.PI` | Pi as a Decimal from the receiving constructor. |
 | `Decimal.limits` | Readonly public validation limits: `maxDigits` and `maxExponent`. |
 
-### Inspection Methods
+### Inspection methods
 
 | Method | Returns | Description |
 | --- | --- | --- |
@@ -197,7 +218,7 @@ Refer to the [API references](docs/api/index.html) for comprehensive documentati
 
 ### Exponential and trigonometric methods
 
-Note: All angles are in radians.
+All angles are expressed in radians.
 
 | Method | Description |
 | --- | --- |
@@ -209,14 +230,14 @@ Note: All angles are in radians.
 | `sinh()`, `cosh()`, `tanh()` | Hyperbolic functions. |
 | `asinh()`, `acosh()`, `atanh()` | Inverse hyperbolic functions. |
 
-The internal constant for PI contains about 1,000 decimal places. That limits the maximum useful precision of trigonometric and logarithmic calculations.
+The internal constant for `PI` contains approximately 1,000 decimal places. That limits the maximum useful precision of trigonometric and logarithmic calculations.
 
 ### Minimum, maximum, and comparison
 
 | Method | Returns | Description |
 | --- | --- | --- |
-| `Decimal.min(value, ...values)` | `Decimal` | Minimum of the supplied values. |
-| `Decimal.max(value, ...values)` | `Decimal` | Maximum of the supplied values. |
+| `Decimal.min(value, ...values)` or `Decimal.min(values)` | `Decimal` | Minimum of scalar arguments or a finite, non-empty iterable. |
+| `Decimal.max(value, ...values)` or `Decimal.max(values)` | `Decimal` | Maximum of scalar arguments or a finite, non-empty iterable. |
 | `cmp(value)` | `number` | `-1`, `0`, `1`, or `NaN`. |
 | `eq(value)` | `boolean` | Equal to. |
 | `gt(value)` | `boolean` | Greater than. |
@@ -224,8 +245,7 @@ The internal constant for PI contains about 1,000 decimal places. That limits th
 | `lt(value)` | `boolean` | Less than. |
 | `lte(value)` | `boolean` | Less than or equal to. |
 
-`Decimal.min()` and `Decimal.max()` require at least one scalar `DecimalValue`. Arrays and other
-collections must be spread by the caller.
+`Decimal.min()` and `Decimal.max()` accept either one or more scalar `DecimalValue` arguments or one finite, non-empty iterable. Arrays, sets, and generators are streamed without being spread into an argument list. Strings remain scalar decimal values rather than being treated as iterables.
 
 ### Predicates
 
@@ -287,7 +307,7 @@ The `+` operator uses default coercion and therefore concatenates Decimal values
 
 ## Errors
 
-All input validation and configured-limit failures throw `DecimalError`, which has a property `code` describing the error:
+All input validation and configured-limit failures throw `DecimalError` with a stable `code` property:
 
 | Code | Meaning |
 | --- | --- |
@@ -305,14 +325,14 @@ import { Decimal, DecimalError } from '@neutrium/decimal';
 
 try
 {
-    new Decimal('not-a-number');
+  new Decimal('not-a-number');
 }
 catch (error)
 {
-    if (error instanceof DecimalError)
-    {
-      console.error(error.code); // 'INVALID_ARGUMENT'
-    }
+  if (error instanceof DecimalError)
+  {
+    console.error(error.code); // 'INVALID_ARGUMENT'
+  }
 }
 ```
 
@@ -329,14 +349,16 @@ import {
   type DecimalConstructor,
   type DecimalErrorCode,
   type DecimalFraction,
+  type DecimalLike,
   type DecimalLimits,
   type DecimalValue,
+  type DecimalValueIterable,
   type ModuloMode,
   type RoundingMode
 } from '@neutrium/decimal';
 ```
 
-Decimal-returning methods return `Decimal`. `Decimal.clone()` returns a `DecimalConstructor` whose instances retain the generated constructor at runtime without executing it for intermediate values.
+Decimal-returning methods return `Decimal`. `Decimal.clone()` returns an independently configured `DecimalConstructor`; values created by it preserve that constructor through subsequent Decimal-returning operations.
 
 ```ts
 const Money: DecimalConstructor = Decimal.clone({ precision: 24 });
@@ -344,15 +366,41 @@ const amount: Decimal = new Money('10.00').mul(3).toDP(2);
 const angle: Decimal = Money.atan2(1, 1);
 ```
 
+## Changelog
+
+### 2.2.0 (unreleased)
+
+- Added feature-tier entry points for core, arithmetic, and scientific use cases.
+- Added iterable support to `Decimal.min()` and `Decimal.max()`.
+- Added an interactive precision demo and automated demo publishing alongside the API documentation.
+- Improved multiplication performance for large coefficients and expanded package and architecture validation.
+- Expanded CI coverage to Node.js 24.
+
+### 2.1.1 — 2026-09-01
+
+- Moved API documentation generation into the GitHub Pages deployment workflow.
+- Fixed `toFixed()` so negative values rounded to zero retain their negative sign.
+
+### 2.0.1 — 2026-09-01
+
+- Corrected README formatting.
+
+### 2.0.0 — 2026-08-31
+
+- Refactored the public API and internal calculation architecture.
+- Added human-readable rounding and modulo modes, structured errors, immutable private state, and `bigint` input support.
+- Removed JavaScript floating-point dependence from trigonometric calculations and improved performance.
+- See the [2.0 migration guide](https://github.com/neutrium/decimal/blob/master/docs/Migration%20Guide.md) for upgrade details.
+
 ## License
 
 This project is licensed under the MIT License (see the [LICENSE](./LICENSE) file for details).
 
-### What this Means
+### What this means
 
 You are free to:
 
-- Use this plugin for personal or commercial purposes
+- Use this library for personal or commercial purposes
 - Modify and distribute the code
 - Include it in other projects
 
@@ -362,4 +410,4 @@ Under the following conditions:
 
 ### Disclaimer
 
-This plugin is provided "as is", without warranty of any kind. Use at your own risk.
+This library is provided "as is", without warranty of any kind. Use at your own risk.

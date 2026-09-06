@@ -24,7 +24,7 @@ describe('Optimized arithmetic kernels', () => {
 		const D = Decimal.clone({ precision: 2000 });
 		const next = integerGenerator();
 
-		for (const words of [1, 2, 3, 8, 29, 115, 130])
+		for (const words of [1, 2, 3, 8, 29, 115, 127, 128, 129, 130])
 		{
 			const boundary = 10000000n ** BigInt(words) - 1n;
 			const values = [boundary, boundary + 1n, boundary + 2n, ...Array.from({ length: 25 }, () => next(words))];
@@ -37,6 +37,26 @@ describe('Optimized arithmetic kernels', () => {
 				expect(x.mul(x).toFixed()).toBe((a * a).toString());
 				expect(new D(-a).mul(new D(b)).toFixed()).toBe((-a * b).toString());
 			}
+		}
+	});
+
+	it('converts large coefficients with embedded zero words exactly', () => {
+		for (const words of [128, 129, 256, 1000])
+		{
+			const aText = '1234567' + Array.from(
+				{ length: words - 1 },
+				(_, i) => i % 3 === 0 ? '0000000' : String((i * 104729 + 17) % 10000000).padStart(7, '0')
+			).join('');
+			const bText = '7654321' + Array.from(
+				{ length: words - 1 },
+				(_, i) => i % 5 === 0 ? '0000000' : String((i * 130363 + 29) % 10000000).padStart(7, '0')
+			).join('');
+			const D = Decimal.clone({ precision: words * 14 + 1 });
+			const a = BigInt(aText);
+			const b = BigInt(bText);
+
+			expect(new D(a).mul(new D(b)).toFixed()).toBe((a * b).toString());
+			expect(new D(a).mul(new D(a)).toFixed()).toBe((a * a).toString());
 		}
 	});
 

@@ -75,5 +75,13 @@ export function normaliseDecimalConfig(current : Readonly<DecimalConfig>, input 
 		}
 	}
 
-	return Object.freeze({ ...current, ...updates });
+	for (const key of Object.keys(updates) as (keyof DecimalConfig)[])
+	{
+		if (updates[key] !== current[key])
+		{
+			return Object.freeze({ ...current, ...updates });
+		}
+	}
+
+	return current;
 }

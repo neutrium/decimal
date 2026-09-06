@@ -25,6 +25,7 @@ jobs:
       - uses: pnpm/action-setup@v6
         with:
           version: 10.34.5
+          standalone: true
 
       - uses: actions/setup-node@v7
         with:
