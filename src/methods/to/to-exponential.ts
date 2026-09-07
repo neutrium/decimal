@@ -1,5 +1,5 @@
 import { DecimalConstants } from "../../InternalConstants.js";
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import type { RoundingCode } from "../../config/RoundingModes.js";
 import { formatFinite } from "./finite-to-string.js";
@@ -14,7 +14,7 @@ import { isNeg, isZero } from "../compare/identity-compare.js";
 // [dp] {number} Decimal places. Integer, 0 to MAX_DIGITS inclusive.
 // rm {RoundingCode} Validated and defaulted by the public method before dispatch.
 //
-export function toExponential(x: Decimal, dp : number | undefined, rm : RoundingCode, context : CalculationContext) : string
+export function toExponential(x: KernelDecimal, dp : number | undefined, rm : RoundingCode, context : CalculationContext) : string
 {
 	let str;
 
@@ -25,7 +25,7 @@ export function toExponential(x: Decimal, dp : number | undefined, rm : Rounding
 	else
 	{
 		checkInt32(dp, 0, DecimalConstants.MAX_DIGITS);
-		const formattingContext = context.withoutLimits();
+		const formattingContext = context.forIntermediate();
 		const y = finalise(formattingContext.create(x), dp + 1, rm, undefined, formattingContext);
 		str = formatFinite(y, true, dp + 1, context.config.maxOutputDigits);
 	}

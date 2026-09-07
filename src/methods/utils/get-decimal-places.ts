@@ -1,12 +1,12 @@
 import { DecimalConstants } from "../../InternalConstants.js";
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import { getDecimalState } from '../../DecimalState.js';
 
 
 //
 // Return the number of decimal places of the value of Decimal `x`.
 //
-export function getDecimalPlaces(x: Decimal) : number
+export function getDecimalPlaces(x: KernelDecimal) : number
 {
 	const { d, e } = getDecimalState(x);
 	let w,

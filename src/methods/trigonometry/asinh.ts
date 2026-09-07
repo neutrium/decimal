@@ -1,5 +1,5 @@
 import type { CalculationContext } from '../../CalculationContext.js';
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import { getDecimalState } from '../../DecimalState.js';
 import { ROUND_DOWN } from '../../config/RoundingModes.js';
 import { add } from "../arithmetic/add-subtract.js";
@@ -10,7 +10,7 @@ import { sqrt } from '../power/sqrt.js';
 import { precision } from '../utils/precision.js';
 
 // Return the inverse hyperbolic sine of x.
-export function asinh(x: Decimal, context: CalculationContext): Decimal
+export function asinh(x: KernelDecimal, context: CalculationContext): KernelDecimal
 {
 	if (!isFinite(x) || isZero(x))
 	{
@@ -18,7 +18,7 @@ export function asinh(x: Decimal, context: CalculationContext): Decimal
 	}
 
 	const workingContext = context.with({
-		external: false,
+		boundary: 'intermediate',
 		precision: context.precision + 2 * Math.max(Math.abs(getDecimalState(x).e), precision(x)) + 6,
 		roundingCode: ROUND_DOWN
 	});

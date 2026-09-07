@@ -1,5 +1,5 @@
 import type { CalculationContext } from '../../CalculationContext.js';
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import { getDecimalState } from '../../DecimalState.js';
 import { ROUND_DOWN } from '../../config/RoundingModes.js';
 import { mul } from '../arithmetic/mul.js';
@@ -11,7 +11,7 @@ import { reciprocalPowerOfFour } from './argument-reduction-scale.js';
 import { taylorSeries } from './taylor-series.js';
 
 // Return the hyperbolic cosine of x.
-export function cosh(x: Decimal, context: CalculationContext): Decimal
+export function cosh(x: KernelDecimal, context: CalculationContext): KernelDecimal
 {
 	const one = context.create(1);
 

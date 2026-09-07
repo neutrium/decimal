@@ -1,4 +1,4 @@
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { ROUND_DOWN } from "../../config/RoundingModes.js";
 import { divideSignificant } from '../arithmetic/div.js'
@@ -24,7 +24,7 @@ import { getDecimalState } from '../../DecimalState.js';
 //
 //  ln(n) (n != 1) is non-terminating.
 //
-export function naturalLogarithm(y : Decimal, sd : number | undefined, context : CalculationContext) : Decimal
+export function naturalLogarithm(y : KernelDecimal, sd : number | undefined, context : CalculationContext) : KernelDecimal
 {
 	const yState = getDecimalState(y);
 	let c, c0, denominator, e, numerator, rep, sum, t, wpr, x1, x2,
@@ -51,7 +51,7 @@ export function naturalLogarithm(y : Decimal, sd : number | undefined, context :
 	}
 
 	wpr += guard;
-	let workingContext = context.with({ external: false, precision: wpr });
+	let workingContext = context.with({ boundary: 'intermediate', precision: wpr });
 
 	c = digitsToString(xd);
 	c0 = c.charAt(0);

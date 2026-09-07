@@ -1,5 +1,5 @@
 import type { CalculationContext } from '../../CalculationContext.js';
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import { getDecimalState } from '../../DecimalState.js';
 import { ROUND_DOWN } from '../../config/RoundingModes.js';
 import { add } from "../arithmetic/add-subtract.js";
@@ -11,7 +11,7 @@ import { reciprocalPowerOfFive } from './argument-reduction-scale.js';
 import { taylorSeries } from './taylor-series.js';
 
 // Return the hyperbolic sine of x.
-export function sinh(x: Decimal, context: CalculationContext): Decimal
+export function sinh(x: KernelDecimal, context: CalculationContext): KernelDecimal
 {
 	if (!isFinite(x) || isZero(x)) return context.create(x);
 

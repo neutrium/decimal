@@ -1,7 +1,9 @@
-import type { Decimal, DecimalValue } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
+import type { DecimalValue } from "../../DecimalBase.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { getDecimalState } from '../../DecimalState.js';
 import { normaliseOperand } from '../utils/normalise-operand.js';
+import { compareMagnitudes } from '../utils/coefficients/compare.js';
 
 //
 // Return
@@ -10,18 +12,17 @@ import { normaliseOperand } from '../utils/normalise-operand.js';
 //   0    if they have the same value,
 //   NaN  if the value of either Decimal is NaN.
 //
-export function cmp(x: Decimal, w : DecimalValue, context : CalculationContext) : number
+export function cmp(x: KernelDecimal, w : DecimalValue, context : CalculationContext) : number
 {
 	return compareDecimals(x, normaliseOperand(w, context));
 }
 
 /** Compare two already-normalized Decimal values without cloning either operand. */
-export function compareDecimals(x : Decimal, y : Decimal) : number
+export function compareDecimals(x : KernelDecimal, y : KernelDecimal) : number
 {
 	const xState = getDecimalState(x);
 	const yState = getDecimalState(y);
-	let xdL, ydL,
-		xd = xState.d,
+	const xd = xState.d,
 		yd = yState.d,
 		xs = xState.s,
 		ys = yState.s;
@@ -44,21 +45,7 @@ export function compareDecimals(x : Decimal, y : Decimal) : number
 		return xs;
 	}
 
-	// Compare exponents.
-	if (xState.e !== yState.e)
-	{
-		return xState.e > yState.e !== xs < 0 ? 1 : -1;
-	}
-
-	xdL = xd.length;
-	ydL = yd.length;
-
-	// Compare digit by digit.
-	for (let i = 0, j = xdL < ydL ? xdL : ydL; i < j; ++i)
-	{
-		if (xd[i] !== yd[i]) return xd[i]! > yd[i]! !== xs < 0 ? 1 : -1;
-	}
-
-	// Compare lengths.
-	return xdL === ydL ? 0 : xdL > ydL !== xs < 0 ? 1 : -1;
+	const magnitude = compareMagnitudes(xd, xState.e, yd, yState.e);
+	// Preserve positive zero for equality, including two negative operands.
+	return magnitude === 0 ? 0 : magnitude * xs;
 }

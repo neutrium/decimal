@@ -1,5 +1,5 @@
 import { DecimalConstants } from "../../InternalConstants.js";
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { ROUND_DOWN } from "../../config/RoundingModes.js";
 import { divideSignificant } from "../arithmetic/div.js";
@@ -12,17 +12,17 @@ import { getDecimalState, getMutableDecimalState } from '../../DecimalState.js';
 //
 export function taylorSeries(
 	n : number,
-	x : Decimal,
-	y : Decimal,
+	x : KernelDecimal,
+	y : KernelDecimal,
 	isHyperbolic : boolean | undefined,
 	context : CalculationContext
-) : Decimal
+) : KernelDecimal
 {
 	let j, t, u, x2,
 		pr = context.precision,
 		k = Math.ceil(pr / DecimalConstants.LOG_BASE);
 
-	const workingContext = context.withoutLimits();
+	const workingContext = context.forIntermediate();
 	x2 = mul(x, x, workingContext);
 	u = workingContext.create(y);
 

@@ -1,11 +1,11 @@
 import type { CalculationContext } from '../../CalculationContext.js';
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import { getDecimalState } from '../../DecimalState.js';
 import { finalise } from './finalise.js';
 
 export type DecimalBounds = {
-	readonly lower: Decimal;
-	readonly upper: Decimal;
+	readonly lower: KernelDecimal;
+	readonly upper: KernelDecimal;
 	readonly lowerHasMore: boolean;
 };
 
@@ -15,7 +15,7 @@ export function refineRoundedBounds(
 	initialLength : number,
 	hasUnrefinedDigits : (length : number) => boolean,
 	createBounds : (length : number) => DecimalBounds
-) : Decimal | undefined
+) : KernelDecimal | undefined
 {
 	let length = initialLength;
 
@@ -44,7 +44,7 @@ export function refineRoundedBounds(
 	return undefined;
 }
 
-function sameDecimal(a : Decimal, b : Decimal) : boolean
+function sameDecimal(a : KernelDecimal, b : KernelDecimal) : boolean
 {
 	const x = getDecimalState(a);
 	const y = getDecimalState(b);

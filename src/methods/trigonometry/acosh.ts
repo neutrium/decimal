@@ -1,5 +1,5 @@
 import type { CalculationContext } from '../../CalculationContext.js';
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import { getDecimalState } from '../../DecimalState.js';
 import { ROUND_DOWN } from '../../config/RoundingModes.js';
 import { add, sub } from "../arithmetic/add-subtract.js";
@@ -11,7 +11,7 @@ import { sqrt } from '../power/sqrt.js';
 import { precision } from '../utils/precision.js';
 
 // Return the inverse hyperbolic cosine of x.
-export function acosh(x: Decimal, context: CalculationContext): Decimal
+export function acosh(x: KernelDecimal, context: CalculationContext): KernelDecimal
 {
 	const one = context.create(1);
 	const comparison = compareDecimals(x, one);
@@ -27,7 +27,7 @@ export function acosh(x: Decimal, context: CalculationContext): Decimal
 	}
 
 	const workingContext = context.with({
-		external: false,
+		boundary: 'intermediate',
 		precision: context.precision + Math.max(Math.abs(getDecimalState(x).e), precision(x)) + 4,
 		roundingCode: ROUND_DOWN
 	});

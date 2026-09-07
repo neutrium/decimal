@@ -1,4 +1,4 @@
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import type { RoundingCode } from "../../config/RoundingModes.js";
 import { DecimalConstants } from "../../InternalConstants.js";
@@ -23,7 +23,7 @@ import { getDecimalState } from '../../DecimalState.js';
 // (-0).toFixed(3) is '-0.000'.
 // (-0.5).toFixed(0) is '-0'.
 //
-export function toFixed(x: Decimal, dp : number | undefined, rm: RoundingCode, context : CalculationContext) : string
+export function toFixed(x: KernelDecimal, dp : number | undefined, rm: RoundingCode, context : CalculationContext) : string
 {
 	var str, y;
 
@@ -34,7 +34,7 @@ export function toFixed(x: Decimal, dp : number | undefined, rm: RoundingCode, c
 	else
 	{
 		checkInt32(dp, 0, DecimalConstants.MAX_DIGITS);
-		const formattingContext = context.withoutLimits();
+		const formattingContext = context.forIntermediate();
 		y = finalise(formattingContext.create(x), dp + getDecimalState(x).e + 1, rm, undefined, formattingContext);
 		str = formatFinite(y, false, dp + getDecimalState(y).e + 1, context.config.maxOutputDigits);
 	}

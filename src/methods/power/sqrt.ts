@@ -1,4 +1,4 @@
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { ROUND_DOWN, ROUND_UP } from "../../config/RoundingModes.js";
 import { finalise } from "../utils/finalise.js";
@@ -23,7 +23,7 @@ import { getDecimalState } from '../../DecimalState.js';
 //  sqrt(0)  =  0
 //  sqrt(-0) = -0
 //
-export function sqrt(x: Decimal, context: CalculationContext) : Decimal
+export function sqrt(x: KernelDecimal, context: CalculationContext) : KernelDecimal
 {
 	const xState = getDecimalState(x);
 	let m, n, sd, r, rep, t,
@@ -38,7 +38,7 @@ export function sqrt(x: Decimal, context: CalculationContext) : Decimal
 	}
 
 	const precision = context.precision;
-	let workingContext = context.withoutLimits();
+	let workingContext = context.forIntermediate();
 
 	// Initial estimate.
 	s = Math.sqrt(toNumber(x));

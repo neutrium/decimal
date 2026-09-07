@@ -1,10 +1,10 @@
-import type { Decimal } from "../../Decimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
-import { getMutableDecimalState } from '../../DecimalState.js';
+import { getMutableDecimalState, type InternalDecimal } from '../../DecimalState.js';
 
-export function checkOverflow(x: Decimal, context: CalculationContext) : Decimal
+/** @internal */
+export function checkOverflow<T extends InternalDecimal>(x: T, context: CalculationContext) : T
 {
-	if (context.external)
+	if ((context.boundary === 'public'))
 	{
 		const config = context.config;
 		const state = getMutableDecimalState(x);

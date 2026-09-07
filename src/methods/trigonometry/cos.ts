@@ -1,5 +1,5 @@
 import { DecimalConstants } from "../../InternalConstants.js";
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { ROUND_DOWN, type RoundingCode } from "../../config/RoundingModes.js";
 import { finalise } from "../utils/finalise.js";
@@ -24,7 +24,7 @@ import { reciprocalPowerOfFour } from "./argument-reduction-scale.js";
 // cos(-Infinity) = NaN
 // cos(NaN)       = NaN
 //
-export function cos(x: Decimal, context : CalculationContext) : Decimal
+export function cos(x: KernelDecimal, context : CalculationContext) : KernelDecimal
 {
 	const xState = getDecimalState(x);
 	let pr : number,
@@ -63,7 +63,7 @@ export function cos(x: Decimal, context : CalculationContext) : Decimal
 // cos(x) = 1 - x^2/2! + x^4/4! - ...
 // |x| < pi/2
 //
-function cosine(x : Decimal, context : CalculationContext) : Decimal
+function cosine(x : KernelDecimal, context : CalculationContext) : KernelDecimal
 {
 	let k,
 		len = getDecimalState(x).d!.length;

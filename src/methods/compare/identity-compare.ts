@@ -1,12 +1,12 @@
 import { DecimalConstants } from "../../InternalConstants.js";
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import { getDecimalState } from '../../DecimalState.js';
 
 
 //
 // Return true if the value of x Decimal is a finite number, otherwise return false.
 //
-export function isFinite(x: Decimal) : boolean
+export function isFinite(x: KernelDecimal) : boolean
 {
 	return !!getDecimalState(x).d;
 }
@@ -14,7 +14,7 @@ export function isFinite(x: Decimal) : boolean
 //
 // Return true if the value of x Decimal is an integer, otherwise return false.
 //
-export function isInt(x: Decimal) : boolean
+export function isInt(x: KernelDecimal) : boolean
 {
 	const { d, e } = getDecimalState(x);
 	return !!d && Math.floor(e / DecimalConstants.LOG_BASE) > d.length - 2;
@@ -23,7 +23,7 @@ export function isInt(x: Decimal) : boolean
 //
 // Return true if the value of x Decimal is NaN, otherwise return false.
 //
-export function isNaN(x: Decimal) : boolean
+export function isNaN(x: KernelDecimal) : boolean
 {
 	return !getDecimalState(x).s;
 }
@@ -31,7 +31,7 @@ export function isNaN(x: Decimal) : boolean
 //
 // Return true if the value of x Decimal is negative, otherwise return false.
 //
-export function isNeg(x: Decimal) : boolean
+export function isNeg(x: KernelDecimal) : boolean
 {
 	return getDecimalState(x).s < 0;
 }
@@ -39,7 +39,7 @@ export function isNeg(x: Decimal) : boolean
 //
 // Return true if the value of x Decimal is positive, otherwise return false.
 //
-export function isPos(x: Decimal) : boolean
+export function isPos(x: KernelDecimal) : boolean
 {
 	return getDecimalState(x).s > 0;
 }
@@ -47,13 +47,13 @@ export function isPos(x: Decimal) : boolean
 //
 // Return true if the value of x Decimal is 0 or -0, otherwise return false.
 //
-export function isZero(x: Decimal) : boolean
+export function isZero(x: KernelDecimal) : boolean
 {
 	const d = getDecimalState(x).d;
 	return !!d && d[0] === 0;
 }
 
-export function isOdd(n : Decimal) : boolean
+export function isOdd(n : KernelDecimal) : boolean
 {
 	const { d, e } = getDecimalState(n);
 
@@ -61,7 +61,7 @@ export function isOdd(n : Decimal) : boolean
 		(d[d.length - 1]! & 1) === 1;
 }
 
-export function isEven(n : Decimal) : boolean
+export function isEven(n : KernelDecimal) : boolean
 {
 	const { d, e } = getDecimalState(n);
 

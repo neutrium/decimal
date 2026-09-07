@@ -1,4 +1,5 @@
-import type { Decimal, DecimalValue } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
+import type { DecimalValue } from "../../DecimalBase.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import {
 	ROUND_CEIL,
@@ -35,14 +36,14 @@ import { getDecimalState, getMutableDecimalState } from '../../DecimalState.js';
 // rm {RoundingCode} Validated and defaulted by the public method before dispatch.
 //
 export function toNearest(
-	x: Decimal,
+	x: KernelDecimal,
 	yy : DecimalValue | undefined,
 	rm : RoundingCode,
 	context : CalculationContext
-) : Decimal
+) : KernelDecimal
 {
 	const xState = getDecimalState(x);
-	let y : Decimal;
+	let y : KernelDecimal;
 
 	if (yy == null)
 	{
@@ -75,7 +76,7 @@ export function toNearest(
 
 	if (yState.d !== null && yState.d[0])
 	{
-		const workingContext = context.withoutLimits();
+		const workingContext = context.forIntermediate();
 
 		if (rm === ROUND_UP)
 		{

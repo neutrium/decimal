@@ -1,5 +1,5 @@
 import type { CalculationContext } from '../../CalculationContext.js';
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import { getDecimalState, getMutableDecimalState } from '../../DecimalState.js';
 import { ROUND_DOWN } from '../../config/RoundingModes.js';
 import { abs } from '../arithmetic/abs.js';
@@ -13,7 +13,7 @@ import { atan } from './atan.js';
 import { getPi } from './get-pi.js';
 
 // Return the arcsine of x in radians, in the range [-pi/2, pi/2].
-export function asin(x: Decimal, context: CalculationContext): Decimal
+export function asin(x: KernelDecimal, context: CalculationContext): KernelDecimal
 {
 	if (isZero(x)) return context.create(x);
 

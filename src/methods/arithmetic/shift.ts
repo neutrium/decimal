@@ -1,4 +1,4 @@
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import type { CalculationContext } from '../../CalculationContext.js';
 import { DecimalConstants } from '../../InternalConstants.js';
 import { invalidArgumentError } from '../../errors.js';
@@ -7,7 +7,7 @@ import { prependDigit } from '../utils/digit-array.js';
 import { getMutableDecimalState } from '../../DecimalState.js';
 
 // Return a new Decimal with its decimal point shifted by `places` positions.
-export function shift(x : Decimal, places : number, context : CalculationContext) : Decimal
+export function shift(x : KernelDecimal, places : number, context : CalculationContext) : KernelDecimal
 {
 	if (!Number.isSafeInteger(places))
 	{

@@ -1,5 +1,5 @@
 import type { CalculationContext } from '../../CalculationContext.js';
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import { getDecimalState } from '../../DecimalState.js';
 import { ROUND_DOWN } from '../../config/RoundingModes.js';
 import { abs } from '../arithmetic/abs.js';
@@ -13,7 +13,7 @@ import { finalise } from '../utils/finalise.js';
 import { precision } from '../utils/precision.js';
 
 // Return the inverse hyperbolic tangent of x.
-export function atanh(x: Decimal, context: CalculationContext): Decimal
+export function atanh(x: KernelDecimal, context: CalculationContext): KernelDecimal
 {
 	const state = getDecimalState(x);
 	if (!isFinite(x)) return context.create(NaN);

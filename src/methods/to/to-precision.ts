@@ -1,5 +1,5 @@
 import { DecimalConstants } from "../../InternalConstants.js";
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import type { CalculationContext } from '../../CalculationContext.js';
 import type { RoundingCode } from '../../config/RoundingModes.js';
 import { checkInt32 } from '../utils/check-int.js';
@@ -18,7 +18,7 @@ import { getDecimalState } from '../../DecimalState.js';
 // [sd] {number} Significant digits. Integer, 1 to MAX_DIGITS inclusive.
 // rm {RoundingCode} Validated and defaulted by the public method before dispatch.
 //
-export function toPrecision(x: Decimal, sd : number | undefined, rm : RoundingCode, context : CalculationContext) : string
+export function toPrecision(x: KernelDecimal, sd : number | undefined, rm : RoundingCode, context : CalculationContext) : string
 {
 	let str: string;
 	const config = context.config;
@@ -31,7 +31,7 @@ export function toPrecision(x: Decimal, sd : number | undefined, rm : RoundingCo
 	else
 	{
 		checkInt32(sd, 1, DecimalConstants.MAX_DIGITS);
-		const formattingContext = context.withoutLimits();
+		const formattingContext = context.forIntermediate();
 		const y = finalise(formattingContext.create(x), sd, rm, undefined, formattingContext);
 		const e = getDecimalState(y).e;
 		str = formatFinite(y, sd <= e || e <= config.toExpNeg, sd, config.maxOutputDigits);

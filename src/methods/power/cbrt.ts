@@ -1,4 +1,4 @@
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import type { CalculationContext } from '../../CalculationContext.js';
 import { ROUND_DOWN, ROUND_UP } from '../../config/RoundingModes.js';
 import { finalise } from '../utils/finalise.js';
@@ -27,7 +27,7 @@ import { getDecimalState, getMutableDecimalState } from '../../DecimalState.js';
 //
 // Math.cbrt(x) = (x < 0 ? -Math.pow(-x, 1/3) : Math.pow(x, 1/3))
 //
-export function cbrt(x: Decimal, context: CalculationContext) : Decimal
+export function cbrt(x: KernelDecimal, context: CalculationContext) : KernelDecimal
 {
 	const xState = getDecimalState(x);
 	var e, m, n, r, rep, s, sd, t, t3, t3plusx;
@@ -38,7 +38,7 @@ export function cbrt(x: Decimal, context: CalculationContext) : Decimal
 	}
 
 	const precision = context.precision;
-	let workingContext = context.withoutLimits();
+	let workingContext = context.forIntermediate();
 
 	// Initial estimate.
 	s = xState.s * Math.pow(xState.s * toNumber(x), 1 / 3);

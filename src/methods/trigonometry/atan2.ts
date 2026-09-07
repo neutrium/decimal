@@ -1,5 +1,6 @@
 import type { CalculationContext } from '../../CalculationContext.js';
-import type { Decimal, DecimalValue } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
+import type { DecimalValue } from '../../DecimalBase.js';
 import { getDecimalState, getMutableDecimalState } from '../../DecimalState.js';
 import { ROUND_DOWN } from '../../config/RoundingModes.js';
 import { add, sub } from "../arithmetic/add-subtract.js";
@@ -10,7 +11,7 @@ import { atan } from './atan.js';
 import { getPi } from './get-pi.js';
 
 // Return atan(y / x) in radians, preserving the quadrant in the range [-pi, pi].
-export function atan2(yValue: DecimalValue, xValue: DecimalValue, context: CalculationContext): Decimal
+export function atan2(yValue: DecimalValue, xValue: DecimalValue, context: CalculationContext): KernelDecimal
 {
 	let x = context.createExact(xValue);
 	const y = context.createExact(yValue);
@@ -19,7 +20,7 @@ export function atan2(yValue: DecimalValue, xValue: DecimalValue, context: Calcu
 	const workingPrecision = precision + 4;
 	const xState = getDecimalState(x);
 	const yState = getDecimalState(y);
-	let result: Decimal;
+	let result: KernelDecimal;
 
 	if (!yState.s || !xState.s)
 	{

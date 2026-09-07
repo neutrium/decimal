@@ -1,5 +1,5 @@
 import type { CalculationContext } from '../../CalculationContext.js';
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import { getDecimalState } from '../../DecimalState.js';
 import { ROUND_DOWN } from '../../config/RoundingModes.js';
 import { divideSignificant } from '../arithmetic/div.js';
@@ -8,7 +8,7 @@ import { cosh } from './cosh.js';
 import { sinh } from './sinh.js';
 
 // Return the hyperbolic tangent of x.
-export function tanh(x: Decimal, context: CalculationContext): Decimal
+export function tanh(x: KernelDecimal, context: CalculationContext): KernelDecimal
 {
 	if (!isFinite(x))
 	{

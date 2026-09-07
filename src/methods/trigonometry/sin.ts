@@ -1,4 +1,4 @@
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { DecimalConstants } from "../../InternalConstants.js";
 import { ROUND_DOWN } from "../../config/RoundingModes.js";
@@ -27,7 +27,7 @@ import { reciprocalPowerOfFive } from "./argument-reduction-scale.js";
 // sin(-Infinity) = NaN
 // sin(NaN)       = NaN
 //
-export function sin(x: Decimal, context : CalculationContext) : Decimal
+export function sin(x: KernelDecimal, context : CalculationContext) : KernelDecimal
 {
 	let pr, rm;
 
@@ -64,7 +64,7 @@ export function sin(x: Decimal, context : CalculationContext) : Decimal
 // sin(x) = x - x^3/3! + x^5/5! - ...
 // |x| < pi/2
 //
-export function sine(x : Decimal, context : CalculationContext) : Decimal
+export function sine(x : KernelDecimal, context : CalculationContext) : KernelDecimal
 {
 	if(isFinite(x))
 	{

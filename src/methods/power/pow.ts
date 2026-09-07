@@ -1,5 +1,6 @@
 import { DecimalConstants } from "../../InternalConstants.js";
-import type { Decimal, DecimalValue } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
+import type { DecimalValue } from '../../DecimalBase.js';
 import type { CalculationContext } from '../../CalculationContext.js';
 import { ROUND_DOWN, ROUND_UP } from '../../config/RoundingModes.js';
 import { finalise } from '../utils/finalise.js'
@@ -53,7 +54,7 @@ import { getDecimalState, getMutableDecimalState } from '../../DecimalState.js';
 //
 // If a result is incorrectly rounded the maximum error will be 1 ulp (unit in last place).
 //
-export function pow(x: Decimal, yy : DecimalValue, context : CalculationContext) : Decimal
+export function pow(x: KernelDecimal, yy : DecimalValue, context : CalculationContext) : KernelDecimal
 {
 	let e, k, pr, r, rm, sign, yIsInt,
 		y = context.createExact(yy),
@@ -119,7 +120,7 @@ export function pow(x: Decimal, yy : DecimalValue, context : CalculationContext)
 		return context.create(e > 0 ? sign / 0 : 0);
 	}
 
-	let workingContext = context.with({ external: false, roundingCode: ROUND_DOWN });
+	let workingContext = context.with({ boundary: 'intermediate', roundingCode: ROUND_DOWN });
 	// x is already an independent copy; changing its sign cannot affect the caller.
 	getMutableDecimalState(x).s = 1;
 
@@ -174,9 +175,9 @@ export function pow(x: Decimal, yy : DecimalValue, context : CalculationContext)
 //
 // Implements 'exponentiation by squaring'. Called by `pow` and `parseOther`.
 //
-function intPow(x : Decimal, n : number, pr : number, context : CalculationContext) : Decimal
+function intPow(x : KernelDecimal, n : number, pr : number, context : CalculationContext) : KernelDecimal
 {
-	const workingContext = context.withoutLimits();
+	const workingContext = context.forIntermediate();
 	let isTruncated,
 		r = workingContext.create(1),
 		// Max n of 9007199254740991 takes 53 loop iterations.

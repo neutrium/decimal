@@ -1,4 +1,4 @@
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { finalise } from "../utils/finalise.js";
 import { getMutableDecimalState } from '../../DecimalState.js';
@@ -6,7 +6,7 @@ import { getMutableDecimalState } from '../../DecimalState.js';
 //
 // Return a new Decimal whose value is the value of `x` negated, i.e. as if multiplied by -1
 //
-export function neg(xx: Decimal, context: CalculationContext) : Decimal
+export function neg(xx: KernelDecimal, context: CalculationContext) : KernelDecimal
 {
 	const x = context.createExact(xx);
 	const state = getMutableDecimalState(x);

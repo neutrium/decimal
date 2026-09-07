@@ -1,4 +1,5 @@
-import type { Decimal, DecimalValue } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
+import type { DecimalValue } from '../../DecimalBase.js';
 import type { CalculationContext } from '../../CalculationContext.js';
 import { MODULO_EUCLID, ROUND_FLOOR } from '../../config/RoundingModes.js';
 import { finalise } from '../utils/finalise.js';
@@ -31,7 +32,7 @@ import { normaliseOperand } from '../utils/normalise-operand.js';
 //   I % N =  N
 //   I % I =  N
 //
-export function mod(x: Decimal, yy : DecimalValue, context : CalculationContext) : Decimal
+export function mod(x: KernelDecimal, yy : DecimalValue, context : CalculationContext) : KernelDecimal
 {
 	let q;
 	let y = normaliseOperand(yy, context);
@@ -51,7 +52,7 @@ export function mod(x: Decimal, yy : DecimalValue, context : CalculationContext)
 	}
 
 	// Prevent rounding of intermediate calculations.
-	const workingContext = context.withoutLimits();
+	const workingContext = context.forIntermediate();
 	const moduloCode = context.moduloCode;
 
 	if (moduloCode === MODULO_EUCLID)

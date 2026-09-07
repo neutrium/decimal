@@ -1,5 +1,3 @@
-import { PI_STR, LN10_STR } from './constants.js'
-
 /** @internal Numeric limits and coefficient-storage parameters used by Decimal. */
 export const DecimalConstants = Object.freeze({
 	BASE: 1e7,
@@ -10,8 +8,5 @@ export const DecimalConstants = Object.freeze({
 	// The maximum exponent magnitude.
 	// The limit on the value of `toExpNeg`, `toExpPos`.
 	// Values: 0 to 9e15
-	EXP_LIMIT: 9e15,
-
-	PI_PRECISION: PI_STR.length - 1,
-	LN10_PRECISION: LN10_STR.length - 1
+	EXP_LIMIT: 9e15
 });

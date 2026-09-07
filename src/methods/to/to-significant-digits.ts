@@ -1,5 +1,5 @@
 import { DecimalConstants } from "../../InternalConstants.js";
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import type { RoundingCode } from "../../config/RoundingModes.js";
 import { checkInt32 } from "../utils/check-int.js";
@@ -13,11 +13,11 @@ import { finalise } from "../utils/finalise.js";
 // rm {RoundingCode} Validated and defaulted by the public method before dispatch.
 //
 export function toSignificantDigits(
-	x: Decimal,
+	x: KernelDecimal,
 	sd : number | undefined,
 	rm : RoundingCode,
 	context : CalculationContext
-) : Decimal
+) : KernelDecimal
 {
 	if (sd === void 0)
 	{

@@ -1,5 +1,6 @@
 import { DecimalConstants } from "../../InternalConstants.js";
-import type { Decimal, DecimalValue } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
+import type { DecimalValue } from "../../DecimalBase.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { finalise } from "../utils/finalise.js";
 import { getBase10Exponent } from "../utils/get-base-10-exponent.js"
@@ -7,6 +8,7 @@ import { removeLeadingZeros } from "../utils/digit-array.js";
 import { normaliseOperand } from '../utils/normalise-operand.js';
 import { getDecimalState, getMutableDecimalState } from '../../DecimalState.js';
 import { refineRoundedBounds } from '../utils/verified-rounding.js';
+import { BIGINT_MULTIPLICATION_WORDS, digitsPrefixToBigInt, multiplyCoefficients } from './coefficients/multiply.js';
 
 //
 // Return a new Decimal whose value is `x` times `y`, rounded to `precision` significant
@@ -28,7 +30,7 @@ import { refineRoundedBounds } from '../utils/verified-rounding.js';
 //  I * N = N
 //  I * I = I
 //
-export function mul(x: Decimal, yy : DecimalValue, context : CalculationContext) : Decimal
+export function mul(x: KernelDecimal, yy : DecimalValue, context : CalculationContext) : KernelDecimal
 {
 	const y = normaliseOperand(yy, context);
 	const existingOperand = y === yy;
@@ -60,15 +62,13 @@ export function mul(x: Decimal, yy : DecimalValue, context : CalculationContext)
 
 	e = Math.floor(xState.e / LOG_BASE) + Math.floor(yState.e / LOG_BASE);
 
-	if (context.external && xd.length + yd.length >= 256)
+	if ((context.boundary === 'public') && xd.length + yd.length >= BIGINT_MULTIPLICATION_WORDS)
 	{
 		const rounded = multiplyRoundedPrefixes(x, y, sign, context);
 		if (rounded) return rounded;
 	}
 
-	r = xd.length + yd.length >= 256
-		? multiplyDigitsWithBigInt(xd, yd)
-		: xd === yd ? squareDigits(xd) : multiplyDigits(xd, yd);
+	r = multiplyCoefficients(xd, yd);
 
 	if (r[0])
 	{
@@ -100,7 +100,7 @@ export function mul(x: Decimal, yy : DecimalValue, context : CalculationContext)
 		state.e = resultExponent;
 	}
 
-	return context.external
+	return (context.boundary === 'public')
 		? finalise(result, context.precision, context.roundingCode, undefined, context)
 		: result;
 }
@@ -111,17 +111,16 @@ export function mul(x: Decimal, yy : DecimalValue, context : CalculationContext)
  * result is accepted only when both conservative endpoints round identically.
  */
 function multiplyRoundedPrefixes(
-	x : Decimal,
-	y : Decimal,
+	x : KernelDecimal,
+	y : KernelDecimal,
 	sign : number,
 	context : CalculationContext
-) : Decimal | undefined
+) : KernelDecimal | undefined
 {
 	const xState = getDecimalState(x);
 	const yState = getDecimalState(y);
 	const xd = xState.d!;
 	const yd = yState.d!;
-	const base = BigInt(DecimalConstants.BASE);
 
 	return refineRoundedBounds(
 		context,
@@ -130,10 +129,10 @@ function multiplyRoundedPrefixes(
 		keep => {
 			const xLength = Math.min(keep, xd.length);
 			const yLength = Math.min(keep, yd.length);
-			const xPrefix = digitsPrefixToBigInt(xd, xLength, base);
+			const xPrefix = digitsPrefixToBigInt(xd, xLength);
 			const yPrefix = xd === yd && xLength === yLength
 				? xPrefix
-				: digitsPrefixToBigInt(yd, yLength, base);
+				: digitsPrefixToBigInt(yd, yLength);
 			const xTruncated = xLength < xd.length;
 			const yTruncated = yLength < yd.length;
 			const scale = Math.floor(xState.e / DecimalConstants.LOG_BASE) - xLength + 1 +
@@ -148,24 +147,12 @@ function multiplyRoundedPrefixes(
 	);
 }
 
-function digitsPrefixToBigInt(digits : readonly number[], length : number, base : bigint) : bigint
-{
-	let coefficient = 0n;
-
-	for (let i = 0; i < length; i++)
-	{
-		coefficient = coefficient * base + BigInt(digits[i]!);
-	}
-
-	return coefficient;
-}
-
 function decimalFromScaledCoefficient(
 	coefficient : bigint,
 	scale : number,
 	sign : number,
 	context : CalculationContext
-) : Decimal
+) : KernelDecimal
 {
 	const source = coefficient.toString();
 	const firstLength = source.length % DecimalConstants.LOG_BASE || DecimalConstants.LOG_BASE;
@@ -181,112 +168,4 @@ function decimalFromScaledCoefficient(
 		e: (scale + digits.length - 1) * DecimalConstants.LOG_BASE + firstLength - 1,
 		s: sign
 	});
-}
-
-/** Use the runtime's sub-quadratic BigInt kernel once it is faster than word convolution. */
-function multiplyDigitsWithBigInt(a : readonly number[], b : readonly number[]) : number[]
-{
-	const x = digitsToBigInt(a);
-	const y = a === b ? x : digitsToBigInt(b);
-
-	const coefficient = (x * y).toString();
-	const expectedLength = a.length + b.length;
-	const result = new Array<number>(expectedLength);
-	const actualLength = Math.ceil(coefficient.length / DecimalConstants.LOG_BASE);
-	const offset = expectedLength - actualLength;
-	let sourceIndex = coefficient.length % DecimalConstants.LOG_BASE || DecimalConstants.LOG_BASE;
-	let targetIndex = offset;
-
-	if (offset)
-	{
-		result[0] = 0;
-	}
-
-	result[targetIndex++] = Number(coefficient.slice(0, sourceIndex));
-
-	while (sourceIndex < coefficient.length)
-	{
-		const end = sourceIndex + DecimalConstants.LOG_BASE;
-		result[targetIndex++] = Number(coefficient.slice(sourceIndex, end));
-		sourceIndex = end;
-	}
-
-	return result;
-}
-
-/** Convert base-1e7 coefficient words to an exact BigInt in one native parse. */
-function digitsToBigInt(digits : readonly number[]) : bigint
-{
-	const chunks = new Array<string>(digits.length);
-	chunks[0] = String(digits[0]!);
-
-	for (let i = 1; i < digits.length; i++)
-	{
-		chunks[i] = String(digits[i]!).padStart(DecimalConstants.LOG_BASE, '0');
-	}
-
-	return BigInt(chunks.join(''));
-}
-
-function multiplyDigits(a : readonly number[], b : readonly number[]) : number[]
-{
-	if (a.length < b.length)
-	{
-		[a, b] = [b, a];
-	}
-
-	const base = DecimalConstants.BASE;
-	const result : number[] = [];
-
-	for (let i = a.length + b.length; i--;)
-	{
-		result.push(0);
-	}
-
-	for (let i = b.length; i--;)
-	{
-		let carry = 0;
-		let k = a.length + i;
-
-		for (; k > i; k--)
-		{
-			const product = result[k]! + b[i]! * a[k - i - 1]! + carry;
-			// product < base² < 2^53: derive the exact remainder from the quotient.
-			carry = product / base | 0;
-			result[k] = product - carry * base;
-		}
-
-		result[k] = carry;
-	}
-	return result;
-}
-
-/** Square using each off-diagonal product once, doubling it for its symmetric partner. */
-function squareDigits(digits : readonly number[]) : number[]
-{
-	const base = DecimalConstants.BASE;
-	const result : number[] = [];
-	for (let i = digits.length * 2; i--;) result.push(0);
-
-	for (let i = digits.length; i--;)
-	{
-		const word = digits[i]!;
-		let k = i * 2 + 1;
-		let product = result[k]! + word * word;
-		let carry = product / base | 0;
-		result[k] = product - carry * base;
-
-		for (let j = i; j--;)
-		{
-			k--;
-			product = result[k]! + 2 * word * digits[j]! + carry;
-			carry = product / base | 0;
-			result[k] = product - carry * base;
-		}
-
-		// This carry slot may temporarily exceed base; the next row normalizes it.
-		// Even doubled products plus carry remain below 2 * base² + 2 * base < 2^53.
-		result[i] = carry;
-	}
-	return result;
 }

@@ -8,6 +8,7 @@ import {
 	type DecimalFraction,
 	type DecimalLimits,
 	type DecimalValue,
+	type DecimalValueIterable,
 	type ModuloMode,
 	type RoundingMode
 } from '@neutrium/decimal';
@@ -42,6 +43,9 @@ const precision: number = rounded.precision(trailingZeroes);
 const fraction: DecimalFraction = rounded.toFraction(100);
 const minimum: Decimal = Decimal.min(value, input, 2, new Decimal(3), -4);
 const maximum: Decimal = Decimal.max(value, 1, '4', 3);
+const iterableValues: DecimalValueIterable = [value, 1, '4', 3];
+const iterableMinimum: Decimal = Decimal.min(iterableValues);
+const iterableMaximum: Decimal = Decimal.max(new Set<DecimalValue>([value, 1, '4', 3]));
 const [numerator, denominator] = fraction;
 const maybeDenominator: Decimal | undefined = denominator;
 // @ts-expect-error Fraction tuples are immutable at runtime and in the public type.
@@ -53,6 +57,8 @@ void precision;
 void nearestInteger;
 void minimum;
 void maximum;
+void iterableMinimum;
+void iterableMaximum;
 void numerator;
 void maybeDenominator;
 void bigintInput;
@@ -130,8 +136,10 @@ value.toNearest(2, 4);
 new Decimal({ value: 1 });
 // @ts-expect-error Minimum requires at least one value.
 Decimal.min();
-// @ts-expect-error Collections must be spread by the caller.
-Decimal.max([1, 2]);
+// @ts-expect-error Iterable values must be valid Decimal inputs.
+Decimal.max(new Set([{}, 1]));
+// @ts-expect-error An iterable cannot be combined with additional scalar arguments.
+Decimal.min([1, 2], 3);
 // @ts-expect-error Internal representation is not part of the package declaration.
 value.d;
 // @ts-expect-error Public limits are immutable.

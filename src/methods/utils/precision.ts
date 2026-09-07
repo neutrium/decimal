@@ -1,4 +1,4 @@
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import { invalidArgumentError } from "../../errors.js";
 import { getPrecision } from "./get-precision.js";
 import { getDecimalState } from '../../DecimalState.js';
@@ -7,7 +7,7 @@ import { getDecimalState } from '../../DecimalState.js';
 // Return the number of significant digits of the value of this Decimal.
 // [z] {boolean} Whether to count integer-part trailing zeros.
 //
-export function precision(x: Decimal, z ?: boolean) : number
+export function precision(x: KernelDecimal, z ?: boolean) : number
 {
 	const { d, e } = getDecimalState(x);
 	let k;

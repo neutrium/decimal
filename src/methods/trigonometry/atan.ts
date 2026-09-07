@@ -1,5 +1,6 @@
+import { PI_PRECISION } from '../../constants.js';
 import type { CalculationContext } from '../../CalculationContext.js';
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import { getDecimalState, getMutableDecimalState } from '../../DecimalState.js';
 import { DecimalConstants } from '../../InternalConstants.js';
 import { ROUND_DOWN } from '../../config/RoundingModes.js';
@@ -14,7 +15,7 @@ import { finalise } from '../utils/finalise.js';
 import { getPi } from './get-pi.js';
 
 // Return the arctangent of x in radians, in the range [-pi/2, pi/2].
-export function atan(x: Decimal, context: CalculationContext): Decimal
+export function atan(x: KernelDecimal, context: CalculationContext): KernelDecimal
 {
 	let index, termIndex, reductions, denominator = 1, previous, intermediate, result, squared;
 	const precision = context.precision;
@@ -25,7 +26,7 @@ export function atan(x: Decimal, context: CalculationContext): Decimal
 		const state = getDecimalState(x);
 		if (!state.s) return context.create(NaN);
 
-		if (precision + 4 <= DecimalConstants.PI_PRECISION)
+		if (precision + 4 <= PI_PRECISION)
 		{
 			result = mul(getPi(precision + 4, rounding, context), 0.5, context);
 			getMutableDecimalState(result).s = state.s;
@@ -38,7 +39,7 @@ export function atan(x: Decimal, context: CalculationContext): Decimal
 	}
 	else if (
 		compareDecimals(abs(x, context), context.create(1)) === 0 &&
-		precision + 4 <= DecimalConstants.PI_PRECISION
+		precision + 4 <= PI_PRECISION
 	)
 	{
 		result = mul(getPi(precision + 4, rounding, context), 0.25, context);
@@ -58,7 +59,7 @@ export function atan(x: Decimal, context: CalculationContext): Decimal
 		x = divideSignificant(x, add(root, 1, argumentContext), argumentContext);
 	}
 
-	const seriesContext = argumentContext.with({ external: false });
+	const seriesContext = argumentContext.with({ boundary: 'intermediate' });
 	termIndex = Math.ceil(workingPrecision / DecimalConstants.LOG_BASE);
 	squared = mul(x, x, seriesContext);
 	result = seriesContext.create(x);

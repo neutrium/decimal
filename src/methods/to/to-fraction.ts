@@ -1,5 +1,6 @@
 import { DecimalConstants } from "../../InternalConstants.js";
-import type { Decimal, DecimalFraction, DecimalValue } from "../../Decimal.js";
+import type { KernelDecimal, KernelDecimalFraction } from "../../KernelDecimal.js";
+import type { DecimalValue } from "../../DecimalBase.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { ROUND_DOWN } from "../../config/RoundingModes.js";
 import { invalidArgumentError } from "../../errors.js";
@@ -23,7 +24,7 @@ import { getDecimalState, getMutableDecimalState } from '../../DecimalState.js';
 //
 // [maxD] {DecimalValue} Maximum denominator. Integer >= 1 and < Infinity.
 //
-export function toFraction(x: Decimal, denominator : DecimalValue | undefined, context : CalculationContext) : DecimalFraction
+export function toFraction(x: KernelDecimal, denominator : DecimalValue | undefined, context : CalculationContext) : KernelDecimalFraction
 {
 	const xState = getDecimalState(x);
 	let d0, d1, d2, k, n, n0, n1, q, r,
@@ -62,7 +63,7 @@ export function toFraction(x: Decimal, denominator : DecimalValue | undefined, c
 	}
 
 	e = xd.length * DecimalConstants.LOG_BASE * 2;
-	const workingContext = context.with({ external: false, precision: e });
+	const workingContext = context.with({ boundary: 'intermediate', precision: e });
 	n = workingContext.create(digitsToString(xd));
 	d = workingContext.create(d);
 	d0 = workingContext.create(d0);

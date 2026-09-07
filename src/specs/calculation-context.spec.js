@@ -2,6 +2,9 @@ import { CalculationContext } from '../CalculationContext.ts';
 import { Decimal } from '../Decimal.ts';
 import { getDecimalState } from '../DecimalState.ts';
 import { div } from '../methods/arithmetic/div.ts';
+import { add } from '../methods/arithmetic/add-subtract.ts';
+import { mul } from '../methods/arithmetic/mul.ts';
+import { finalise } from '../methods/utils/finalise.ts';
 
 describe('CalculationContext', () => {
 	it('captures an immutable constructor configuration snapshot', () => {
@@ -18,28 +21,54 @@ describe('CalculationContext', () => {
 
 	it('derives a new context without modifying its parent', () => {
 		const context = new CalculationContext(Decimal, Decimal.config);
-		const working = context.with({ external: false, precision: 40, roundingCode: 1 });
+		const working = context.with({ boundary: 'intermediate', precision: 40, roundingCode: 1 });
 
 		expect(working).not.toBe(context);
 		expect(working.Constructor).toBe(context.Constructor);
-		expect(working.external).toBe(false);
+		expect(working.boundary).toBe('intermediate');
 		expect(working.config).toBe(context.config);
 		expect(working.precision).toBe(40);
 		expect(working.roundingCode).toBe(1);
-		expect(context.external).toBe(true);
+		expect(context.boundary).toBe('public');
 		expect(context.precision).not.toBe(40);
 	});
 
-	it('reuses its unlimited context without changing calculation policy', () => {
+	it('reuses intermediate policy while retaining precision and rounding settings', () => {
 		const context = new CalculationContext(Decimal, Decimal.config);
-		const unlimited = context.withoutLimits();
+		const unlimited = context.forIntermediate();
 
-		expect(context.withoutLimits()).toBe(unlimited);
-		expect(unlimited.withoutLimits()).toBe(unlimited);
+		expect(context.forIntermediate()).toBe(unlimited);
+		expect(unlimited.forIntermediate()).toBe(unlimited);
 		expect(unlimited.config).toBe(context.config);
 		expect(unlimited.precision).toBe(context.precision);
 		expect(unlimited.roundingCode).toBe(context.roundingCode);
-		expect(unlimited.external).toBe(false);
+		expect(unlimited.boundary).toBe('intermediate');
+	});
+
+	it('makes automatic rounding, explicit rounding, and exponent boundaries distinct', () => {
+		const Clone = Decimal.clone({ precision: 2, rounding: 'down', maxE: 2, minE: -2 });
+		const context = new CalculationContext(Clone, Clone.config);
+		const working = context.forIntermediate();
+		const value = working.create('1.234');
+		expect(add(value, 0, context).toValue()).toBe('1.2');
+		expect(add(value, 0, working).toValue()).toBe('1.234');
+		expect(mul(value, 2, context).toValue()).toBe('2.4');
+		expect(mul(value, 2, working).toValue()).toBe('2.468');
+		// Division still has an explicit working precision, even for intermediates.
+		expect(div(working.create(1), 3, working).toValue()).toBe('0.33');
+		expect(finalise(working.create(value), 2, working.roundingCode, false, working).toValue()).toBe('1.2');
+		expect(working.create('1e3').toValue()).toBe('1000');
+		expect(working.create('1e-3').toValue()).toBe('0.001');
+		expect(context.create('1e3').toValue()).toBe('Infinity');
+		expect(context.create('1e-3').toValue()).toBe('0');
+		expect(working.with({ boundary: 'public' }).boundary).toBe('public');
+		expect(working.with({ precision: 4 }).boundary).toBe('intermediate');
+	});
+
+	it('retains resource budgets for intermediate parsing', () => {
+		const Clone = Decimal.clone({ maxPrefixedDigits: 3 });
+		const context = new CalculationContext(Clone, Clone.config).forIntermediate();
+		expect(() => context.create('0b1p100')).toThrow();
 	});
 
 	it('constructs intermediate values with the configured clone', () => {
@@ -79,7 +108,7 @@ describe('CalculationContext', () => {
 	it('uses transient parsing contexts without attaching them to values', () => {
 		const Clone = Decimal.clone({ maxE: 2 });
 		const context = new CalculationContext(Clone, Clone.config);
-		const internal = context.with({ external: false });
+		const internal = context.with({ boundary: 'intermediate' });
 		const value = internal.create('1e3');
 
 		expect(context.create('1e3').isFinite()).toBe(false);
@@ -98,7 +127,7 @@ describe('CalculationContext', () => {
 		}
 		TaggedDecimal.config = { minE: -1, maxE: 2 };
 		const external = new CalculationContext(TaggedDecimal, TaggedDecimal.config);
-		const internal = external.with({ external: false });
+		const internal = external.with({ boundary: 'intermediate' });
 
 		expect(external.Constructor).toBe(Decimal);
 		for (const input of [0.03125, '0.03125', 1000, '1000', 1000n, new Decimal('1000')]) {

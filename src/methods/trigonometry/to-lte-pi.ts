@@ -1,4 +1,4 @@
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { ROUND_DOWN } from "../../config/RoundingModes.js";
 import { isOdd } from "../compare/identity-compare.js";
@@ -16,10 +16,10 @@ import { getDecimalState } from '../../DecimalState.js';
 //
 export type ReducedAngle = {
 	readonly quadrant: 1 | 2 | 3 | 4;
-	readonly value: Decimal;
+	readonly value: KernelDecimal;
 };
 
-export function toLessThanHalfPi(x : Decimal, context : CalculationContext) : ReducedAngle
+export function toLessThanHalfPi(x : KernelDecimal, context : CalculationContext) : ReducedAngle
 {
 	let t,
 		isNeg = getDecimalState(x).s < 0,

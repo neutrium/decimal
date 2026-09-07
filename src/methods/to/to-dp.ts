@@ -1,5 +1,5 @@
 import { DecimalConstants } from "../../InternalConstants.js";
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import type { RoundingCode } from "../../config/RoundingModes.js";
 import { checkInt32 } from "../utils/check-int.js";
@@ -15,7 +15,7 @@ import { getDecimalState } from '../../DecimalState.js';
 // [dp] {number} Decimal places. Integer, 0 to MAX_DIGITS inclusive.
 // rm {RoundingCode} Validated and defaulted by the public method before dispatch.
 //
-export function toDP(x: Decimal, dp : number | undefined, rm: RoundingCode, context : CalculationContext) : Decimal
+export function toDP(x: KernelDecimal, dp : number | undefined, rm: RoundingCode, context : CalculationContext) : KernelDecimal
 {
 	if (dp === void 0)
 	{

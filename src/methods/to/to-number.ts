@@ -1,4 +1,4 @@
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import { finiteToString } from "./finite-to-string.js";
 import { getDecimalState } from '../../DecimalState.js';
 
@@ -6,7 +6,7 @@ import { getDecimalState } from '../../DecimalState.js';
 // Return the value of this Decimal converted to a number primitive.
 // Zero keeps its sign.
 //
-export function toNumber(x: Decimal) : number
+export function toNumber(x: KernelDecimal) : number
 {
 	const { d, e, s } = getDecimalState(x);
 	// Avoid serializing coefficients when the exponent alone determines the binary64 result.

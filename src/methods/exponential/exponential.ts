@@ -1,4 +1,4 @@
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { ROUND_DOWN } from "../../config/RoundingModes.js";
 import { divideSignificant } from "../arithmetic/div.js";
@@ -40,7 +40,7 @@ import { getDecimalState } from '../../DecimalState.js';
 //
 //  The result will always be correctly rounded.
 //
-export function naturalExponential(x : Decimal, sd : number | undefined, context : CalculationContext) : Decimal
+export function naturalExponential(x : KernelDecimal, sd : number | undefined, context : CalculationContext) : KernelDecimal
 {
 	let xState = getDecimalState(x);
 	let denominator, guard, j, pow, sum, t, wpr,
@@ -65,7 +65,7 @@ export function naturalExponential(x : Decimal, sd : number | undefined, context
 		wpr = sd;
 	}
 
-	let workingContext = context.withoutLimits();
+	let workingContext = context.forIntermediate();
 	t = workingContext.create(0.03125);
 
 	// while abs(x) >= 0.1

@@ -1,5 +1,5 @@
 import type { CalculationContext } from '../../CalculationContext.js';
-import type { Decimal } from '../../Decimal.js';
+import type { KernelDecimal } from '../../KernelDecimal.js';
 import { ROUND_DOWN } from '../../config/RoundingModes.js';
 import { abs } from '../arithmetic/abs.js';
 import { mul } from '../arithmetic/mul.js';
@@ -10,7 +10,7 @@ import { asin } from './asin.js';
 import { getPi } from './get-pi.js';
 
 // Return the arccosine of x in radians, in the range [0, pi].
-export function acos(x: Decimal, context: CalculationContext): Decimal
+export function acos(x: KernelDecimal, context: CalculationContext): KernelDecimal
 {
 	const comparison = compareDecimals(abs(x, context), context.create(1));
 	const precision = context.precision;

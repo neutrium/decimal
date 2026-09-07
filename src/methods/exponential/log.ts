@@ -1,4 +1,5 @@
-import type { Decimal, DecimalValue } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
+import type { DecimalValue } from "../../DecimalBase.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { ROUND_DOWN, ROUND_UP } from "../../config/RoundingModes.js";
 import { divideSignificant } from "../arithmetic/div.js";
@@ -36,10 +37,10 @@ import { getDecimalState } from '../../DecimalState.js';
 // log[b](Infinity) = Infinity
 // log[b](NaN)      = NaN
 //
-export function log(arg: Decimal, baseN : DecimalValue, context : CalculationContext) : Decimal
+export function log(arg: KernelDecimal, baseN : DecimalValue, context : CalculationContext) : KernelDecimal
 {
 	let baseBelowOne = false, isBase10, d, denominator, k, inf, num, sd, r,
-		base : Decimal,
+		base : KernelDecimal,
 		pr = context.precision,
 		rm = context.roundingCode,
 		guard = 5;
@@ -94,7 +95,7 @@ export function log(arg: Decimal, baseN : DecimalValue, context : CalculationCon
 		}
 	}
 
-	const workingContext = context.withoutLimits();
+	const workingContext = context.forIntermediate();
 	sd = pr + guard;
 	num = naturalLogarithm(arg, sd, workingContext);
 	denominator = isBase10

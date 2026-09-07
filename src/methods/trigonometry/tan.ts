@@ -1,5 +1,5 @@
 import { DecimalConstants } from "../../InternalConstants.js";
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { ROUND_DOWN, ROUND_UP } from "../../config/RoundingModes.js";
 import { finalise } from "../utils/finalise.js";
@@ -26,7 +26,7 @@ import { getDecimalState, getMutableDecimalState } from '../../DecimalState.js';
 // tan(-Infinity) = NaN
 // tan(NaN)       = NaN
 //
-export function tan(x: Decimal, context : CalculationContext) : Decimal
+export function tan(x: KernelDecimal, context : CalculationContext) : KernelDecimal
 {
 	if (!isFinite(x))
 	{

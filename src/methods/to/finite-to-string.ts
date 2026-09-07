@@ -1,4 +1,4 @@
-import type { Decimal } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
 import { getZeroString } from "../utils/get-zero-string.js";
 import { digitsToString } from "../utils/digits-to-string.js";
 import { isFinite } from "../compare/identity-compare.js";
@@ -8,7 +8,7 @@ import { DecimalConstants } from '../../InternalConstants.js';
 import { getDecimalState } from '../../DecimalState.js';
 
 /** Public formatting policy, kept off the context-free numeric-conversion path. */
-export function formatFinite(x: Decimal, isExp: boolean | undefined, sd: number | undefined, maxDigits: number): string
+export function formatFinite(x: KernelDecimal, isExp: boolean | undefined, sd: number | undefined, maxDigits: number): string
 {
 	const { d, e } = getDecimalState(x);
 
@@ -33,7 +33,7 @@ export function formatFinite(x: Decimal, isExp: boolean | undefined, sd: number 
 	return finiteToString(x, isExp, sd);
 }
 
-export function finiteToString(x : Decimal, isExp? : boolean, sd? : number) : string
+export function finiteToString(x : KernelDecimal, isExp? : boolean, sd? : number) : string
 {
 	const state = getDecimalState(x);
 
@@ -98,7 +98,7 @@ export function finiteToString(x : Decimal, isExp? : boolean, sd? : number) : st
 //
 // ±Infinity, NaN.
 //
-function nonFiniteToString(x : Decimal) : string
+function nonFiniteToString(x : KernelDecimal) : string
 {
 	// Unsigned.
 	const s = getDecimalState(x).s;

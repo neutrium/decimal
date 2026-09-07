@@ -1,6 +1,6 @@
 {
 	"name": "@neutrium/decimal",
-	"version": "2.1.1",
+	"version": "2.2.0",
 	"packageManager": "pnpm@10.34.5",
 	"type": "module",
 	"sideEffects": false,
@@ -9,6 +9,21 @@
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js",
 			"default": "./dist/index.js"
+		},
+		"./core": {
+			"types": "./dist/core.d.ts",
+			"import": "./dist/core.js",
+			"default": "./dist/core.js"
+		},
+		"./arithmetic": {
+			"types": "./dist/arithmetic.d.ts",
+			"import": "./dist/arithmetic.js",
+			"default": "./dist/arithmetic.js"
+		},
+		"./scientific": {
+			"types": "./dist/scientific.d.ts",
+			"import": "./dist/scientific.js",
+			"default": "./dist/scientific.js"
 		}
 	},
 	"files": [
@@ -42,28 +57,38 @@
 		"url": "https://github.com/neutrium/decimal/issues"
 	},
 	"scripts": {
+		"sync:tiers": "node scripts/sync-tiers.mjs --write",
 		"clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
 		"tsc": "tsc",
-		"build": "pnpm run tsc",
+		"build": "pnpm run test:metadata && pnpm run tsc && pnpm run sizes:readme",
+		"sizes:readme": "node scripts/update-readme-sizes.mjs",
 		"benchmark": "pnpm run build && node --expose-gc scripts/benchmark.mjs",
 		"benchmark:json": "tsc && node --expose-gc scripts/benchmark.mjs --json",
-		"docs": "typedoc",
+		"benchmark:smoke": "pnpm run build && pnpm run benchmark:smoke:built",
+		"benchmark:smoke:built": "node scripts/benchmark.mjs --smoke",
+		"demo": "vite demo --host 127.0.0.1 --port 4173 --strictPort --base /demo/",
+		"docs": "pnpm run test:metadata && typedoc && pnpm run docs:demo",
+		"docs:demo": "tsc -p demo/tsconfig.json && vite build demo --base ./ --outDir ../docs/api/demo --emptyOutDir --sourcemap",
 		"docs:check": "typedoc --emit none",
 		"typecheck": "tsc --noEmit",
-		"test:architecture": "node scripts/check-architecture.mjs",
-		"test:types": "pnpm run build && tsc -p tsconfig.type-tests.json",
-		"test:declarations": "pnpm run build && tsc -p tsconfig.declarations.json",
-		"test:package": "pnpm run clean && pnpm run build && node scripts/validate-package.mjs",
-		"verify": "pnpm run typecheck && pnpm run docs:check && pnpm run test:architecture && pnpm run test:types && pnpm run test:declarations && pnpm test && pnpm run test:package",
-		"prepack": "pnpm run clean && pnpm run build && pnpm run docs",
+		"test:architecture": "node --test scripts/specs/*.test.mjs && node scripts/check-architecture.mjs",
+		"test:types": "pnpm run build && pnpm run test:types:built",
+		"test:types:built": "tsc -p tsconfig.type-tests.json",
+		"test:declarations": "pnpm run build && pnpm run test:declarations:built",
+		"test:declarations:built": "tsc -p tsconfig.declarations.json",
+		"test:metadata": "node scripts/sync-tiers.mjs --check",
+		"test:package": "pnpm run clean && pnpm run build && pnpm run test:package:built",
+		"test:package:built": "node scripts/validate-package.mjs",
+		"verify": "pnpm run clean && pnpm run build && pnpm run docs:check && pnpm run test:architecture && pnpm run test:types:built && pnpm run test:declarations:built && pnpm test && pnpm run benchmark:smoke:built && pnpm run test:package:built",
+		"prepack": "pnpm run clean && pnpm run build",
 		"prepublishOnly": "pnpm run verify",
 		"test": "vitest run",
 		"test:watch": "vitest"
 	},
 	"devDependencies": {
-		"esbuild": "^0.28.2",
 		"typedoc": "0.28.20",
 		"typescript": "^5.9.2",
+		"vite": "^8.2.2",
 		"vitest": "^4.1.11"
 	}
 }

@@ -33,20 +33,24 @@ console.log(nativeResult); // 0.30000000000000004
 
 Pass decimal values as strings when their exact value cannot be represented by a JavaScript `number`, particularly for long values and decimal fractions.
 
-For browser applications, import the package through an ESM-aware bundler such as [Vite](https://vite.dev/) or [webpack](https://webpack.js.org/). The package is marked as side-effect-free, so compatible bundlers can remove unused imports.
-
 ## Feature tiers
 
 Import from `@neutrium/decimal` by default to use the full API. If bundle size is a priority, choose the smallest entry point that contains the operations your application needs:
 
-| Entry point | Includes | Approximate minified bundle |
-| --- | --- | ---: |
-| `@neutrium/decimal/core` | Representation, parsing, comparison, predicates, and string/number formatting | 17.4 KB |
-| `@neutrium/decimal/arithmetic` | Core plus arithmetic, rounding, shifting, and fractions | 29.2 KB |
-| `@neutrium/decimal/scientific` | Arithmetic plus powers, logarithms, trigonometry, `PI`, and `atan2` (the complete API) | 43.3 KB |
-| `@neutrium/decimal` | Alias for the scientific tier; retained for compatibility | 43.3 KB |
+<!-- tier-table:start -->
+| Entry point | Includes | Minified size | Budget |
+| --- | --- | ---: | ---: |
+| `@neutrium/decimal/core` | Representation, parsing, comparison, predicates, and string/number formatting | 15.03 KiB | 20 KiB |
+| `@neutrium/decimal/arithmetic` | Core plus arithmetic, rounding, shifting, and fractions | 26.30 KiB | 32 KiB |
+| `@neutrium/decimal/scientific` | Arithmetic plus powers, logarithms, trigonometry, `PI`, and `atan2` (the complete API) | 42.25 KiB | 50 KiB |
+| `@neutrium/decimal` | Alias for the scientific tier; retained for compatibility | 42.24 KiB | 50 KiB |
+<!-- tier-table:end -->
+
+Sizes are measured from the browser smoke fixtures (minified ES2022 IIFE, uncompressed, including fixture code) and refreshed by `pnpm run build`. Actual application sizes depend on usage and bundler settings. Budgets are enforced by `pnpm run test:package`.
 
 Each entry point exports a `Decimal` constructor and the shared configuration, error, input, rounding, modulo, and limits types. The core, arithmetic, and scientific constructors have independent configurations; the root and scientific entry points expose the same complete constructor.
+
+Internally, the implementations form the inheritance chain `DecimalLike` → `CoreDecimal` → `ArithmeticDecimal` → `ScientificDecimal`. The scientific entry point exports its implementation as both `Decimal` and `ScientificDecimal`, and the root entry point re-exports the scientific API. Both names refer to the same constructor and configuration.
 
 Values are interoperable across tiers, so a richer tier can consume a value directly without converting it to a string:
 
@@ -368,9 +372,9 @@ const angle: Decimal = Money.atan2(1, 1);
 
 ## Changelog
 
-### 2.2.0 (unreleased)
+### 2.2.0 - 2026-09-07
 
-- Added feature-tier entry points for core, arithmetic, and scientific use cases.
+- Added feature-tier entry points backed by a shared core → arithmetic → scientific inheritance chain.
 - Added iterable support to `Decimal.min()` and `Decimal.max()`.
 - Added an interactive precision demo and automated demo publishing alongside the API documentation.
 - Improved multiplication performance for large coefficients and expanded package and architecture validation.

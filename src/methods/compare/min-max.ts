@@ -1,4 +1,5 @@
-import type { Decimal, DecimalValue, DecimalValueIterable } from "../../Decimal.js";
+import type { KernelDecimal } from "../../KernelDecimal.js";
+import type { DecimalValue, DecimalValueIterable } from "../../DecimalBase.js";
 import type { CalculationContext } from "../../CalculationContext.js";
 import { compareDecimals } from "./relational-compare.js";
 import { getDecimalState } from '../../DecimalState.js';
@@ -13,7 +14,7 @@ export function max(
 	value : DecimalValue | DecimalValueIterable,
 	context : CalculationContext,
 	...values : DecimalValue[]
-) : Decimal
+) : KernelDecimal
 {
 	return dispatchMaxOrMin(value, values, -1, context);
 }
@@ -26,7 +27,7 @@ export function min(
 	value : DecimalValue | DecimalValueIterable,
 	context : CalculationContext,
 	...values : DecimalValue[]
-) : Decimal
+) : KernelDecimal
 {
 	return dispatchMaxOrMin(value, values, 1, context);
 }
@@ -36,7 +37,7 @@ function dispatchMaxOrMin(
 	values : readonly DecimalValue[],
 	direction : number,
 	context : CalculationContext
-) : Decimal
+) : KernelDecimal
 {
 	if (isDecimalValueIterable(value))
 	{
@@ -54,7 +55,7 @@ function dispatchMaxOrMin(
 //
 // Handle `max` and `min` using `n` as the comparison direction.
 //
-function maxOrMin(value : DecimalValue, values : readonly DecimalValue[], n : number, context : CalculationContext) : Decimal
+function maxOrMin(value : DecimalValue, values : readonly DecimalValue[], n : number, context : CalculationContext) : KernelDecimal
 {
 	let x = normaliseOperand(value, context);
 
@@ -84,9 +85,9 @@ function maxOrMinIterable(
 	values : DecimalValueIterable,
 	direction : number,
 	context : CalculationContext
-) : Decimal
+) : KernelDecimal
 {
-	let selected : Decimal | undefined;
+	let selected : KernelDecimal | undefined;
 
 	for (const candidate of values)
 	{
@@ -119,7 +120,7 @@ function isDecimalValueIterable(value : unknown) : value is DecimalValueIterable
 		typeof (value as { [Symbol.iterator]?: unknown })[Symbol.iterator] === 'function';
 }
 
-function select(x : Decimal, y : Decimal, direction : number) : Decimal
+function select(x : KernelDecimal, y : KernelDecimal, direction : number) : KernelDecimal
 {
 	const comparison = compareDecimals(x, y);
 

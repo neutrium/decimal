@@ -15,7 +15,6 @@
 	"excludeInternal": true,
 	"excludePrivate": true,
 	"excludeProtected": true,
-	"disableSources": false,
 	"gitRevision": "master",
 	"cleanOutputDir": true,
 	"validation": {

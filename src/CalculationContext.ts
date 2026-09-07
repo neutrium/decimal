@@ -1,6 +1,7 @@
-import type { Decimal, DecimalValue } from './Decimal.js';
+import type { KernelDecimal, KernelDecimalConstructor } from './KernelDecimal.js';
+import { decimalEnvironmentAccess, type DecimalValue } from './DecimalBase.js';
 import type { DecimalState } from './DecimalState.js';
-import { getDecimalRuntime, type DecimalRuntime } from './DecimalRuntime.js';
+import type { DecimalEnvironment } from './DecimalEnvironment.js';
 import type { DecimalConfig } from './config/DecimalConfig.js';
 import {
 	getModuloModeCode,
@@ -9,88 +10,94 @@ import {
 	type RoundingCode
 } from './config/RoundingModes.js';
 
+/** Public calculations apply exponent limits and automatic add/mul rounding. */
+export type CalculationBoundary = 'public' | 'intermediate';
+
 export type CalculationContextOverrides = {
-	readonly external?: boolean;
+	readonly boundary?: CalculationBoundary;
 	readonly precision?: number;
 	readonly roundingCode?: RoundingCode;
 };
 
-type ResolvedCalculationContext = {
-	readonly moduloCode: ModuloCode;
-	readonly precision: number;
-	readonly roundingCode: RoundingCode;
-};
-
-const unlimitedContexts = new WeakMap<CalculationContext, CalculationContext>();
+const intermediateContexts = new WeakMap<CalculationContext, CalculationContext>();
 
 /**
  * Immutable state used by one calculation and any intermediate calculations it creates.
  */
 export class CalculationContext
 {
-	readonly Constructor : typeof Decimal;
+	readonly Constructor : KernelDecimalConstructor;
 	/** Original immutable constructor configuration; active derived policy uses the fields below. */
 	readonly config : Readonly<DecimalConfig>;
-	readonly external : boolean;
+	readonly boundary : CalculationBoundary;
 	readonly moduloCode : ModuloCode;
 	readonly precision : number;
 	readonly roundingCode : RoundingCode;
-	readonly #runtime : DecimalRuntime;
+	readonly #environment : DecimalEnvironment;
 
 	constructor(
-		Constructor : typeof Decimal,
+		Constructor : KernelDecimalConstructor,
 		config : Readonly<DecimalConfig>,
-		external = true,
-		resolved ?: ResolvedCalculationContext,
-		runtime ?: DecimalRuntime
+		policy : CalculationContextOverrides = {}
 	)
 	{
-		this.#runtime = runtime ?? getDecimalRuntime(Constructor);
-		this.Constructor = this.#runtime.resolveCalculationConstructor(Constructor);
+		const provider = Constructor as KernelDecimalConstructor & {
+			[decimalEnvironmentAccess]?: () => DecimalEnvironment
+		};
+		const environment = provider[decimalEnvironmentAccess]?.();
+		if (!environment) throw new TypeError('Decimal environment is not initialized');
+		this.#environment = environment;
+		this.Constructor = environment.getCalculationConstructor(Constructor);
 		// Constructor-owned configurations and context-derived configurations are immutable
 		// snapshots, so they can be shared instead of copied for every operation.
 		this.config = Object.isFrozen(config) ? config : Object.freeze({ ...config });
-		this.external = external;
-		this.moduloCode = resolved?.moduloCode ?? getModuloModeCode(config.modulo);
-		this.precision = resolved?.precision ?? config.precision;
-		this.roundingCode = resolved?.roundingCode ?? getRoundingModeCode(config.rounding);
+		this.boundary = policy.boundary ?? 'public';
+		this.moduloCode = getModuloModeCode(config.modulo);
+		this.precision = policy.precision ?? config.precision;
+		this.roundingCode = policy.roundingCode ?? getRoundingModeCode(config.rounding);
 
 		Object.freeze(this);
 	}
 
-	create(value : DecimalValue) : Decimal
+	create(value : DecimalValue) : KernelDecimal
 	{
-		return this.#runtime.createForCalculation(this.Constructor, value, this);
+		return this.#environment.createForCalculation(this.Constructor, value, this);
 	}
 
 	/** Allocate a result whose mutable state is already owned by this calculation. */
-	createResult(state : DecimalState) : Decimal
+	createResult(state : DecimalState) : KernelDecimal
 	{
-		return this.#runtime.createResultForCalculation(this.Constructor, state);
+		return this.#environment.createResultForCalculation(this.Constructor, state);
 	}
 
-	isDecimal(value : unknown) : value is Decimal
+	isDecimal(value : unknown) : value is KernelDecimal
 	{
-		return this.#runtime.isDecimal(value);
+		return this.#environment.isDecimal(value);
 	}
 
 	/** Parse an operand without applying exponent limits, which are output policy. */
-	createExact(value : DecimalValue) : Decimal
+	createExact(value : DecimalValue) : KernelDecimal
 	{
-		return this.withoutLimits().create(value);
+		return this.forIntermediate().create(value);
 	}
 
-	/** Reuse an otherwise identical context which does not apply public exponent limits. */
-	withoutLimits() : CalculationContext
+	/** Reuse intermediate policy: no exponent limits or automatic add/mul rounding.
+	 * Working precision, explicit finalise calls, and resource budgets still apply. */
+	forIntermediate() : CalculationContext
 	{
-		if (!this.external) return this;
+		if (this.boundary === 'intermediate')
+		{
+			return this;
+		}
 
-		let context = unlimitedContexts.get(this);
+		let context = intermediateContexts.get(this);
+
 		if (!context)
 		{
-			context = this.with({ external: false });
-			unlimitedContexts.set(this, context);
+			context = this.with({ boundary: 'intermediate' });
+			intermediateContexts.set(this, context);
 		}
+
 		return context;
 	}
 
@@ -98,19 +105,19 @@ export class CalculationContext
 	{
 		const precision = overrides.precision ?? this.precision;
 		const roundingCode = overrides.roundingCode ?? this.roundingCode;
-		const external = overrides.external ?? this.external;
+		const boundary = overrides.boundary ?? this.boundary;
 
 		if (precision === this.precision &&
 			roundingCode === this.roundingCode &&
-			external === this.external)
-		{
+			boundary === this.boundary
+		){
 			return this;
 		}
 
-		return new CalculationContext(this.Constructor, this.config, external, {
-			moduloCode: this.moduloCode,
+		return new CalculationContext(this.Constructor, this.config, {
+			boundary,
 			precision,
 			roundingCode
-		}, this.#runtime);
+		});
 	}
 }
