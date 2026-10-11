@@ -4,7 +4,7 @@ Arbitrary-precision decimal arithmetic for JavaScript and TypeScript.
 
 `@neutrium/decimal` provides configurable precision and rounding, scientific functions, comparisons, and formatting without the floating-point surprises of JavaScript numbers.
 
-[Try the interactive demo](https://neutrium.github.io/decimal/demo/) to explore the functionality and compare `Decimal` calculations with native JavaScript.
+[Interactive demo](https://neutrium.github.io/decimal/demo/) · [API reference](https://neutrium.github.io/decimal/)
 
 ## Installation
 
