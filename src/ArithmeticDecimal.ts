@@ -11,6 +11,9 @@ import { div, divToInt } from './methods/arithmetic/div.js';
 import { mod } from './methods/arithmetic/mod.js';
 import { mul } from './methods/arithmetic/mul.js';
 import { neg } from './methods/arithmetic/neg.js';
+import type { DecimalRationalTerm } from './DecimalRationalTerm.js';
+import { compareRationalSum, fromRationalSum } from './methods/arithmetic/rational-sum.js';
+import { powInteger } from './methods/arithmetic/pow-integer.js';
 import { shift } from './methods/arithmetic/shift.js';
 import { ceil, floor, round } from './methods/rounding/rounding.js';
 import { toNearest } from './methods/rounding/to-nearest.js';
@@ -32,6 +35,10 @@ export interface ArithmeticDecimalConstructor extends CoreDecimalConstructor
 	readonly prototype : ArithmeticDecimal;
 	/** Create an independently configurable arithmetic constructor. */
 	clone(config ?: DecimalConfigInput): ArithmeticDecimalConstructor;
+	/** Construct a correctly rounded sum of exact rational terms. */
+	fromRationalSum(terms : Iterable<DecimalRationalTerm>): ArithmeticDecimal;
+	/** Compare an exact rational sum with zero without rounding or exponent limits. */
+	compareRationalSum(terms : Iterable<DecimalRationalTerm>): -1 | 0 | 1;
 	/** Select the least value from a non-empty iterable. */
 	min(value : DecimalValueIterable): ArithmeticDecimal;
 	/** Select the least of one or more scalar values. */
@@ -50,7 +57,7 @@ export interface ArithmeticDecimal
 
 /**
  * The core Decimal representation plus arithmetic and rounding operations.
- * Import the scientific tier for powers, logarithms, and trigonometry.
+ * Integer powers are included; import the scientific tier for general powers, logarithms, and trigonometry.
  */
 export class ArithmeticDecimal extends CoreDecimal
 {
@@ -66,6 +73,24 @@ export class ArithmeticDecimal extends CoreDecimal
 	declare static max : ArithmeticDecimalConstructor['max'];
 	/** Create an independently configurable constructor for this tier. */
 	declare static clone : ArithmeticDecimalConstructor['clone'];
+
+	/** Construct a sum of exact rational terms, rounding once using this constructor's settings.
+	 * Terms represent numerator / denominator times ten to exponent. Denominators must be positive.
+	 * Empty or all-zero inputs produce +0; nonzero cancellation produces -0 only with floor rounding.
+	 * Invalid terms or non-iterable input throw INVALID_ARGUMENT. */
+	static fromRationalSum(terms : Iterable<DecimalRationalTerm>) : ArithmeticDecimal
+	{
+		return fromRationalSum(terms, this.context()) as ArithmeticDecimal;
+	}
+
+	/** Compare an exact rational sum with zero, returning -1, 0 or 1.
+	 * Precision, rounding, exponent and formatting settings do not affect the comparison.
+	 * Terms have the same validation and resource limits as fromRationalSum.
+	 * Empty, all-zero and exactly cancelling inputs return +0. */
+	static compareRationalSum(terms : Iterable<DecimalRationalTerm>) : -1 | 0 | 1
+	{
+		return compareRationalSum(terms);
+	}
 
 	/** Add a value. */
 	add(value : DecimalValue) : this[typeof decimalResultType]
@@ -86,6 +111,12 @@ export class ArithmeticDecimal extends CoreDecimal
 	div(value : DecimalValue) : this[typeof decimalResultType]
 	{
 		return this.executeCalculation(context => div(this, value, context));
+	}
+	/** Raise to a safe integer Number exponent, rounding only the final result.
+	 * Negative exponents calculate reciprocals. Invalid exponents throw INVALID_ARGUMENT. */
+	powInteger(exponent : number) : this[typeof decimalResultType]
+	{
+		return this.executeCalculation(context => powInteger(this, exponent, context));
 	}
 	/** Divide by a value and truncate the quotient toward zero. */
 	divToInt(value : DecimalValue) : this[typeof decimalResultType]

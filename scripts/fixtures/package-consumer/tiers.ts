@@ -15,3 +15,21 @@ if (ScientificDecimal !== RootDecimal) throw new Error('Root and scientific entr
 if (RootDecimal !== ScientificDecimalBase) throw new Error('Scientific implementation is not the canonical constructor');
 if (Object.getPrototypeOf(ScientificDecimalBase.prototype) !== ArithmeticDecimal.prototype) throw new Error('Arithmetic inheritance boundary is missing');
 if (Object.getPrototypeOf(ArithmeticDecimal.prototype) !== CoreDecimal.prototype) throw new Error('Core inheritance boundary is missing');
+
+if (new ArithmeticDecimal(2).powInteger(-3).toString() !== '0.125') throw new Error('Arithmetic integer powers failed');
+if (new ScientificDecimal(2).powInteger(10).toString() !== '1024') throw new Error('Inherited integer powers failed');
+if ('powInteger' in core) throw new Error('Core exposes integer powers');
+
+const third = { numerator: 1n, denominator: 3n, exponent: 0n };
+if (ArithmeticDecimal.fromRationalSum([third, third, third]).toString() !== '1') throw new Error('Arithmetic rational sum failed');
+if (ScientificDecimal.fromRationalSum([{ ...third, numerator: 12n }]).sqrt().toString() !== '2') throw new Error('Scientific rational sum failed');
+if ('fromRationalSum' in CoreDecimal) throw new Error('Core exposes rational sum');
+
+const exactTerm = core.toRationalTerm();
+if (exactTerm.numerator !== 125n || exactTerm.exponent !== -2n || exactTerm.denominator !== 1n) throw new Error('Core rational extraction failed');
+if (!ArithmeticDecimal.fromRationalSum([exactTerm]).eq(core)) throw new Error('Rational round trip failed');
+
+const residual = [{ ...third, numerator: -1n, exponent: -100000000000000000000n }];
+if (ArithmeticDecimal.compareRationalSum(residual) !== -1) throw new Error('Exact rational comparison failed');
+if (ScientificDecimal.clone().compareRationalSum(residual) !== -1) throw new Error('Inherited rational comparison failed');
+if ('compareRationalSum' in CoreDecimal) throw new Error('Core exposes rational comparison');

@@ -14,6 +14,8 @@ describe('Decimal context-free methods', () => {
 		expect(value.dp()).toBe(1);
 		expect(value.precision()).toBe(4);
 		expect(value.sign()).toBe(-1);
+		expect(value.toBytes()).toBe(40);
+		expect(value.toRationalTerm()).toEqual({ numerator: -1235n, denominator: 1n, exponent: -1n });
 		expect(value.isFinite()).toBe(true);
 		expect(value.isInt()).toBe(false);
 		expect(value.isNaN()).toBe(false);

@@ -5,3 +5,4 @@ export {
 	type ScientificDecimalFraction as DecimalFraction
 } from './ScientificDecimal.js';
 export type { DecimalLike, DecimalValue, DecimalValueIterable } from './DecimalBase.js';
+export type { DecimalRationalTerm } from './DecimalRationalTerm.js';

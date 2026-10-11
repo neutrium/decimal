@@ -1,3 +1,4 @@
+import type { DecimalRationalTerm } from './DecimalRationalTerm.js';
 import {
 	ArithmeticDecimal,
 	type ArithmeticDecimalFraction,
@@ -41,6 +42,8 @@ export interface ScientificDecimalConstructor extends ArithmeticDecimalConstruct
 	new (value : DecimalValue): ScientificDecimal;
 	/** Prototype shared by instances from this constructor. */
 	readonly prototype : ScientificDecimal;
+	/** Construct a correctly rounded sum in the scientific tier. */
+	fromRationalSum(terms : Iterable<DecimalRationalTerm>): ScientificDecimal;
 	/** Pi at the active precision. */
 	readonly PI : ScientificDecimal;
 	/** Create an independently configurable scientific constructor. */
@@ -83,6 +86,8 @@ export class ScientificDecimal extends ArithmeticDecimal
 	}
 
 	// Declarations narrow inherited statics without creating runtime overrides.
+	/** Construct a correctly rounded sum in the scientific tier. */
+	declare static fromRationalSum : ScientificDecimalConstructor['fromRationalSum'];
 	/** Select the least value from an iterable or scalar inputs. */
 	declare static min : ScientificDecimalConstructor['min'];
 	/** Select the greatest value from an iterable or scalar inputs. */

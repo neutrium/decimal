@@ -4,7 +4,7 @@
  * - `INVALID_ARGUMENT`: a constructor or method argument is invalid.
  * - `INVALID_CONFIGURATION`: a configuration value or object is invalid.
  * - `UNKNOWN_CONFIGURATION_KEY`: a configuration property is unsupported.
- * - `PRECISION_LIMIT_EXCEEDED`: a calculation exceeds a bundled constant's precision.
+ * - `PRECISION_LIMIT_EXCEEDED`: a calculation exceeds supported working precision or a bundled constant's precision.
  * - `PREFIXED_EXPANSION_LIMIT_EXCEEDED`: prefixed parsing exceeds `maxPrefixedDigits`.
  * - `OUTPUT_DIGIT_LIMIT_EXCEEDED`: formatting exceeds `maxOutputDigits`.
  */

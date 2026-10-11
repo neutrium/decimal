@@ -8,8 +8,7 @@ import { naturalExponential } from '../exponential/exponential.js'
 import { naturalLogarithm } from '../exponential/ln.js'
 import { digitsToString } from "../utils/digits-to-string.js";
 import { checkRoundingDigits } from '../rounding/check-rounding-digits.js'
-import { truncate } from '../rounding/truncate.js'
-import { divideSignificant } from '../arithmetic/div.js';
+import { powInteger } from '../arithmetic/pow-integer.js';
 import { mul } from '../arithmetic/mul.js';
 import { compareDecimals } from '../compare/relational-compare.js';
 import { toNumber } from '../to/to-number.js';
@@ -94,10 +93,7 @@ export function pow(x: KernelDecimal, yy : DecimalValue, context : CalculationCo
 	}
 	else if ((k = yn < 0 ? -yn : yn) <= DecimalConstants.MAX_SAFE_INTEGER)
 	{
-		r = intPow(x, k, pr, context);
-		return yState.s < 0
-			? divideSignificant(context.create(1), r, context)
-			: finalise(r, pr, rm, undefined, context);
+		return powInteger(x, yn, context);
 	}
 
 	// Result is negative if x is negative and the last digit of integer y is odd.
@@ -167,47 +163,4 @@ export function pow(x: KernelDecimal, yy : DecimalValue, context : CalculationCo
 	getMutableDecimalState(r).s = sign;
 
 	return finalise(r, pr, rm, undefined, context);
-}
-
-//
-// Return a new Decimal whose value is the value of Decimal `x` to the power `n`, where `n` is an
-// integer of type number.
-//
-// Implements 'exponentiation by squaring'. Called by `pow` and `parseOther`.
-//
-function intPow(x : KernelDecimal, n : number, pr : number, context : CalculationContext) : KernelDecimal
-{
-	const workingContext = context.forIntermediate();
-	let isTruncated,
-		r = workingContext.create(1),
-		// Max n of 9007199254740991 takes 53 loop iterations.
-		// Maximum digits array length; leaves [28, 34] guard digits.
-		k = Math.ceil(pr / DecimalConstants.LOG_BASE + 4);
-
-	for (;;)
-	{
-		if (n % 2)
-		{
-			r = mul(r, x, workingContext);
-			if (truncate(getMutableDecimalState(r).d!, k))
-			{
-				isTruncated = true;
-			}
-		}
-
-		n = Math.floor(n / 2);
-		if (n === 0)
-		{
-			// To ensure correct rounding when r.d is truncated, increment the last word if it is zero.
-			const rd = getMutableDecimalState(r).d!;
-			n = rd.length - 1;
-			if (isTruncated && rd[n] === 0) rd[n] = rd[n]! + 1;
-			break;
-		}
-
-		x = mul(x, x, workingContext);
-		truncate(getMutableDecimalState(x).d!, k);
-	}
-
-	return r;
 }

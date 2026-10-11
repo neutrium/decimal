@@ -14,6 +14,9 @@
 	},
 	"files": [
 		"./type-tests/public-api.test.ts",
-		"./type-tests/tier-entrypoints.test.ts"
+		"./type-tests/tier-entrypoints.test.ts",
+		"./type-tests/pow-integer.test.ts",
+		"./type-tests/rational-sum.test.ts",
+		"./type-tests/rational-term.test.ts"
 	]
 }

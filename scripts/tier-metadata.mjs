@@ -6,7 +6,7 @@ export const tiers = [
 		kernelPaths: ['methods/compare/', 'methods/utils/', 'methods/to/'],
 		infrastructure: [
 			'src/CalculationContext.ts', 'src/DecimalBase.ts', 'src/DecimalEnvironment.ts',
-			'src/DecimalLimits.ts', 'src/DecimalState.ts', 'src/InternalConstants.ts',
+			'src/DecimalLimits.ts', 'src/DecimalRationalTerm.ts', 'src/DecimalState.ts', 'src/InternalConstants.ts',
 			'src/KernelDecimal.ts', 'src/config/DecimalConfig.ts',
 			'src/config/DecimalConfigNormalizer.ts', 'src/config/DefaultConfig.ts',
 			'src/config/RoundingModes.ts', 'src/config/RoundingCodes.ts', 'src/errors.ts', 'src/initialise-decimal.ts'
@@ -15,14 +15,14 @@ export const tiers = [
 	},
 	{
 		id: 'arithmetic', className: 'ArithmeticDecimal', parent: 'CoreDecimal', parentFile: 'src/CoreDecimal.ts',
-		description: 'Core plus arithmetic, rounding, shifting, and fractions',
+		description: 'Core plus arithmetic, integer powers, rounding, shifting, and fractions',
 		kernelPaths: ['methods/arithmetic/', 'methods/rounding/', 'methods/to/to-dp.ts', 'methods/to/to-significant-digits.ts', 'methods/to/to-fraction.ts'],
 		infrastructure: [],
 		budget: { bytes: 32 * 1024 }
 	},
 	{
 		id: 'scientific', className: 'ScientificDecimal', parent: 'ArithmeticDecimal', parentFile: 'src/ArithmeticDecimal.ts',
-		description: 'Arithmetic plus powers, logarithms, trigonometry, `PI`, and `atan2` (the complete API)',
+		description: 'Arithmetic plus general powers, logarithms, trigonometry, `PI`, and `atan2` (the complete API)',
 		kernelPaths: ['methods/power/', 'methods/exponential/', 'methods/trigonometry/'],
 		infrastructure: ['src/ConstantCache.ts', 'src/constants.ts'],
 		budget: { bytes: 50 * 1024 }

@@ -8,7 +8,8 @@ import { removeLeadingZeros } from "../utils/digit-array.js";
 import { normaliseOperand } from '../utils/normalise-operand.js';
 import { getDecimalState, getMutableDecimalState } from '../../DecimalState.js';
 import { refineRoundedBounds } from '../utils/verified-rounding.js';
-import { BIGINT_MULTIPLICATION_WORDS, digitsPrefixToBigInt, multiplyCoefficients } from './coefficients/multiply.js';
+import { BIGINT_MULTIPLICATION_WORDS, multiplyCoefficients } from './coefficients/multiply.js';
+import { digitsPrefixToBigInt } from '../utils/coefficients/to-bigint.js';
 
 //
 // Return a new Decimal whose value is `x` times `y`, rounded to `precision` significant

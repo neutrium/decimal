@@ -1,7 +1,8 @@
 import { divideCoefficients } from '../methods/arithmetic/coefficients/divide.js';
 import { addMagnitudes, subtractMagnitudes } from '../methods/arithmetic/coefficients/add-subtract.js';
 import { compareMagnitudes } from '../methods/utils/coefficients/compare.js';
-import { digitsPrefixToBigInt, multiplyCoefficients } from '../methods/arithmetic/coefficients/multiply.js';
+import { multiplyCoefficients } from '../methods/arithmetic/coefficients/multiply.js';
+import { digitsPrefixToBigInt } from '../methods/utils/coefficients/to-bigint.js';
 import { binaryExponentRange, decodePrefixedCoefficient, expandBinaryCoefficient } from '../methods/utils/coefficients/prefixed.js';
 
 const BASE = 10000000n;

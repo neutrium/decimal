@@ -1,8 +1,10 @@
+import type { DecimalRationalTerm } from './DecimalRationalTerm.js';
+import { toRationalTerm } from './methods/to/to-rational-term.js';
 import type { CalculationContext } from './CalculationContext.js';
 import { DecimalEnvironment, calculationConstruction, resultStateConstruction } from './DecimalEnvironment.js';
 import { DecimalLike as DecimalBase, decimalEnvironmentAccess, type DecimalValue, type DecimalValueIterable } from './DecimalBase.js';
 import { DECIMAL_LIMITS, type DecimalLimits } from './DecimalLimits.js';
-import { setDecimalState, type DecimalState } from './DecimalState.js';
+import { getDecimalState, setDecimalState, type DecimalState } from './DecimalState.js';
 import type { DecimalConfig, DecimalConfigInput } from './config/DecimalConfig.js';
 import { DefaultDecimalConfig } from './config/DefaultConfig.js';
 import { getRoundingModeCode, type RoundingMode } from './config/RoundingModes.js';
@@ -30,6 +32,8 @@ import { getSign } from './methods/utils/get-sign.js';
 import { precision } from './methods/utils/precision.js';
 
 let environment : DecimalEnvironment;
+
+const DECIMAL_STATE_SLOT_BYTES = 8;
 
 /** The independently configurable constructor returned by {@link CoreDecimal.clone}. */
 export interface CoreDecimalConstructor
@@ -146,6 +150,27 @@ export class CoreDecimal extends DecimalBase
 
 	/** @returns `-1`, `-0`, `0`, `1`, or `NaN` according to this value's state. */
 	sign() : number { return getSign(this); }
+
+	/**
+	 * Estimate the bytes used by this value's stored numeric state.
+	 *
+	 * The estimate counts the coefficient reference, exponent, sign, and each base-1e7
+	 * coefficient word as one eight-byte slot. It excludes engine-dependent object and
+	 * array headers, alignment, private-field metadata, and shared prototype data.
+	 */
+	toBytes() : number
+	{
+		const coefficient = getDecimalState(this).d;
+		return (3 + (coefficient?.length ?? 0)) * DECIMAL_STATE_SLOT_BYTES;
+	}
+
+	/** Return an owned immutable exact rational term with denominator 1 and a normalized numerator.
+	 * Independent of calculation and formatting settings. Both zero signs produce numerator 0.
+	 * NaN and infinities throw INVALID_ARGUMENT. */
+	toRationalTerm() : DecimalRationalTerm
+	{
+		return toRationalTerm(this);
+	}
 
 	/** Compare this value with another value. */
 	cmp(value : DecimalValue) : number

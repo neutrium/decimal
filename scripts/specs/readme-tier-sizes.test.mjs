@@ -13,8 +13,8 @@ test('renders measured sizes independently of metadata budgets and preserves sur
 	assert.ok(!result.includes('old table'));
 	assert.ok(result.includes('| Entry point | Includes | Minified size | Budget |'));
 	assert.ok(result.includes('| `@neutrium/decimal/core` | Representation, parsing, comparison, predicates, and string/number formatting | 1.00 KiB | 20 KiB |'));
-	assert.ok(result.includes('| `@neutrium/decimal/arithmetic` | Core plus arithmetic, rounding, shifting, and fractions | 2.50 KiB | 32 KiB |'));
-	assert.ok(result.includes('| `@neutrium/decimal/scientific` | Arithmetic plus powers, logarithms, trigonometry, `PI`, and `atan2` (the complete API) | 4.00 KiB | 50 KiB |'));
+	assert.ok(result.includes('| `@neutrium/decimal/arithmetic` | Core plus arithmetic, integer powers, rounding, shifting, and fractions | 2.50 KiB | 32 KiB |'));
+	assert.ok(result.includes('| `@neutrium/decimal/scientific` | Arithmetic plus general powers, logarithms, trigonometry, `PI`, and `atan2` (the complete API) | 4.00 KiB | 50 KiB |'));
 	assert.ok(result.includes('| `@neutrium/decimal` | Alias for the scientific tier; retained for compatibility | 4.00 KiB | 50 KiB |'));
 	assert.equal(updateTierSizeTable(result, sizes), result);
 });

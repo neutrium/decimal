@@ -11,5 +11,6 @@ export {
 export type { DecimalLike, DecimalValue, DecimalValueIterable } from './DecimalBase.js';
 export type { DecimalConfig, DecimalConfigInput } from './config/DecimalConfig.js';
 export type { ModuloMode, RoundingMode } from './config/RoundingModes.js';
+export type { DecimalRationalTerm } from './DecimalRationalTerm.js';
 export type { DecimalLimits } from './DecimalLimits.js';
 export { DecimalError, type DecimalErrorCode } from './errors.js';

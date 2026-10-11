@@ -40,10 +40,10 @@ Import from `@neutrium/decimal` by default to use the full API. If bundle size i
 <!-- tier-table:start -->
 | Entry point | Includes | Minified size | Budget |
 | --- | --- | ---: | ---: |
-| `@neutrium/decimal/core` | Representation, parsing, comparison, predicates, and string/number formatting | 15.03 KiB | 20 KiB |
-| `@neutrium/decimal/arithmetic` | Core plus arithmetic, rounding, shifting, and fractions | 26.30 KiB | 32 KiB |
-| `@neutrium/decimal/scientific` | Arithmetic plus powers, logarithms, trigonometry, `PI`, and `atan2` (the complete API) | 42.25 KiB | 50 KiB |
-| `@neutrium/decimal` | Alias for the scientific tier; retained for compatibility | 42.24 KiB | 50 KiB |
+| `@neutrium/decimal/core` | Representation, parsing, comparison, predicates, and string/number formatting | 15.81 KiB | 20 KiB |
+| `@neutrium/decimal/arithmetic` | Core plus arithmetic, integer powers, rounding, shifting, and fractions | 31.70 KiB | 32 KiB |
+| `@neutrium/decimal/scientific` | Arithmetic plus general powers, logarithms, trigonometry, `PI`, and `atan2` (the complete API) | 46.77 KiB | 50 KiB |
+| `@neutrium/decimal` | Alias for the scientific tier; retained for compatibility | 46.76 KiB | 50 KiB |
 <!-- tier-table:end -->
 
 Sizes are measured from the browser smoke fixtures (minified ES2022 IIFE, uncompressed, including fixture code) and refreshed by `pnpm run build`. Actual application sizes depend on usage and bundler settings. Budgets are enforced by `pnpm run test:package`.
@@ -190,6 +190,8 @@ Refer to the [API reference](https://neutrium.github.io/decimal/) for comprehens
 | `Decimal.config` | Get a readonly configuration snapshot or assign partial configuration. |
 | `Decimal.clone(config?)` | Create an independently configured Decimal constructor. |
 | `Decimal.atan2(y, x)` | Return the angle in radians from the positive x-axis to `(x, y)`. |
+| `Decimal.fromRationalSum(terms)` | Construct a correctly rounded sum of exact rational terms; available in the arithmetic and scientific tiers. |
+| `Decimal.compareRationalSum(terms)` | Compare an exact rational sum with zero without rounding; available in the arithmetic and scientific tiers. |
 | `Decimal.min(value, ...values)` or `Decimal.min(values)` | Return the minimum using the receiving constructor. |
 | `Decimal.max(value, ...values)` or `Decimal.max(values)` | Return the maximum using the receiving constructor. |
 | `Decimal.PI` | Pi as a Decimal from the receiving constructor. |
@@ -202,6 +204,8 @@ Refer to the [API reference](https://neutrium.github.io/decimal/) for comprehens
 | `dp()` | `number` | Number of decimal places, or `NaN` for a non-finite value. |
 | `precision(includeTrailingZeros?)` | `number` | Number of significant digits. Pass `true` to count trailing integer zeroes; only booleans are accepted. |
 | `sign()` | `number` | `-1`, `-0`, `0`, `1`, or `NaN`, preserving the sign of zero. |
+| `toBytes()` | `number` | Estimated bytes used by the stored numeric state, excluding engine-dependent object and array overhead. |
+| `toRationalTerm()` | `DecimalRationalTerm` | The decimal as a numerator, denominator and exponent |
 
 ### Arithmetic and powers
 
@@ -216,7 +220,8 @@ Refer to the [API reference](https://neutrium.github.io/decimal/) for comprehens
 | `abs()` | Return the absolute value of the decimal. |
 | `neg()` | Invert the sign of the decimal. |
 | `shift(places)` | Shift the decimal point by a safe integer number of places. |
-| `pow(value)` | Raise the decimal to the power of value. |
+| `powInteger(exponent)` | Raise to a safe integer Number exponent, including negative powers; available in the arithmetic tier. |
+| `pow(value)` | Raise the decimal to an integer or fractional power; requires the scientific tier. |
 | `sqrt()` | Return the square root of the decimal. |
 | `cbrt()` | Return the cube root of the decimal. |
 
@@ -371,6 +376,15 @@ const angle: Decimal = Money.atan2(1, 1);
 ```
 
 ## Changelog
+
+### 2.3.0 — 2026-10-11
+
+- Added `Decimal.toBytes()` to estimate the storage used by a value's numeric state.
+- Added exact rational interchange through `DecimalRationalTerm` and `Decimal.toRationalTerm()`.
+- Added `Decimal.fromRationalSum()` and `Decimal.compareRationalSum()` to the arithmetic and scientific tiers.
+- Added `Decimal.powInteger()` to the arithmetic tier for correctly rounded safe-integer powers.
+- Reduced arithmetic and scientific bundle sizes by sharing BigInt coefficient conversion and compact rational-sum state.
+- Refreshed vulnerable transitive dependencies to patched releases.
 
 ### 2.2.0 - 2026-09-07
 
